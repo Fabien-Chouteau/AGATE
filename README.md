@@ -1,5 +1,5 @@
 # AGATE
-Playing with the idea of a tasking library/RTOS in Ada
+Playing with the idea of a tasking/RTOS library in Ada
 
 ## Setup
 
