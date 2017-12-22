@@ -21,4 +21,22 @@ $ gprbuild -P agate.gpr
 You can try the project in GNATemulator (QEMU) provided with GNAT:
 ```
 $ arm-eabi-gnatemu -P agate.gpr obj/main
+---> Dynamic T2 Clock: 921
+---> Static T2 Clock: 1640
+---> Static T1 Clock: 1796
+---> Dynamic T2 Clock: 1008551
+---> Dynamic T2 Clock: 2016354
+---> Dynamic T2 Clock: 3024332
+---> Dynamic T2 Clock: 4032392
+---> Dynamic T2 Clock: 5040271
+---> Static T1 Clock: 5040332
+---> Dynamic T2 Clock: 6048447
+---> Dynamic T2 Clock: 7056388
+---> Dynamic T2 Clock: 8064407
+---> Dynamic T2 Clock: 9072455
+---> Dynamic T2 Clock: 10080463
+---> Static T1 Clock: 10080594
+---> Static T2 Clock: 10080726
+---> Dynamic T2 Clock: 11088401
+[...]
 ```
