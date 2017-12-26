@@ -29,11 +29,15 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL; use HAL;
+with HAL;              use HAL;
+with AGATE.Semaphores; use AGATE.Semaphores;
 
 package AGATE.SysCalls is
 
    procedure Yield;
    function Clock return UInt32;
    procedure Delay_Until (Wakeup_Time : Time);
+
+   procedure Wait_For_Signal (ID : Semaphore_ID);
+   procedure Signal (ID : Semaphore_ID);
 end AGATE.SysCalls;

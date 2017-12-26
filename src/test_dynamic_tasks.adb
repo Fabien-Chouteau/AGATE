@@ -34,8 +34,14 @@ with AGATE.Tasking.Dynamic_Task;
 with Ada.Text_IO;
 with AGATE.SysCalls;
 with System.Machine_Code; use System.Machine_Code;
+with Test_Static_Tasks;
+with AGATE.Semaphores;
+with AGATE.Semaphores.Dynamic;
 
 package body Test_Dynamic_Tasks is
+
+   Dyn_Semaphore : AGATE.Semaphores.Semaphore_ID :=
+     AGATE.Semaphores.Dynamic.Create;
 
    -------------
    -- T1_Proc --
@@ -43,6 +49,10 @@ package body Test_Dynamic_Tasks is
 
    procedure T1_Proc is
    begin
+      Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Static_Semaphore");
+      AGATE.SysCalls.Signal (Test_Static_Tasks.Static_Semaphore.ID);
+      Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
+      AGATE.SysCalls.Signal (Test_Static_Tasks.Static_Semaphore.ID);
       loop
 --           Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" &
 --                                   AGATE.SysCalls.Clock'Img);
@@ -92,5 +102,13 @@ package body Test_Dynamic_Tasks is
          Proc           => T2_Proc'Access);
       AGATE.Tasking.Register (T, "Dynamic T2");
    end Create;
+
+   ----------------------
+   -- Dyamic_Semaphore --
+   ----------------------
+
+   function Dyamic_Semaphore
+     return AGATE.Semaphores.Semaphore_ID
+   is (Dyn_Semaphore);
 
 end Test_Dynamic_Tasks;

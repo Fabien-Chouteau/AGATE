@@ -29,31 +29,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking.Static_Task;
-with AGATE.Semaphores.Static;
+generic
+   initial_Count : Semaphore_Count := 0;
+package AGATE.Semaphores.Static is
 
-package Test_Static_Tasks is
+   function ID return Semaphore_ID;
 
-   procedure T1_Proc;
-
-   package T1 is new AGATE.Tasking.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
-      Priority       => 1,
-      Proc           => T1_Proc'Access,
-      Name           => "Static T1");
-
-   procedure T2_Proc;
-
-   package T2 is new AGATE.Tasking.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
-      Priority       => 1,
-      Proc           => T2_Proc'Access,
-      Name           => "Static T2");
-
-   package Static_Semaphore is new AGATE.Semaphores.Static;
-
-end Test_Static_Tasks;
+end AGATE.Semaphores.Static;

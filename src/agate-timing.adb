@@ -159,7 +159,6 @@ package body AGATE.Timing is
       while Alarm_List /= null and then Alarm_List.Alarm_Time <= Now loop
          T := Alarm_List;
          Alarm_List := T.Next;
-         T.Next := null;
          Tasking.Resume (Task_ID (T));
       end loop;
    end Wakeup_Expired_Alarms;

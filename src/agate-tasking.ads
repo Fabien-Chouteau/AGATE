@@ -48,7 +48,7 @@ package AGATE.Tasking is
    procedure Yield;
    procedure Resume (ID : Task_ID);
 
-   type Suspend_Reason is (Alarm);
+   type Suspend_Reason is (Alarm, Semaphore);
    procedure Suspend (Reason : Suspend_Reason);
 
    function Context_Switch_Needed return Boolean;

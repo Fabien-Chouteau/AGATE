@@ -30,10 +30,12 @@
 ------------------------------------------------------------------------------
 
 package AGATE.Tasking.Dynamic_Task is
+
    function Create (Stack_Size     : Storage_Count;
                     Sec_Stack_Size : Storage_Count;
                     Heap_Size      : Storage_Count;
                     Priority       : Task_Priority;
                     Proc           : Task_Procedure)
                     return Task_ID;
+
 end AGATE.Tasking.Dynamic_Task;

@@ -29,31 +29,47 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking.Static_Task;
-with AGATE.Semaphores.Static;
+with HAL; use HAL;
 
-package Test_Static_Tasks is
+package AGATE.Semaphores is
 
-   procedure T1_Proc;
+   type Semaphore_Count is new Natural;
 
-   package T1 is new AGATE.Tasking.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
-      Priority       => 1,
-      Proc           => T1_Proc'Access,
-      Name           => "Static T1");
+   type Semaphore_ID is limited private;
 
-   procedure T2_Proc;
+   function Count (Sem : Semaphore_ID)
+                   return Semaphore_Count;
 
-   package T2 is new AGATE.Tasking.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
-      Priority       => 1,
-      Proc           => T2_Proc'Access,
-      Name           => "Static T2");
+   procedure Signal (Sem : Semaphore_ID);
 
-   package Static_Semaphore is new AGATE.Semaphores.Static;
+   procedure Wait_For_Signal (Sem : Semaphore_ID);
 
-end Test_Static_Tasks;
+   function To_UInt32 (ID : Semaphore_ID) return UInt32;
+   function To_ID (ID : UInt32) return Semaphore_ID;
+
+private
+
+   type Semaphore (Initial_Count : Semaphore_Count := 0)
+   is limited record
+      Count        : Semaphore_Count := Initial_Count;
+      Waiting_List : Task_Object_Access := null;
+   end record;
+
+   type Semaphore_Access is access all Semaphore;
+   type Semaphore_ID is new not null Semaphore_Access;
+
+   function Count (Sem : Semaphore)
+                   return Semaphore_Count;
+
+   procedure Signal (Sem : in out Semaphore);
+
+   procedure Wait_For_Signal (Sem : in out Semaphore);
+
+
+   procedure Insert_Task (Sem : in out Semaphore;
+                          T : Task_Object_Access);
+
+   procedure Resume_One_Task (Sem : in out Semaphore)
+     with Pre => Sem.Waiting_List /= null;
+
+end AGATE.Semaphores;

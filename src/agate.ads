@@ -40,6 +40,15 @@ package AGATE is
 
    type Task_Procedure is access procedure;
 
+   type Task_Status is (Created, Ready, Running, Suspended_Alarm,
+                        Suspended_Semaphore);
+
+   function Image (ID : Task_ID) return String;
+
+   type Time is new UInt64;
+
+private
+
    type Task_Stack is new Storage_Array
      with Alignment => 8 * 8;
 
@@ -50,15 +59,6 @@ package AGATE is
 
    type Task_Heap is new Storage_Array;
    type Task_Heap_Access is access all Task_Heap;
-
-   type Task_Status is (Created, Ready, Running, Suspended_Alarm);
-
-   function Image (ID : Task_ID) return String;
-
-   type Time is new UInt64;
-
-private
-
 
    subtype Task_Name is String (1 .. 10);
 

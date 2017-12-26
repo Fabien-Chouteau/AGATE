@@ -40,7 +40,7 @@ package body AGATE.SysCalls is
 
    SVCall_Interrupt_ID : constant Interrupt_ID := -5;
 
-   type Syscall_ID is (Yield, Clock, Delay_Until);
+   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait);
 
    type Syscall_Handler is access
      function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
@@ -61,6 +61,8 @@ package body AGATE.SysCalls is
    function Do_Yield (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Clock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Delay_Until (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Sem_Wait (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Sem_Signal (Arg1, Arg2, Arg3 : UInt32) return UInt32;
 
    ----------------
    -- Initialize --
@@ -76,6 +78,8 @@ package body AGATE.SysCalls is
       SysCall_Handler_Table (Yield) := Do_Yield'Access;
       SysCall_Handler_Table (Clock) := Do_Clock'Access;
       SysCall_Handler_Table (Delay_Until) := Do_Delay_Until'Access;
+      SysCall_Handler_Table (Sem_Signal) := Do_Sem_Signal'Access;
+      SysCall_Handler_Table (Sem_Wait) := Do_Sem_Wait'Access;
    end Initialize;
 
    --------------
@@ -118,6 +122,32 @@ package body AGATE.SysCalls is
       Timing.Delay_Until (Time (Arg1));
       return 0;
    end Do_Delay_Until;
+
+   -----------------
+   -- Do_Sem_Wait --
+   -----------------
+
+   function Do_Sem_Wait
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      Semaphores.Wait_For_Signal (To_ID (Arg1));
+      return 0;
+   end Do_Sem_Wait;
+
+   -------------------
+   -- Do_Sem_Signal --
+   -------------------
+
+   function Do_Sem_Signal
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      Semaphores.Signal (To_ID (Arg1));
+      return 0;
+   end Do_Sem_Signal;
 
    --------------------
    -- SVCall_Handler --
@@ -236,6 +266,30 @@ package body AGATE.SysCalls is
    begin
       Unref := Trig (Delay_Until, UInt32 (Wakeup_Time));
    end Delay_Until;
+
+   ---------------------
+   -- Wait_For_Signal --
+   ---------------------
+
+   procedure Wait_For_Signal
+     (ID : Semaphore_ID)
+   is
+      Unref : UInt32 with Unreferenced;
+   begin
+      Unref := Trig (Sem_Wait, To_UInt32 (ID));
+   end Wait_For_Signal;
+
+   ------------
+   -- Signal --
+   ------------
+
+   procedure Signal
+     (ID : Semaphore_ID)
+   is
+      Unref : UInt32 with Unreferenced;
+   begin
+      Unref := Trig (Sem_Signal, To_UInt32 (ID));
+   end Signal;
 
 begin
    Initialize;

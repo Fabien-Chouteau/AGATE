@@ -349,7 +349,8 @@ package body AGATE.Tasking is
    begin
       Extract (Current_Task);
       Current_Task.Status := (case Reason is
-                                 when Alarm => Suspended_Alarm);
+                                 when Alarm     => Suspended_Alarm,
+                                 when Semaphore => Suspended_Semaphore);
    end Suspend;
 
    ---------------------------
