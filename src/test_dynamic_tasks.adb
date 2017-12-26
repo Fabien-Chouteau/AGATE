@@ -49,10 +49,8 @@ package body Test_Dynamic_Tasks is
 
    procedure T1_Proc is
    begin
-      Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Static_Semaphore");
-      AGATE.SysCalls.Signal (Test_Static_Tasks.Static_Semaphore.ID);
       Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
-      AGATE.SysCalls.Signal (Test_Static_Tasks.Static_Semaphore.ID);
+      AGATE.SysCalls.Signal (Dyn_Semaphore);
       loop
 --           Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" &
 --                                   AGATE.SysCalls.Clock'Img);
@@ -71,6 +69,11 @@ package body Test_Dynamic_Tasks is
    procedure T2_Proc is
       Now : Time;
    begin
+
+      Ada.Text_IO.Put_Line ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
+      AGATE.SysCalls.Wait_For_Signal (Dyn_Semaphore);
+      Ada.Text_IO.Put_Line ("---> Dynamic T2 released");
+
       loop
          Now := Time (AGATE.SysCalls.Clock);
          Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);

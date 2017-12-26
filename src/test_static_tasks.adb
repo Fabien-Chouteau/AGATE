@@ -32,7 +32,6 @@
 with Ada.Text_IO;
 with AGATE.SysCalls;
 with AGATE;              use AGATE;
-with Test_Dynamic_Tasks; use Test_Dynamic_Tasks;
 
 package body Test_Static_Tasks is
 
@@ -43,9 +42,9 @@ package body Test_Static_Tasks is
    procedure T1_Proc is
       Now : Time;
    begin
-      Ada.Text_IO.Put_Line ("---> Static T1 Wait_For_Signal on Static_Semaphore");
-      AGATE.SysCalls.Wait_For_Signal (Static_Semaphore.ID);
-      Ada.Text_IO.Put_Line ("---> Static T1 released");
+
+      Ada.Text_IO.Put_Line ("---> Static T1 Signal Static_Semaphore");
+      AGATE.SysCalls.Signal (Static_Semaphore.ID);
 
       loop
          Now := Time (AGATE.SysCalls.Clock);
@@ -62,8 +61,9 @@ package body Test_Static_Tasks is
       Now : Time;
       Cnt : Natural := 0;
    begin
-      Ada.Text_IO.Put_Line ("---> Static T2 Wait_For_Signal on Dynamic_Semaphore");
-      AGATE.SysCalls.Wait_For_Signal (Dyamic_Semaphore);
+
+      Ada.Text_IO.Put_Line ("---> Static T2 Wait_For_Signal on Static_Semaphore");
+      AGATE.SysCalls.Wait_For_Signal (Static_Semaphore.ID);
       Ada.Text_IO.Put_Line ("---> Static T2 released");
 
       loop

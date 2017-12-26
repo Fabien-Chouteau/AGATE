@@ -31,6 +31,7 @@
 
 with AGATE.Tasking.Static_Task;
 with AGATE.Semaphores.Static;
+with AGATE.Mutexes.Static;
 
 package Test_Static_Tasks is
 
@@ -50,10 +51,12 @@ package Test_Static_Tasks is
      (Stack_Size     => 4096,
       Sec_Stack_Size => 1024,
       Heap_Size      => 1024,
-      Priority       => 1,
+      Priority       => 2,
       Proc           => T2_Proc'Access,
       Name           => "Static T2");
 
    package Static_Semaphore is new AGATE.Semaphores.Static;
+
+   package Static_Mutex is new AGATE.Mutexes.Static (Priority => 2);
 
 end Test_Static_Tasks;

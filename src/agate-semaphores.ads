@@ -65,7 +65,6 @@ private
 
    procedure Wait_For_Signal (Sem : in out Semaphore);
 
-
    procedure Insert_Task (Sem : in out Semaphore;
                           T : Task_Object_Access);
 
