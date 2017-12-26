@@ -43,6 +43,10 @@ package AGATE is
    type Task_Status is (Created, Ready, Running, Suspended_Alarm,
                         Suspended_Semaphore, Suspended_Mutex);
 
+   function Image (Status : Task_Status) return String;
+
+   function Name (ID : Task_ID) return String;
+
    function Image (ID : Task_ID) return String;
 
    type Time is new UInt64;
@@ -74,7 +78,6 @@ private
    type Task_Context is array (4 .. 12) of UInt32
      with Pack, Size => 9 * 32;
 
-
    type Task_Object;
 
    type Task_Object_Access is access all Task_Object;
@@ -92,7 +95,6 @@ private
       Alarm_Time    : Time := 0;
       Status        : Task_Status := Created;
    end record;
-
 
    type Task_ID is new Task_Object_Access;
 

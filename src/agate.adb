@@ -42,6 +42,30 @@ package body AGATE is
    -- Image --
    -----------
 
+   function Image
+     (Status : Task_Status)
+      return String
+   is (case Status is
+          when Created             => "Created",
+          when Ready               => "Ready",
+          when Running             => "Running",
+          when Suspended_Alarm     => "Waiting for alarm",
+          when Suspended_Semaphore => "Waiting on semaphore",
+          when Suspended_Mutex     => "Waiting on mutex");
+
+   ----------
+   -- Name --
+   ----------
+
+   function Name
+     (ID : Task_ID)
+      return String
+   is (Task_Object_Access (ID).Name);
+
+   -----------
+   -- Image --
+   -----------
+
    function Image (ID : Task_ID) return String
    is
       T : constant Task_Object_Access := Task_Object_Access (ID);
@@ -49,7 +73,8 @@ package body AGATE is
       return "" & T.Name &
         " - Prio:" & T.Priority'Img &
         " - ID:" & To_Integer (T.all'Address)'Img &
-        " - PSP:" & Image (T.Stack_Pointer);
+        " - PSP:" & Image (T.Stack_Pointer) &
+        " - " & Image (T.Status);
    end Image;
 
 end AGATE;
