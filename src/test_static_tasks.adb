@@ -60,6 +60,7 @@ package body Test_Static_Tasks is
 
    procedure T2_Proc is
       Now : Time;
+      Cnt : Natural := 0;
    begin
       Ada.Text_IO.Put_Line ("---> Static T2 Wait_For_Signal on Dynamic_Semaphore");
       AGATE.SysCalls.Wait_For_Signal (Dyamic_Semaphore);
@@ -68,7 +69,16 @@ package body Test_Static_Tasks is
       loop
          Now := Time (AGATE.SysCalls.Clock);
          Ada.Text_IO.Put_Line ("---> Static T2 Clock:" & Now'Img);
+
+         Cnt := Cnt + 1;
+
+         if Cnt = 3 then
+            Ada.Text_IO.Put_Line ("---> Static T2 Shuting down the system");
+            AGATE.SysCalls.Shutdown_System;
+         end if;
+
          AGATE.SysCalls.Delay_Until (Now + 10_000_000);
+
       end loop;
    end T2_Proc;
 

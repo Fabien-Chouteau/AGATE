@@ -40,4 +40,6 @@ package AGATE.SysCalls is
 
    procedure Wait_For_Signal (ID : Semaphore_ID);
    procedure Signal (ID : Semaphore_ID);
+
+   procedure Shutdown_System;
 end AGATE.SysCalls;

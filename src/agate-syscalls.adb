@@ -30,9 +30,16 @@
 ------------------------------------------------------------------------------
 
 with Ada.Text_IO;
+
 with System.Machine_Code;     use System.Machine_Code;
-with AGATE.Interrupts;        use AGATE.Interrupts;
+
+pragma Warnings (Off, "is an internal GNAT unit");
+with System.Machine_Reset;
+pragma Warnings (On, "is an internal GNAT unit");
+
 with System.Storage_Elements; use System.Storage_Elements;
+
+with AGATE.Interrupts;        use AGATE.Interrupts;
 with AGATE.Timing;
 with AGATE.Tasking;
 
@@ -40,7 +47,8 @@ package body AGATE.SysCalls is
 
    SVCall_Interrupt_ID : constant Interrupt_ID := -5;
 
-   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait);
+   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
+                       Shutdown);
 
    type Syscall_Handler is access
      function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
@@ -63,6 +71,7 @@ package body AGATE.SysCalls is
    function Do_Delay_Until (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Sem_Wait (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Sem_Signal (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Shutdown (Arg1, Arg2, Arg3 : UInt32) return UInt32;
 
    ----------------
    -- Initialize --
@@ -80,6 +89,7 @@ package body AGATE.SysCalls is
       SysCall_Handler_Table (Delay_Until) := Do_Delay_Until'Access;
       SysCall_Handler_Table (Sem_Signal) := Do_Sem_Signal'Access;
       SysCall_Handler_Table (Sem_Wait) := Do_Sem_Wait'Access;
+      SysCall_Handler_Table (Shutdown) := Do_Shutdown'Access;
    end Initialize;
 
    --------------
@@ -148,6 +158,19 @@ package body AGATE.SysCalls is
       Semaphores.Signal (To_ID (Arg1));
       return 0;
    end Do_Sem_Signal;
+
+   -----------------
+   -- Do_Shutdown --
+   -----------------
+
+   function Do_Shutdown
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      System.Machine_Reset.Stop;
+      return 0;
+   end Do_Shutdown;
 
    --------------------
    -- SVCall_Handler --
@@ -291,6 +314,16 @@ package body AGATE.SysCalls is
       Unref := Trig (Sem_Signal, To_UInt32 (ID));
    end Signal;
 
+   ---------------------
+   -- Shutdown_System --
+   ---------------------
+
+   procedure Shutdown_System
+   is
+      Unref : UInt32 with Unreferenced;
+   begin
+      Unref := Trig (Shutdown);
+   end Shutdown_System;
 begin
    Initialize;
 end AGATE.SysCalls;
