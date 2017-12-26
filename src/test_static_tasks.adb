@@ -47,9 +47,17 @@ package body Test_Static_Tasks is
       AGATE.SysCalls.Signal (Static_Semaphore.ID);
 
       loop
+         Ada.Text_IO.Put_Line ("---> Static T1 Wait_Lock on Static_Mutex");
+         SysCalls.Wait_Lock (Static_Mutex.ID);
+         Ada.Text_IO.Put_Line ("---> Static T1 Got the mutex");
+
          Now := Time (AGATE.SysCalls.Clock);
+
          Ada.Text_IO.Put_Line ("---> Static T1 Clock:" & Now'Img);
          AGATE.SysCalls.Delay_Until (Now + 5_000_000);
+
+         Ada.Text_IO.Put_Line ("---> Static T1 Release Static_Mutex");
+         SysCalls.Release (Static_Mutex.ID);
       end loop;
    end T1_Proc;
 
@@ -72,7 +80,14 @@ package body Test_Static_Tasks is
 
          Cnt := Cnt + 1;
 
-         if Cnt = 3 then
+         if Cnt = 2 then
+            Ada.Text_IO.Put_Line ("---> Static T2 Wait_Lock on Static_Mutex");
+            SysCalls.Wait_Lock (Static_Mutex.ID);
+            Ada.Text_IO.Put_Line ("---> Static T2 Got the mutex");
+         elsif Cnt = 3 then
+            Ada.Text_IO.Put_Line ("---> Static T2 Release Static_Mutex");
+            SysCalls.Release (Static_Mutex.ID);
+         elsif Cnt = 4 then
             Ada.Text_IO.Put_Line ("---> Static T2 Shuting down the system");
             AGATE.SysCalls.Shutdown_System;
          end if;

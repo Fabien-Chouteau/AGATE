@@ -48,7 +48,8 @@ package body AGATE.SysCalls is
    SVCall_Interrupt_ID : constant Interrupt_ID := -5;
 
    type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
-                       Shutdown);
+                       Shutdown, Mutex_Wait_Lock, Mutex_Try_Lock,
+                       Mutex_Release);
 
    type Syscall_Handler is access
      function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
@@ -72,6 +73,9 @@ package body AGATE.SysCalls is
    function Do_Sem_Wait (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Sem_Signal (Arg1, Arg2, Arg3 : UInt32) return UInt32;
    function Do_Shutdown (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Wait_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Try_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Release (Arg1, Arg2, Arg3 : UInt32) return UInt32;
 
    ----------------
    -- Initialize --
@@ -90,6 +94,9 @@ package body AGATE.SysCalls is
       SysCall_Handler_Table (Sem_Signal) := Do_Sem_Signal'Access;
       SysCall_Handler_Table (Sem_Wait) := Do_Sem_Wait'Access;
       SysCall_Handler_Table (Shutdown) := Do_Shutdown'Access;
+      SysCall_Handler_Table (Mutex_Wait_Lock) := Do_Wait_Lock'Access;
+      SysCall_Handler_Table (Mutex_Try_Lock) := Do_Try_Lock'Access;
+      SysCall_Handler_Table (Mutex_Release) := Do_Release'Access;
    end Initialize;
 
    --------------
@@ -171,6 +178,44 @@ package body AGATE.SysCalls is
       System.Machine_Reset.Stop;
       return 0;
    end Do_Shutdown;
+
+   ------------------
+   -- Do_Wait_Lock --
+   ------------------
+
+   function Do_Wait_Lock
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      Mutexes.Wait_Lock (To_ID (Arg1));
+      return 0;
+   end Do_Wait_Lock;
+
+   -----------------
+   -- Do_Try_Lock --
+   -----------------
+
+   function Do_Try_Lock
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      return (if Mutexes.Try_Lock (To_ID (Arg1)) then 1 else 0);
+   end Do_Try_Lock;
+
+   ----------------
+   -- Do_Release --
+   ----------------
+
+   function Do_Release
+     (Arg1, Arg2, Arg3 : UInt32)
+      return UInt32
+   is
+   begin
+      Mutexes.Release (To_ID (Arg1));
+      return 0;
+   end Do_Release;
 
    --------------------
    -- SVCall_Handler --
@@ -313,6 +358,43 @@ package body AGATE.SysCalls is
    begin
       Unref := Trig (Sem_Signal, To_UInt32 (ID));
    end Signal;
+
+   ---------------
+   -- Wait_Lock --
+   ---------------
+
+   procedure Wait_Lock
+     (ID : Mutex_ID)
+   is
+      Unref : UInt32 with Unreferenced;
+   begin
+      Unref := Trig (Mutex_Wait_Lock, To_UInt32 (ID));
+   end Wait_Lock;
+
+   --------------
+   -- Try_Lock --
+   --------------
+
+   function Try_Lock
+     (ID : Mutex_ID)
+      return Boolean
+   is
+      Ret : UInt32;
+   begin
+      Ret := Trig (Mutex_Try_Lock, To_UInt32 (ID));
+      return Ret /= 0;
+   end Try_Lock;
+   -------------
+   -- Release --
+   -------------
+
+   procedure Release
+     (ID : Mutex_ID)
+   is
+      Unref : UInt32 with Unreferenced;
+   begin
+      Unref := Trig (Mutex_Release, To_UInt32 (ID));
+   end Release;
 
    ---------------------
    -- Shutdown_System --

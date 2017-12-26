@@ -29,24 +29,16 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;              use HAL;
-with AGATE.Semaphores; use AGATE.Semaphores;
-with AGATE.Mutexes;    use AGATE.Mutexes;
+package body AGATE.Mutexes.Static is
 
-package AGATE.SysCalls is
+   Mut : aliased Mutex (Priority);
 
-   procedure Yield;
-   function Clock return UInt32;
-   procedure Delay_Until (Wakeup_Time : Time);
+   --------
+   -- ID --
+   --------
 
-   -- Semaphores --
-   procedure Wait_For_Signal (ID : Semaphore_ID);
-   procedure Signal (ID : Semaphore_ID);
+   function ID
+     return Mutex_ID
+   is (Mut'Access);
 
-   -- Mutexes --
-   procedure Wait_Lock (ID : Mutex_ID);
-   function Try_Lock (ID : Mutex_ID) return Boolean;
-   procedure Release (ID : Mutex_ID);
-
-   procedure Shutdown_System;
-end AGATE.SysCalls;
+end AGATE.Mutexes.Static;

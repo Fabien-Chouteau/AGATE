@@ -41,7 +41,7 @@ package AGATE is
    type Task_Procedure is access procedure;
 
    type Task_Status is (Created, Ready, Running, Suspended_Alarm,
-                        Suspended_Semaphore);
+                        Suspended_Semaphore, Suspended_Mutex);
 
    function Image (ID : Task_ID) return String;
 

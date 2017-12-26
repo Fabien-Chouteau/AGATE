@@ -29,24 +29,39 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;              use HAL;
-with AGATE.Semaphores; use AGATE.Semaphores;
-with AGATE.Mutexes;    use AGATE.Mutexes;
+with HAL; use HAL;
 
-package AGATE.SysCalls is
+package AGATE.Mutexes is
 
-   procedure Yield;
-   function Clock return UInt32;
-   procedure Delay_Until (Wakeup_Time : Time);
+   type Mutex_ID is limited private;
 
-   -- Semaphores --
-   procedure Wait_For_Signal (ID : Semaphore_ID);
-   procedure Signal (ID : Semaphore_ID);
+   procedure Wait_Lock (Mut : Mutex_ID);
 
-   -- Mutexes --
-   procedure Wait_Lock (ID : Mutex_ID);
-   function Try_Lock (ID : Mutex_ID) return Boolean;
-   procedure Release (ID : Mutex_ID);
+   function Try_Lock (Mut : Mutex_ID) return Boolean;
 
-   procedure Shutdown_System;
-end AGATE.SysCalls;
+   procedure Release (Mut : Mutex_ID);
+
+   function To_UInt32 (ID : Mutex_ID) return UInt32;
+   function To_ID (ID : UInt32) return Mutex_ID;
+
+private
+
+   type Mutex (Prio : Task_Priority)
+   is limited record
+      Owner        : Task_Object_Access := null;
+      Waiting_List : Task_Object_Access := null;
+   end record;
+
+   type Mutex_Access is access all Mutex;
+   type Mutex_ID is new not null Mutex_Access;
+
+   procedure Wait_Lock (Mut : in out Mutex);
+
+   function Try_Lock (Mut : in out Mutex) return Boolean;
+
+   procedure Release (Mut : in out Mutex);
+
+   procedure Insert_Task (Mut : in out Mutex;
+                          T   : Task_Object_Access);
+
+end AGATE.Mutexes;
