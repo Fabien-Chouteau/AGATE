@@ -35,6 +35,8 @@ with AGATE.Mutexes.Static;
 
 package Test_Static_Tasks is
 
+   Test_Time_Unit : constant := 1_000_000;
+
    procedure T1_Proc;
 
    package T1 is new AGATE.Tasking.Static_Task
@@ -55,8 +57,11 @@ package Test_Static_Tasks is
       Proc           => T2_Proc'Access,
       Name           => "Static T2");
 
-   package Static_Semaphore is new AGATE.Semaphores.Static;
+   package Static_Semaphore is new AGATE.Semaphores.Static
+     (Name => "Static Sem");
 
-   package Static_Mutex is new AGATE.Mutexes.Static (Priority => 2);
+   package Static_Mutex is new AGATE.Mutexes.Static
+     (Priority => 2,
+      Name     => "Static Mutex prio 2");
 
 end Test_Static_Tasks;

@@ -42,6 +42,7 @@ with System.Storage_Elements; use System.Storage_Elements;
 with AGATE.Interrupts;        use AGATE.Interrupts;
 with AGATE.Timing;
 with AGATE.Tasking;
+with AGATE.Traces;
 
 package body AGATE.SysCalls is
 
@@ -175,6 +176,7 @@ package body AGATE.SysCalls is
       return UInt32
    is
    begin
+      Traces.Shutdown;
       System.Machine_Reset.Stop;
       return 0;
    end Do_Shutdown;

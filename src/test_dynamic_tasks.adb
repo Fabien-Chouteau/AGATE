@@ -41,7 +41,7 @@ with AGATE.Semaphores.Dynamic;
 package body Test_Dynamic_Tasks is
 
    Dyn_Semaphore : AGATE.Semaphores.Semaphore_ID :=
-     AGATE.Semaphores.Dynamic.Create;
+     AGATE.Semaphores.Dynamic.Create (Name => "Dynamic Sem");
 
    -------------
    -- T1_Proc --
@@ -52,12 +52,6 @@ package body Test_Dynamic_Tasks is
       Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
       AGATE.SysCalls.Signal (Dyn_Semaphore);
       loop
---           Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" &
---                                   AGATE.SysCalls.Clock'Img);
---           AGATE.SysCalls.Yield;
---           for I in 1 .. 100_000 loop
---              null;
---           end loop;
          Asm ("wfi", Volatile => True);
       end loop;
    end T1_Proc;
@@ -77,7 +71,7 @@ package body Test_Dynamic_Tasks is
       loop
          Now := Time (AGATE.SysCalls.Clock);
          Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);
-         AGATE.SysCalls.Delay_Until (Now + 1_000_000);
+         AGATE.SysCalls.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T2_Proc;
 

@@ -31,7 +31,9 @@
 
 package AGATE.Semaphores.Dynamic is
 
-   function Create (Initial_Count : Semaphore_Count := 0)
-                    return Semaphore_ID;
+   function Create
+     (Initial_Count : Semaphore_Count := 0;
+      Name          : String)
+      return Semaphore_ID;
 
 end AGATE.Semaphores.Dynamic;

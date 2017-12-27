@@ -29,6 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with AGATE.Traces;
+
 package body AGATE.Mutexes.Dynamic is
 
    ------------
@@ -36,8 +38,14 @@ package body AGATE.Mutexes.Dynamic is
    ------------
 
    function Create
-     (Prio : Task_Priority)
+     (Prio : Task_Priority;
+      Name : String)
       return Mutex_ID
-   is (new Mutex (Prio));
+   is
+      Ret : constant Mutex_ID := new Mutex (Prio);
+   begin
+      Traces.Register (Ret, Name);
+      return Ret;
+   end Create;
 
 end AGATE.Mutexes.Dynamic;

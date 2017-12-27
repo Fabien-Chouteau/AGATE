@@ -35,6 +35,7 @@ with System.Machine_Code; use System.Machine_Code;
 with System;              use System;
 with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
 with AGATE.Interrupts;    use AGATE.Interrupts;
+with AGATE.Traces;
 
 package body AGATE.Tasking is
 
@@ -179,6 +180,8 @@ package body AGATE.Tasking is
 
       Initialize_Task_Context (T.all);
       Insert (Task_ID (T));
+
+      Traces.Register (Task_ID (T), T.Name);
    end Register;
 
    -----------
@@ -222,7 +225,6 @@ package body AGATE.Tasking is
    function Task_To_Run
      return Task_ID
    is (Task_ID (Ready_Tasks));
-
 
    --------------------
    -- In_Ready_Tasks --
@@ -331,6 +333,8 @@ package body AGATE.Tasking is
      (ID : Task_ID)
    is
    begin
+      Traces.Resume (ID);
+
       Task_Object_Access (ID).Status := Ready;
       Insert (ID);
 
@@ -347,11 +351,14 @@ package body AGATE.Tasking is
      (Reason : Suspend_Reason)
    is
    begin
+      Traces.Suspend (Current_Task);
+
       Extract (Current_Task);
       Current_Task.Status := (case Reason is
                                  when Alarm     => Suspended_Alarm,
                                  when Semaphore => Suspended_Semaphore,
                                  when Mutex     => Suspended_Mutex);
+
    end Suspend;
 
    ---------------------------
@@ -393,8 +400,13 @@ package body AGATE.Tasking is
 
       Set_PSP (Ready_Tasks.Stack_Pointer);
 
+      Traces.Context_Switch (Task_ID (Running_Task),
+                             Task_ID (Ready_Tasks));
+
       Running_Task := Ready_Tasks;
       Running_Task.Status := Running;
+
+      Traces.Running (Current_Task);
 
       Asm (Template =>
              "bl current_task_context" & ASCII.LF &

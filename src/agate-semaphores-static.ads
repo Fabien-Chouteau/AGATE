@@ -31,6 +31,7 @@
 
 generic
    initial_Count : Semaphore_Count := 0;
+   Name          : String;
 package AGATE.Semaphores.Static is
 
    function ID return Semaphore_ID;

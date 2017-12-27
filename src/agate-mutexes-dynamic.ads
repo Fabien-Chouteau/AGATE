@@ -31,6 +31,9 @@
 
 package AGATE.Mutexes.Dynamic is
 
-   function Create (Prio : Task_Priority) return Mutex_ID;
+   function Create
+     (Prio : Task_Priority;
+      Name : String)
+      return Mutex_ID;
 
 end AGATE.Mutexes.Dynamic;

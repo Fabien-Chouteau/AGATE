@@ -33,6 +33,7 @@ with Ada.Text_IO;              use Ada.Text_IO;
 
 with Ada.Unchecked_Conversion;
 with AGATE.Tasking;            use AGATE.Tasking;
+with AGATE.Traces;
 
 package body AGATE.Semaphores is
 
@@ -41,38 +42,6 @@ package body AGATE.Semaphores is
 
    function To_ID_Internal is new Ada.Unchecked_Conversion
      (UInt32, Semaphore_ID);
-
-   -----------
-   -- Count --
-   -----------
-
-   function Count
-     (Sem : Semaphore_ID)
-      return Semaphore_Count
-   is (Semaphore_Access (Sem).all.Count);
-
-   ------------
-   -- Signal --
-   ------------
-
-   procedure Signal
-     (Sem : Semaphore_ID)
-   is
-   begin
-      Signal (Semaphore_Access (Sem).all);
-   end Signal;
-
-
-   ---------------------
-   -- Wait_For_Signal --
-   ---------------------
-
-   procedure Wait_For_Signal
-     (Sem : Semaphore_ID)
-   is
-   begin
-      Wait_For_Signal (Semaphore_Access (Sem).all);
-   end Wait_For_Signal;
 
    ---------------
    -- To_UInt32 --
@@ -97,7 +66,7 @@ package body AGATE.Semaphores is
    -----------
 
    function Count
-     (Sem : Semaphore)
+     (Sem : Semaphore_ID)
       return Semaphore_Count
    is (Sem.Count);
 
@@ -106,13 +75,16 @@ package body AGATE.Semaphores is
    ------------
 
    procedure Signal
-     (Sem : in out Semaphore)
+     (Sem : Semaphore_ID)
    is
    begin
       if Sem.Waiting_List /= null then
-         Resume_One_Task (Sem);
+         Resume_One_Task (Sem.all);
+         Traces.Value_Changed (Sem, Sem.Count + 1, Current_Task);
+         Traces.Value_Changed (Sem, Sem.Count, Current_Task);
       else
          Sem.Count := Sem.Count + 1;
+         Traces.Value_Changed (Sem, Sem.Count, Current_Task);
       end if;
    end Signal;
 
@@ -121,11 +93,12 @@ package body AGATE.Semaphores is
    ---------------------
 
    procedure Wait_For_Signal
-     (Sem : in out Semaphore)
+     (Sem : Semaphore_ID)
    is
    begin
       if Sem.Count >= 1 then
          Sem.Count := Sem.Count - 1;
+         Traces.Value_Changed (Sem, Sem.Count, Current_Task);
       else
          declare
             T : constant Task_Object_Access := Task_Object_Access (Current_Task);
@@ -134,7 +107,7 @@ package body AGATE.Semaphores is
             Tasking.Suspend (Tasking.Semaphore);
 
             --  Add it to the waiting queue
-            Insert_Task (Sem, T);
+            Insert_Task (Sem.all, T);
 
             if Context_Switch_Needed then
                Trigger_Context_Switch;

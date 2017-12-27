@@ -29,6 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with AGATE.Traces;
+
 package body AGATE.Mutexes.Static is
 
    Mut : aliased Mutex (Priority);
@@ -41,4 +43,6 @@ package body AGATE.Mutexes.Static is
      return Mutex_ID
    is (Mut'Access);
 
+begin
+   Traces.Register (ID, Name);
 end AGATE.Mutexes.Static;

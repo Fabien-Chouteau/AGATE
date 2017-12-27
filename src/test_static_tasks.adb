@@ -54,7 +54,7 @@ package body Test_Static_Tasks is
          Now := Time (AGATE.SysCalls.Clock);
 
          Ada.Text_IO.Put_Line ("---> Static T1 Clock:" & Now'Img);
-         AGATE.SysCalls.Delay_Until (Now + 5_000_000);
+         AGATE.SysCalls.Delay_Until (Now + Test_Time_Unit * 2);
 
          Ada.Text_IO.Put_Line ("---> Static T1 Release Static_Mutex");
          SysCalls.Release (Static_Mutex.ID);
@@ -92,7 +92,7 @@ package body Test_Static_Tasks is
             AGATE.SysCalls.Shutdown_System;
          end if;
 
-         AGATE.SysCalls.Delay_Until (Now + 10_000_000);
+         AGATE.SysCalls.Delay_Until (Now + Test_Time_Unit * 10);
 
       end loop;
    end T2_Proc;

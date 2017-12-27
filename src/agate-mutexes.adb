@@ -33,6 +33,7 @@ with Ada.Text_IO;              use Ada.Text_IO;
 
 with Ada.Unchecked_Conversion;
 with AGATE.Tasking;            use AGATE.Tasking;
+with AGATE.Traces;
 
 package body AGATE.Mutexes is
 
@@ -41,33 +42,6 @@ package body AGATE.Mutexes is
 
    function To_ID_Internal is new Ada.Unchecked_Conversion
      (UInt32, Mutex_ID);
-
-   ---------------
-   -- Wait_Lock --
-   ---------------
-
-   procedure Wait_Lock (Mut : Mutex_ID) is
-   begin
-      Wait_Lock (Mutex_Access (Mut).all);
-   end Wait_Lock;
-
-   --------------
-   -- Try_Lock --
-   --------------
-
-   function Try_Lock (Mut : Mutex_ID) return Boolean is
-   begin
-      return Try_Lock (Mutex_Access (Mut).all);
-   end Try_Lock;
-
-   -------------
-   -- Release --
-   -------------
-
-   procedure Release (Mut : Mutex_ID) is
-   begin
-      Release (Mutex_Access (Mut).all);
-   end Release;
 
    ---------------
    -- To_UInt32 --
@@ -87,17 +61,18 @@ package body AGATE.Mutexes is
    -- Wait_Lock --
    ---------------
 
-   procedure Wait_Lock (Mut : in out Mutex) is
+   procedure Wait_Lock (Mut : Mutex_ID) is
       T : constant Task_Object_Access := Task_Object_Access (Current_Task);
    begin
       if Mut.Owner = null then
          Mut.Owner := T;
+         Traces.Lock (Mut, Current_Task);
       else
          --  Suspend the current task
          Tasking.Suspend (Tasking.Semaphore);
 
          --  Add it to the waiting queue
-         Insert_Task (Mut, T);
+         Insert_Task (Mut.all, T);
 
          if Context_Switch_Needed then
             Trigger_Context_Switch;
@@ -109,10 +84,11 @@ package body AGATE.Mutexes is
    -- Try_Lock --
    --------------
 
-   function Try_Lock (Mut : in out Mutex) return Boolean is
+   function Try_Lock (Mut : Mutex_ID) return Boolean is
    begin
       if Mut.Owner = null then
          Mut.Owner := Task_Object_Access (Current_Task);
+         Traces.Lock (Mut, Current_Task);
          return True;
       else
          return False;
@@ -123,16 +99,20 @@ package body AGATE.Mutexes is
    -- Release --
    -------------
 
-   procedure Release (Mut : in out Mutex) is
+   procedure Release (Mut : Mutex_ID) is
    begin
       if Mut.Owner = null then
          raise Program_Error;
       end if;
 
+      Traces.Release (Mut, Current_Task);
+
       Mut.Owner := Mut.Waiting_List;
 
       if Mut.Owner /= null then
          Mut.Waiting_List := Mut.Owner.Next;
+
+         Traces.Lock (Mut, Current_Task);
 
          Tasking.Resume (Task_ID (Mut.Owner));
       end if;
@@ -151,6 +131,5 @@ package body AGATE.Mutexes is
       T.Next := Mut.Waiting_List;
       Mut.Waiting_List := T;
    end Insert_Task;
-
 
 end AGATE.Mutexes;

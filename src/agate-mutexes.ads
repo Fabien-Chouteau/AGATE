@@ -33,7 +33,9 @@ with HAL; use HAL;
 
 package AGATE.Mutexes is
 
-   type Mutex_ID is limited private;
+   type Mutex_ID is private;
+
+   Invalid_ID : constant Mutex_ID;
 
    procedure Wait_Lock (Mut : Mutex_ID);
 
@@ -53,13 +55,9 @@ private
    end record;
 
    type Mutex_Access is access all Mutex;
-   type Mutex_ID is new not null Mutex_Access;
+   type Mutex_ID is new Mutex_Access;
 
-   procedure Wait_Lock (Mut : in out Mutex);
-
-   function Try_Lock (Mut : in out Mutex) return Boolean;
-
-   procedure Release (Mut : in out Mutex);
+   Invalid_ID : constant Mutex_ID := null;
 
    procedure Insert_Task (Mut : in out Mutex;
                           T   : Task_Object_Access);

@@ -31,6 +31,7 @@
 
 generic
    Priority : Task_Priority;
+   Name     : String;
 package AGATE.Mutexes.Static is
 
    function ID return Mutex_ID;

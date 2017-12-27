@@ -29,19 +29,43 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Traces;
+with AGATE.Semaphores; use AGATE.Semaphores;
+with AGATE.Mutexes;    use AGATE.Mutexes;
 
-package body AGATE.Semaphores.Static is
+package AGATE.Traces is
 
-   Sem : aliased Semaphore (initial_Count);
+   -- Tasks --
+   procedure Register (ID   : Task_ID;
+                       Name : String);
 
-   --------
-   -- ID --
-   --------
 
-   function ID return Semaphore_ID
-   is (Semaphore_ID'(Sem'Access));
+   procedure Resume (ID : Task_ID);
+   procedure Suspend (ID : Task_ID);
+   procedure Running (ID : Task_ID);
+   procedure Context_Switch (Old, Next : Task_ID);
 
-begin
-   Traces.Register (ID, Name);
-end AGATE.Semaphores.Static;
+   -- Semaphores --
+
+   procedure Register (ID   : Semaphore_ID;
+                       Name : String);
+
+   procedure Value_Changed (ID    : Semaphore_ID;
+                            Count : Semaphore_Count;
+                            By    : Task_ID);
+
+   -- Mutexes --
+
+   procedure Register (ID   : Mutex_ID;
+                       Name : String);
+
+   procedure Lock (ID : Mutex_ID;
+                   By : Task_ID);
+
+   procedure Release (ID : Mutex_ID;
+                      By : Task_ID);
+
+   -- System --
+
+   procedure Shutdown;
+
+end AGATE.Traces;

@@ -35,7 +35,9 @@ package AGATE.Semaphores is
 
    type Semaphore_Count is new Natural;
 
-   type Semaphore_ID is limited private;
+   type Semaphore_ID is private;
+
+   Invalid_ID : constant Semaphore_ID;
 
    function Count (Sem : Semaphore_ID)
                    return Semaphore_Count;
@@ -56,14 +58,9 @@ private
    end record;
 
    type Semaphore_Access is access all Semaphore;
-   type Semaphore_ID is new not null Semaphore_Access;
+   type Semaphore_ID is new Semaphore_Access;
 
-   function Count (Sem : Semaphore)
-                   return Semaphore_Count;
-
-   procedure Signal (Sem : in out Semaphore);
-
-   procedure Wait_For_Signal (Sem : in out Semaphore);
+   Invalid_ID : constant Semaphore_ID := null;
 
    procedure Insert_Task (Sem : in out Semaphore;
                           T : Task_Object_Access);

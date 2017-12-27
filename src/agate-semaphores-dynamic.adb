@@ -29,6 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with AGATE.Traces;
+
 package body AGATE.Semaphores.Dynamic is
 
    ------------
@@ -36,8 +38,14 @@ package body AGATE.Semaphores.Dynamic is
    ------------
 
    function Create
-     (Initial_Count : Semaphore_Count := 0)
+     (Initial_Count : Semaphore_Count := 0;
+      Name          : String)
       return Semaphore_ID
-   is (new Semaphore (Initial_Count));
+   is
+      Ret : constant Semaphore_ID := new Semaphore (Initial_Count);
+   begin
+      Traces.Register (Ret, Name);
+      return Ret;
+   end Create;
 
 end AGATE.Semaphores.Dynamic;
