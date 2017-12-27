@@ -57,4 +57,4 @@ T2:
 ![GTKwave](gtkwave_example.png)
 
 You can see that the VCD format is not great to represent RTOS events, I would
-like to display the task that own the mutex for instance.
+like to display the task that owns the mutex for instance.
