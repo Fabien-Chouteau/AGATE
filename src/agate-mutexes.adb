@@ -58,7 +58,7 @@ package body AGATE.Mutexes is
          Traces.Lock (Mut, Task_ID (Mut.Owner));
       else
          --  Suspend the current task
-         Tasking.Suspend (Tasking.Semaphore);
+         Tasking.Suspend (Tasking.Mutex);
 
          --  Add it to the waiting queue
          Insert_Task (Mut.all, T);

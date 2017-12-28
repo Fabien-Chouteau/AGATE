@@ -163,7 +163,7 @@ package body AGATE.Traces is
 
       for C of reverse Bin loop
          C := (if (Val and 1) = 0 then '0' else '1');
-         Val := Shift_Right (Val, 2);
+         Val := Shift_Right (Val, 1);
       end loop;
 
       --  TODO: print the boolean value of the integer (e.g. b100101)
@@ -348,9 +348,13 @@ package body AGATE.Traces is
       Name : String)
    is
    begin
-      ID.Trace_Data.Token := Create;
+      ID.Trace_Data.Running := Create;
+      ID.Trace_Data.Status := Create;
+      ID.Trace_Data.Prio := Create;
 
-      Declare_Var (ID.Trace_Data.Token, Clean (Name));
+      Declare_Var (ID.Trace_Data.Running, Clean (Name));
+      Declare_Var (ID.Trace_Data.Status, Clean (Name) & "_Status");
+      Declare_Var (ID.Trace_Data.Prio, Clean (Name) & "_Priority");
    end Register;
 
    ------------
@@ -359,8 +363,8 @@ package body AGATE.Traces is
 
    procedure Resume (ID : Task_ID) is
    begin
-      --  Put_State_Change (Token (ID), 1);
-      null;
+      Put_State_Change (ID.Trace_Data.Status, Clean (Image (ID.Status)));
+      Put_State_Change (ID.Trace_Data.Prio, UInt32 (ID.Current_Prio));
    end Resume;
 
    -------------
@@ -369,8 +373,7 @@ package body AGATE.Traces is
 
    procedure Suspend (ID : Task_ID) is
    begin
-      --  Put_State_Change (Token (ID), 0);
-      null;
+      Put_State_Change (ID.Trace_Data.Status, Clean (Image (ID.Status)));
    end Suspend;
 
    -------------
@@ -379,7 +382,7 @@ package body AGATE.Traces is
 
    procedure Running (ID : Task_ID) is
    begin
-      null;
+      Put_State_Change (ID.Trace_Data.Status, Clean (Image (ID.Status)));
    end Running;
 
    ---------------------
@@ -391,7 +394,7 @@ package body AGATE.Traces is
       New_Prio : Task_Priority)
    is
    begin
-      null;
+      Put_State_Change (ID.Trace_Data.Prio, UInt32 (New_Prio));
    end Change_Priority;
 
    --------------------
@@ -403,8 +406,8 @@ package body AGATE.Traces is
    is
       Now : constant Time := Timing.Clock;
    begin
-      Put_State_Change (Old.Trace_Data.Token, False, Now);
-      Put_State_Change (Next.Trace_Data.Token, True, Now);
+      Put_State_Change (Old.Trace_Data.Running, False, Now);
+      Put_State_Change (Next.Trace_Data.Running, True, Now);
       Put_State_Change (Running_Task_Token, Clean (Next.Name), Now);
    end Context_Switch;
 

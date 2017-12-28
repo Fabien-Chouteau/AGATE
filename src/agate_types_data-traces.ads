@@ -37,7 +37,9 @@ package AGATE_Types_Data.Traces is
 
 
    type Task_Data is record
-      Token : Wire_Token;
+      Running : Wire_Token;
+      Status : String_Token;
+      Prio   : Reg_Token;
    end record;
 
    type Semaphore_Data is record

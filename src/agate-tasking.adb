@@ -354,10 +354,11 @@ package body AGATE.Tasking is
      (ID : Task_ID)
    is
    begin
-      Traces.Resume (ID);
 
       Task_Object_Access (ID).Status := Ready;
       Insert (ID);
+
+      Traces.Resume (ID);
 
       if Context_Switch_Needed then
          Trigger_Context_Switch;
@@ -372,7 +373,6 @@ package body AGATE.Tasking is
      (Reason : Suspend_Reason)
    is
    begin
-      Traces.Suspend (Current_Task);
 
       Extract (Current_Task);
       Current_Task.Status := (case Reason is
@@ -380,6 +380,7 @@ package body AGATE.Tasking is
                                  when Semaphore => Suspended_Semaphore,
                                  when Mutex     => Suspended_Mutex);
 
+      Traces.Suspend (Current_Task);
    end Suspend;
 
    ---------------------
@@ -395,6 +396,8 @@ package body AGATE.Tasking is
          raise Program_Error with
            "Cannot set priority below the task base priority";
       end if;
+
+      Traces.Change_Priority (T, New_Prio);
 
       if New_Prio >= T.Current_Prio then
 
