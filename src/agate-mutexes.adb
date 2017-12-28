@@ -55,7 +55,7 @@ package body AGATE.Mutexes is
       if Mut.Owner = null then
          Mut.Owner := T;
 
-         Traces.Lock (Mut, Current_Task);
+         Traces.Lock (Mut, Task_ID (Mut.Owner));
       else
          --  Suspend the current task
          Tasking.Suspend (Tasking.Semaphore);
@@ -88,7 +88,7 @@ package body AGATE.Mutexes is
       if Mut.Owner = null then
          Mut.Owner := T;
          Change_Priority (Mut.Prio);
-         Traces.Lock (Mut, Current_Task);
+         Traces.Lock (Mut, Task_ID (Mut.Owner));
          return True;
       else
          return False;
@@ -120,7 +120,7 @@ package body AGATE.Mutexes is
       if Mut.Owner /= null then
          Mut.Waiting_List := Mut.Owner.Next;
 
-         Traces.Lock (Mut, Current_Task);
+         Traces.Lock (Mut, Task_ID (Mut.Owner));
 
          Tasking.Resume (Task_ID (Mut.Owner));
       end if;

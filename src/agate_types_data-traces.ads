@@ -31,16 +31,21 @@
 
 package AGATE_Types_Data.Traces is
 
+   type String_Token is new Natural;
+   type Wire_Token is new Natural;
+   type Reg_Token is new Natural;
+
+
    type Task_Data is record
-      Token : Character;
+      Token : Wire_Token;
    end record;
 
    type Semaphore_Data is record
-      Token : Character;
+      Token : Reg_Token;
    end record;
 
    type Mutex_Data is record
-      Token : Character;
+      Token : String_Token;
    end record;
 
 end AGATE_Types_Data.Traces;
