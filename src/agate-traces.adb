@@ -37,29 +37,6 @@ package body AGATE.Traces is
 
    Next_Token : Character := '!';
 
-   type Task_Info is record
-      ID    : Task_ID := null;
-      Token : Character := ' ';
-   end record;
-
-   Task_Array : array (0 .. 9) of Task_Info;
-
-   type Sem_Info is record
-      Used  : Boolean := False;
-      ID    : Semaphore_ID;
-      Token : Character := ' ';
-   end record;
-
-   Sem_Array : array (0 .. 9) of Sem_Info;
-
-   type Mutex_Info is record
-      Used  : Boolean := False;
-      ID    : Mutex_ID;
-      Token : Character := ' ';
-   end record;
-
-   Mutex_Array : array (0 .. 9) of Mutex_Info;
-
    Registration_Done : Boolean := False;
 
    FD : File_Descriptor;
@@ -116,22 +93,10 @@ package body AGATE.Traces is
    begin
       Put_Line ("$upscope $end");
       Put_Line ("$enddefinitions $end");
-      for Elt of Task_Array loop
-         if Elt.Id /= null then
-            Put_Line ("#0 0" & Elt.Token);
-         end if;
-      end loop;
 
-      for Elt of Sem_Array loop
-         if Elt.Id /= Invalid_Semaphore then
-            Put_Line ("#0 0" & Elt.Token);
-         end if;
-      end loop;
-
-      for Elt of Mutex_Array loop
-         if Elt.Id /= Invalid_Mutex then
-            Put_Line ("#0 0" & Elt.Token);
-         end if;
+      --  Initial values
+      for C in '!' .. Character'Pred (Next_Token) loop
+         Put_Line ("#0 0" & C);
       end loop;
 
       Registration_Done := True;
@@ -175,18 +140,7 @@ package body AGATE.Traces is
    function Token
      (ID : Task_ID)
       return Character
-   is
-   begin
-      for Elt of Task_Array loop
-         if Elt.ID = ID then
-            return Elt.Token;
-         end if;
-      end loop;
-
-      raise Program_Error with "Unknown Task_ID";
-
-      return '$';
-   end Token;
+   is (ID.Trace_Data.Token);
 
    -----------
    -- Token --
@@ -195,18 +149,7 @@ package body AGATE.Traces is
    function Token
      (ID : Semaphore_ID)
       return Character
-   is
-   begin
-      for Elt of Sem_Array loop
-         if Elt.ID = ID then
-            return Elt.Token;
-         end if;
-      end loop;
-
-      raise Program_Error with "Unknown Semaphore_ID";
-
-      return '$';
-   end Token;
+   is (ID.Trace_Data.Token);
 
    -----------
    -- Token --
@@ -215,18 +158,7 @@ package body AGATE.Traces is
    function Token
      (ID : Mutex_ID)
       return Character
-   is
-   begin
-      for Elt of Mutex_Array loop
-         if Elt.ID = ID then
-            return Elt.Token;
-         end if;
-      end loop;
-
-      raise Program_Error with "Unknown Mutex_ID";
-
-      return '$';
-   end Token;
+   is (ID.Trace_Data.Token);
 
    -----------
    -- Clean --
@@ -266,23 +198,10 @@ package body AGATE.Traces is
      (ID   : Task_ID;
       Name : String)
    is
-      Index : Natural := Task_Array'First;
    begin
-      while Index in Task_Array'Range
-        and then
-          Task_Array (Index).ID /= null
-      loop
-         Index := Index + 1;
-      end loop;
+      ID.Trace_Data.Token := Create_Token;
 
-      if Index not in Task_Array'Range then
-         raise Program_Error with "Not enough space to log task traces";
-      end if;
-
-      Task_Array (Index).ID := ID;
-      Task_Array (Index).Token := Create_Token;
-
-      Put_Line ("$var wire 1 " & Task_Array (Index).Token &
+      Put_Line ("$var wire 1 " & ID.Trace_Data.Token &
                   " " & Clean (Name) & " $end");
    end Register;
 
@@ -336,23 +255,10 @@ package body AGATE.Traces is
      (ID   : Semaphore_ID;
       Name : String)
    is
-      Index : Natural := Sem_Array'First;
    begin
-      while Index in Sem_Array'Range
-        and then
-          Sem_Array (Index).ID /= Invalid_Semaphore
-      loop
-         Index := Index + 1;
-      end loop;
+      ID.Trace_Data.Token := Create_Token;
 
-      if Index not in Sem_Array'Range then
-         raise Program_Error with "Not enough space to log semaphore traces";
-      end if;
-
-      Sem_Array (Index).ID := ID;
-      Sem_Array (Index).Token := Create_Token;
-
-      Put_Line ("$var wire 1 " & Sem_Array (Index).Token &
+      Put_Line ("$var wire 1 " & ID.Trace_Data.Token &
                   " " & Clean (Name) & " $end");
    end Register;
 
@@ -377,25 +283,12 @@ package body AGATE.Traces is
      (ID   : Mutex_ID;
       Name : String)
    is
-      Index : Natural := Mutex_Array'First;
    begin
-      while Index in Mutex_Array'Range
-        and then
-          Mutex_Array (Index).ID /= Invalid_Mutex
-      loop
-         Index := Index + 1;
-      end loop;
+      ID.Trace_Data.Token := Create_Token;
 
-      if Index not in Mutex_Array'Range then
-         raise Program_Error with "Not enough space to log mutex traces";
-      end if;
-
-      Mutex_Array (Index).ID := ID;
-      Mutex_Array (Index).Token := Create_Token;
-
-      Put_Line ("$var wire 1 " & Mutex_Array (Index).Token &
+      Put_Line ("$var wire 1 " & ID.Trace_Data.Token &
                   " " & Clean (Name) & " $end");
-   end;
+   end Register;
 
    ----------
    -- Lock --
@@ -407,7 +300,7 @@ package body AGATE.Traces is
    is
    begin
       Put_State_Change (Token (ID), 1);
-   end;
+   end Lock;
 
    -------------
    -- Release --
@@ -419,7 +312,7 @@ package body AGATE.Traces is
    is
    begin
       Put_State_Change (Token (ID), 0);
-   end;
+   end Release;
 
    --------------
    -- Shutdown --

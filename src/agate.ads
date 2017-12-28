@@ -32,6 +32,8 @@
 with HAL;                     use HAL;
 with System.Storage_Elements; use System.Storage_Elements;
 
+private with AGATE_Types_Data.Traces;
+
 package AGATE is
 
    -- Task --
@@ -114,6 +116,8 @@ private
       Context       : Task_Context := (others => 0);
       Alarm_Time    : Time := 0;
       Status        : Task_Status := Created;
+
+      Trace_Data    : AGATE_Types_Data.Traces.Task_Data;
    end record;
 
    type Task_ID is new Task_Object_Access;
@@ -124,6 +128,8 @@ private
    is limited record
       Count        : Semaphore_Count := Initial_Count;
       Waiting_List : Task_Object_Access := null;
+
+      Trace_Data    : AGATE_Types_Data.Traces.Semaphore_Data;
    end record;
 
    type Semaphore_Access is access all Semaphore;
@@ -140,6 +146,8 @@ private
    is limited record
       Owner        : Task_Object_Access := null;
       Waiting_List : Task_Object_Access := null;
+
+      Trace_Data    : AGATE_Types_Data.Traces.Mutex_Data;
    end record;
 
    type Mutex_Access is access all Mutex;
