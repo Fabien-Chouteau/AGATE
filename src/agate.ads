@@ -40,6 +40,8 @@ package AGATE is
 
    type Task_ID is private;
 
+   Invalid_Task : constant Task_ID;
+
    type Task_Priority is new Integer;
 
    type Task_Procedure is access procedure;
@@ -96,7 +98,6 @@ private
    function Image (P : Process_Stack_Pointer) return String
    is (To_Integer (System.Address (P))'Img);
 
-
    type Task_Context is array (4 .. 12) of UInt32
      with Pack, Size => 9 * 32;
 
@@ -105,11 +106,12 @@ private
    type Task_Object_Access is access all Task_Object;
 
    type Task_Object (Proc      : not null Task_Procedure;
-                     Priority  : Task_Priority;
+                     Base_Prio : Task_Priority;
                      Stack     : Task_Stack_Access;
                      Sec_Stack : Task_Sec_Stack_Access;
                      Heap      : Task_Heap_Access)
    is limited record
+      Current_Prio  : Task_Priority;
       Next          : Task_Object_Access := null;
       Stack_Pointer : Process_Stack_Pointer := Null_PSP;
       Name          : Task_Name := (others => ' ');
@@ -121,6 +123,8 @@ private
    end record;
 
    type Task_ID is new Task_Object_Access;
+
+   Invalid_Task : constant Task_ID := null;
 
    -- Semaphore --
 

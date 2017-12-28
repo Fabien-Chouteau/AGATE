@@ -234,6 +234,18 @@ package body AGATE.Traces is
       null;
    end Running;
 
+   ---------------------
+   -- Change_Priority --
+   ---------------------
+
+   procedure Change_Priority
+     (ID       : Task_ID;
+      New_Prio : Task_Priority)
+   is
+   begin
+      null;
+   end Change_Priority;
+
    --------------------
    -- Context_Switch --
    --------------------

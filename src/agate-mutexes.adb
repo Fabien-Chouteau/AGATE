@@ -40,11 +40,21 @@ package body AGATE.Mutexes is
    -- Wait_Lock --
    ---------------
 
-   procedure Wait_Lock (Mut : Mutex_ID) is
+   procedure Wait_Lock
+     (Mut : Mutex_ID)
+   is
       T : constant Task_Object_Access := Task_Object_Access (Current_Task);
    begin
+      if T.Base_Prio > Mut.Prio then
+         raise Program_Error with
+           "Task priority must be less than or equal to the mutex priority";
+      end if;
+
+      Change_Priority (Mut.Prio);
+
       if Mut.Owner = null then
          Mut.Owner := T;
+
          Traces.Lock (Mut, Current_Task);
       else
          --  Suspend the current task
@@ -63,10 +73,21 @@ package body AGATE.Mutexes is
    -- Try_Lock --
    --------------
 
-   function Try_Lock (Mut : Mutex_ID) return Boolean is
+   function Try_Lock
+     (Mut : Mutex_ID)
+      return Boolean
+   is
+      T : constant Task_Object_Access := Task_Object_Access (Current_Task);
    begin
+
+      if T.Base_Prio > Mut.Prio then
+         raise Program_Error with
+           "Task priority must be less than or equal to the mutex priority";
+      end if;
+
       if Mut.Owner = null then
-         Mut.Owner := Task_Object_Access (Current_Task);
+         Mut.Owner := T;
+         Change_Priority (Mut.Prio);
          Traces.Lock (Mut, Current_Task);
          return True;
       else
@@ -78,11 +99,19 @@ package body AGATE.Mutexes is
    -- Release --
    -------------
 
-   procedure Release (Mut : Mutex_ID) is
+   procedure Release
+     (Mut : Mutex_ID)
+   is
    begin
       if Mut.Owner = null then
          raise Program_Error;
       end if;
+
+      if Mut.Owner /= Task_Object_Access (Current_Task) then
+         raise Program_Error;
+      end if;
+
+      Change_Priority (Current_Task.Base_Prio);
 
       Traces.Release (Mut, Current_Task);
 

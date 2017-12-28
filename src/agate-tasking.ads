@@ -51,6 +51,8 @@ package AGATE.Tasking is
    type Suspend_Reason is (Alarm, Semaphore, Mutex);
    procedure Suspend (Reason : Suspend_Reason);
 
+   procedure Change_Priority (New_Prio : Task_Priority);
+
    function Context_Switch_Needed return Boolean;
    procedure Trigger_Context_Switch;
 

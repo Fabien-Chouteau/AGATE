@@ -42,6 +42,9 @@ package AGATE.Traces is
    procedure Resume (ID : Task_ID);
    procedure Suspend (ID : Task_ID);
    procedure Running (ID : Task_ID);
+   procedure Change_Priority (ID       : Task_ID;
+                              New_Prio : Task_Priority);
+
    procedure Context_Switch (Old, Next : Task_ID);
 
    -- Semaphores --

@@ -177,8 +177,10 @@ package body AGATE.Tasking is
       T.Status := Ready;
 
       T.Name (Task_Name'First .. Task_Name'First + Name'Length - 1) := Name;
+      T.Current_Prio := T.Base_Prio;
 
       Initialize_Task_Context (T.all);
+
       Insert (Task_ID (T));
 
       Traces.Register (Task_ID (T), T.Name);
@@ -265,13 +267,32 @@ package body AGATE.Tasking is
    procedure Extract
      (ID : Task_ID)
    is
+      Prev, Curr : Task_Object_Access;
    begin
-      if Task_ID (Ready_Tasks) /= ID then
-         raise Program_Error;
-      end if;
+      if Task_ID (Ready_Tasks) = ID then
 
-      Ready_Tasks := Ready_Tasks.Next;
-      Task_Object_Access (ID).Next := null;
+         --  Extract head
+
+         Ready_Tasks := Ready_Tasks.Next;
+         ID.Next := null;
+
+      else
+
+         --  Extract from inside the list
+
+         Prev := null;
+         Curr := Ready_Tasks;
+
+         while Curr /= null and then Task_ID (Curr) /= ID loop
+            Prev := Curr;
+            Curr := Curr.Next;
+         end loop;
+
+         if Task_ID (Curr) = ID then
+            Prev.Next := Curr.Next;
+            ID.Next := null;
+         end if;
+      end if;
    end Extract;
 
    ------------
@@ -287,7 +308,7 @@ package body AGATE.Tasking is
    begin
       Acc.Next := null;
 
-      while Cur /= null and then Cur.Priority > Acc.Priority loop
+      while Cur /= null and then Cur.Current_Prio > Acc.Current_Prio loop
          Prev := Cur;
          Cur := Cur.Next;
       end loop;
@@ -360,6 +381,35 @@ package body AGATE.Tasking is
                                  when Mutex     => Suspended_Mutex);
 
    end Suspend;
+
+   ---------------------
+   -- Change_Priority --
+   ---------------------
+
+   procedure Change_Priority
+     (New_Prio : Task_Priority)
+   is
+      T : constant Task_ID := Current_Task;
+   begin
+      if New_Prio < T.Base_Prio then
+         raise Program_Error with
+           "Cannot set priority below the task base priority";
+      end if;
+
+      if New_Prio >= T.Current_Prio then
+
+         --  The current task already have the highest priority of the ready
+         --  task, by the properties of the FIFO within priorities scheduling.
+         --  So the current task position in the ready tasks list won't change,
+         --  We don't have to re-insert it.
+         T.Current_Prio := New_Prio;
+      else
+
+         Extract (T);
+         T.Current_Prio := New_Prio;
+         Insert (T);
+      end if;
+   end Change_Priority;
 
    ---------------------------
    -- Context_Switch_Needed --

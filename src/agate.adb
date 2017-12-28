@@ -117,7 +117,7 @@ package body AGATE is
       T : constant Task_Object_Access := Task_Object_Access (ID);
    begin
       return "" & T.Name &
-        " - Prio:" & T.Priority'Img &
+        " - Prio:" & T.Base_Prio'Img &
         " - ID:" & To_Integer (T.all'Address)'Img &
         " - PSP:" & Image (T.Stack_Pointer) &
         " - " & Image (T.Status);
