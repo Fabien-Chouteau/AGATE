@@ -33,31 +33,13 @@ with HAL; use HAL;
 
 package AGATE.Mutexes is
 
-   type Mutex_ID is private;
-
-   Invalid_ID : constant Mutex_ID;
-
    procedure Wait_Lock (Mut : Mutex_ID);
 
    function Try_Lock (Mut : Mutex_ID) return Boolean;
 
    procedure Release (Mut : Mutex_ID);
 
-   function To_UInt32 (ID : Mutex_ID) return UInt32;
-   function To_ID (ID : UInt32) return Mutex_ID;
-
 private
-
-   type Mutex (Prio : Task_Priority)
-   is limited record
-      Owner        : Task_Object_Access := null;
-      Waiting_List : Task_Object_Access := null;
-   end record;
-
-   type Mutex_Access is access all Mutex;
-   type Mutex_ID is new Mutex_Access;
-
-   Invalid_ID : constant Mutex_ID := null;
 
    procedure Insert_Task (Mut : in out Mutex;
                           T   : Task_Object_Access);

@@ -35,12 +35,12 @@ with Ada.Text_IO;
 with AGATE.SysCalls;
 with System.Machine_Code; use System.Machine_Code;
 with Test_Static_Tasks;
-with AGATE.Semaphores;
+with AGATE;
 with AGATE.Semaphores.Dynamic;
 
 package body Test_Dynamic_Tasks is
 
-   Dyn_Semaphore : AGATE.Semaphores.Semaphore_ID :=
+   Dyn_Semaphore : AGATE.Semaphore_ID :=
      AGATE.Semaphores.Dynamic.Create (Name => "Dynamic Sem");
 
    -------------
@@ -105,7 +105,7 @@ package body Test_Dynamic_Tasks is
    ----------------------
 
    function Dyamic_Semaphore
-     return AGATE.Semaphores.Semaphore_ID
+     return AGATE.Semaphore_ID
    is (Dyn_Semaphore);
 
 end Test_Dynamic_Tasks;

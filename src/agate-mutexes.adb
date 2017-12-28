@@ -29,33 +29,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;              use Ada.Text_IO;
+with Ada.Text_IO;   use Ada.Text_IO;
 
-with Ada.Unchecked_Conversion;
-with AGATE.Tasking;            use AGATE.Tasking;
+with AGATE.Tasking; use AGATE.Tasking;
 with AGATE.Traces;
 
 package body AGATE.Mutexes is
-
-   function To_UInt32_Internal is new Ada.Unchecked_Conversion
-     (Mutex_ID, UInt32);
-
-   function To_ID_Internal is new Ada.Unchecked_Conversion
-     (UInt32, Mutex_ID);
-
-   ---------------
-   -- To_UInt32 --
-   ---------------
-
-   function To_UInt32 (ID : Mutex_ID) return UInt32
-   is (To_UInt32_Internal (ID));
-
-   -----------
-   -- To_ID --
-   -----------
-
-   function To_ID (ID : UInt32) return Mutex_ID
-   is (To_ID_Internal (ID));
 
    ---------------
    -- Wait_Lock --

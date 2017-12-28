@@ -29,7 +29,53 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Unchecked_Conversion;
+
 package body AGATE is
+
+   function To_UInt32_Internal is new Ada.Unchecked_Conversion
+     (Mutex_ID, UInt32);
+
+   function To_ID_Internal is new Ada.Unchecked_Conversion
+     (UInt32, Mutex_ID);
+
+   function To_UInt32_Internal is new Ada.Unchecked_Conversion
+     (Semaphore_ID, UInt32);
+
+   function To_ID_Internal is new Ada.Unchecked_Conversion
+     (UInt32, Semaphore_ID);
+
+   ---------------
+   -- To_UInt32 --
+   ---------------
+
+   function To_UInt32 (ID : Mutex_ID) return UInt32
+   is (To_UInt32_Internal (ID));
+
+   -----------
+   -- To_ID --
+   -----------
+
+   function To_ID (ID : UInt32) return Mutex_ID
+   is (To_ID_Internal (ID));
+
+   ---------------
+   -- To_UInt32 --
+   ---------------
+
+   function To_UInt32
+     (ID : Semaphore_ID)
+      return UInt32
+   is (To_UInt32_Internal (ID));
+
+   -----------
+   -- To_ID --
+   -----------
+
+   function To_ID
+     (ID : UInt32)
+      return Semaphore_ID
+   is (To_ID_Internal (ID));
 
    --------
    -- ID --

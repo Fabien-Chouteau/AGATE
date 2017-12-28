@@ -34,6 +34,8 @@ with System.Storage_Elements; use System.Storage_Elements;
 
 package AGATE is
 
+   -- Task --
+
    type Task_ID is private;
 
    type Task_Priority is new Integer;
@@ -49,9 +51,27 @@ package AGATE is
 
    function Image (ID : Task_ID) return String;
 
+   -- Time --
+
    type Time is new UInt64;
 
+   -- Semaphore --
+
+   type Semaphore_Count is new Natural;
+
+   type Semaphore_ID is private;
+
+   Invalid_Semaphore : constant Semaphore_ID;
+
+   -- Mutex --
+
+   type Mutex_ID is private;
+
+   Invalid_Mutex : constant Mutex_ID;
+
 private
+
+   -- Task --
 
    type Task_Stack is new Storage_Array
      with Alignment => 8 * 8;
@@ -97,5 +117,38 @@ private
    end record;
 
    type Task_ID is new Task_Object_Access;
+
+   -- Semaphore --
+
+   type Semaphore (Initial_Count : Semaphore_Count := 0)
+   is limited record
+      Count        : Semaphore_Count := Initial_Count;
+      Waiting_List : Task_Object_Access := null;
+   end record;
+
+   type Semaphore_Access is access all Semaphore;
+   type Semaphore_ID is new Semaphore_Access;
+
+   Invalid_Semaphore : constant Semaphore_ID := null;
+
+   function To_UInt32 (ID : Semaphore_ID) return UInt32;
+   function To_ID (ID : UInt32) return Semaphore_ID;
+
+   -- Mutex --
+
+   type Mutex (Prio : Task_Priority)
+   is limited record
+      Owner        : Task_Object_Access := null;
+      Waiting_List : Task_Object_Access := null;
+   end record;
+
+   type Mutex_Access is access all Mutex;
+   type Mutex_ID is new Mutex_Access;
+
+
+   Invalid_Mutex : constant Mutex_ID := null;
+
+   function To_UInt32 (ID : Mutex_ID) return UInt32;
+   function To_ID (ID : UInt32) return Mutex_ID;
 
 end AGATE;

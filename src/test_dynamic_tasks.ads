@@ -29,12 +29,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Semaphores;
+with AGATE;
 
 package Test_Dynamic_Tasks is
 
    procedure Create;
 
-   function Dyamic_Semaphore return AGATE.Semaphores.Semaphore_ID;
+   function Dyamic_Semaphore return AGATE.Semaphore_ID;
 
 end Test_Dynamic_Tasks;

@@ -123,13 +123,13 @@ package body AGATE.Traces is
       end loop;
 
       for Elt of Sem_Array loop
-         if Elt.Id /= Semaphores.Invalid_ID then
+         if Elt.Id /= Invalid_Semaphore then
             Put_Line ("#0 0" & Elt.Token);
          end if;
       end loop;
 
       for Elt of Mutex_Array loop
-         if Elt.Id /= Mutexes.Invalid_ID then
+         if Elt.Id /= Invalid_Mutex then
             Put_Line ("#0 0" & Elt.Token);
          end if;
       end loop;
@@ -340,7 +340,7 @@ package body AGATE.Traces is
    begin
       while Index in Sem_Array'Range
         and then
-          Sem_Array (Index).ID /= Semaphores.Invalid_ID
+          Sem_Array (Index).ID /= Invalid_Semaphore
       loop
          Index := Index + 1;
       end loop;
@@ -381,7 +381,7 @@ package body AGATE.Traces is
    begin
       while Index in Mutex_Array'Range
         and then
-          Mutex_Array (Index).ID /= Mutexes.Invalid_ID
+          Mutex_Array (Index).ID /= Invalid_Mutex
       loop
          Index := Index + 1;
       end loop;

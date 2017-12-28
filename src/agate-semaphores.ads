@@ -33,12 +33,6 @@ with HAL; use HAL;
 
 package AGATE.Semaphores is
 
-   type Semaphore_Count is new Natural;
-
-   type Semaphore_ID is private;
-
-   Invalid_ID : constant Semaphore_ID;
-
    function Count (Sem : Semaphore_ID)
                    return Semaphore_Count;
 
@@ -46,21 +40,7 @@ package AGATE.Semaphores is
 
    procedure Wait_For_Signal (Sem : Semaphore_ID);
 
-   function To_UInt32 (ID : Semaphore_ID) return UInt32;
-   function To_ID (ID : UInt32) return Semaphore_ID;
-
 private
-
-   type Semaphore (Initial_Count : Semaphore_Count := 0)
-   is limited record
-      Count        : Semaphore_Count := Initial_Count;
-      Waiting_List : Task_Object_Access := null;
-   end record;
-
-   type Semaphore_Access is access all Semaphore;
-   type Semaphore_ID is new Semaphore_Access;
-
-   Invalid_ID : constant Semaphore_ID := null;
 
    procedure Insert_Task (Sem : in out Semaphore;
                           T : Task_Object_Access);
