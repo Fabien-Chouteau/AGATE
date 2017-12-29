@@ -31,6 +31,7 @@
 
 with HAL;                     use HAL;
 with System.Storage_Elements; use System.Storage_Elements;
+with Tools;                   use Tools;
 
 private with AGATE_Types_Data.Traces;
 
@@ -96,7 +97,7 @@ private
      Process_Stack_Pointer (System.Null_Address);
 
    function Image (P : Process_Stack_Pointer) return String
-   is (To_Integer (System.Address (P))'Img);
+   is (Hex (UInt32 (To_Integer (System.Address (P)))));
 
    type Task_Context is array (4 .. 12) of UInt32
      with Pack, Size => 9 * 32;

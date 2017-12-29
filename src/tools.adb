@@ -29,98 +29,40 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Unchecked_Conversion;
+package body Tools is
 
-package body AGATE is
+   ---------
+   -- Hex --
+   ---------
 
-   function To_UInt32_Internal is new Ada.Unchecked_Conversion
-     (Mutex_ID, UInt32);
-
-   function To_ID_Internal is new Ada.Unchecked_Conversion
-     (UInt32, Mutex_ID);
-
-   function To_UInt32_Internal is new Ada.Unchecked_Conversion
-     (Semaphore_ID, UInt32);
-
-   function To_ID_Internal is new Ada.Unchecked_Conversion
-     (UInt32, Semaphore_ID);
-
-   ---------------
-   -- To_UInt32 --
-   ---------------
-
-   function To_UInt32 (ID : Mutex_ID) return UInt32
-   is (To_UInt32_Internal (ID));
-
-   -----------
-   -- To_ID --
-   -----------
-
-   function To_ID (ID : UInt32) return Mutex_ID
-   is (To_ID_Internal (ID));
-
-   ---------------
-   -- To_UInt32 --
-   ---------------
-
-   function To_UInt32
-     (ID : Semaphore_ID)
-      return UInt32
-   is (To_UInt32_Internal (ID));
-
-   -----------
-   -- To_ID --
-   -----------
-
-   function To_ID
-     (ID : UInt32)
-      return Semaphore_ID
-   is (To_ID_Internal (ID));
-
-   --------
-   -- ID --
-   --------
-
-   function ID (T : Task_Object_Access) return Task_ID
-   is (Task_ID (T));
-
-   -----------
-   -- Image --
-   -----------
-
-   function Image
-     (Status : Task_Status)
+   function Hex
+     (Value : UInt32)
       return String
-   is (case Status is
-          when Created             => "Created",
-          when Ready               => "Ready",
-          when Running             => "Running",
-          when Suspended_Alarm     => "Waiting for alarm",
-          when Suspended_Semaphore => "Waiting on semaphore",
-          when Suspended_Mutex     => "Waiting on mutex");
-
-   ----------
-   -- Name --
-   ----------
-
-   function Name
-     (ID : Task_ID)
-      return String
-   is (Task_Object_Access (ID).Name);
-
-   -----------
-   -- Image --
-   -----------
-
-   function Image (ID : Task_ID) return String
    is
-      T : constant Task_Object_Access := Task_Object_Access (ID);
+      Ret : String (1 .. 10) := "0x........";
+      Val : UInt32 := Value;
    begin
-      return "" & T.Name &
-        " - Prio:" & T.Base_Prio'Img &
-        " - ID:" & Hex (UInt32 (To_Integer (T.all'Address))) &
-        " - PSP:" & Image (T.Stack_Pointer) &
-        " - " & Image (T.Status);
-   end Image;
+      for Index in reverse Ret'First + 2 .. Ret'Last loop
+         Ret (Index) := (case Val and 16#F# is
+                            when 0  => '0',
+                            when 1  => '1',
+                            when 2  => '2',
+                            when 3  => '3',
+                            when 4  => '4',
+                            when 5  => '5',
+                            when 6  => '6',
+                            when 7  => '7',
+                            when 8  => '8',
+                            when 9  => '9',
+                            when 10 => 'A',
+                            when 11 => 'B',
+                            when 12 => 'C',
+                            when 13 => 'D',
+                            when 14 => 'E',
+                            when  others => 'F');
+         Val := Shift_Right (Val, 4);
+      end loop;
+      return Ret;
+   end Hex;
 
-end AGATE;
+end Tools;
