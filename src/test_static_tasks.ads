@@ -61,7 +61,7 @@ package Test_Static_Tasks is
      (Name => "Static Sem");
 
    package Static_Mutex is new AGATE.Mutexes.Static
-     (Priority => 2,
+     (Priority => 5,
       Name     => "Static Mutex prio 2");
 
 end Test_Static_Tasks;

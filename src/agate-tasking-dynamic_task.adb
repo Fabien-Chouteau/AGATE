@@ -49,7 +49,7 @@ package body AGATE.Tasking.Dynamic_Task is
 
       The_Task  : Task_Object_Access :=
         new Task_Object (Proc      => Proc,
-                         Base_Prio => Priority,
+                         Base_Prio => Internal_Task_Priority (Priority),
                          Stack     => Stack,
                          Sec_Stack => Sec_Stack,
                          Heap      => Heap);

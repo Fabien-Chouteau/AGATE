@@ -43,7 +43,7 @@ package AGATE.Traces is
    procedure Suspend (ID : Task_ID);
    procedure Running (ID : Task_ID);
    procedure Change_Priority (ID       : Task_ID;
-                              New_Prio : Task_Priority);
+                              New_Prio : Internal_Task_Priority);
 
    procedure Context_Switch (Old, Next : Task_ID);
 

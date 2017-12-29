@@ -48,11 +48,14 @@ package body Test_Dynamic_Tasks is
    -------------
 
    procedure T1_Proc is
+      Now : Time;
    begin
       Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
       AGATE.SysCalls.Signal (Dyn_Semaphore);
       loop
-         Asm ("wfi", Volatile => True);
+         Now := Time (AGATE.SysCalls.Clock);
+         Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" & Now'Img);
+         AGATE.SysCalls.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T1_Proc;
 

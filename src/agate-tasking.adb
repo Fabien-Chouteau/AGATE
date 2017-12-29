@@ -39,6 +39,19 @@ with AGATE.Traces;
 
 package body AGATE.Tasking is
 
+   procedure Idle_Procedure;
+   pragma Machine_Attribute (Idle_Procedure, "naked");
+
+   Idle_Stack     : aliased Task_Stack := (1 .. 256 => 0);
+   Idle_Sec_Stack : aliased Task_Sec_Stack := (1 .. 0 => 0);
+   Idle_Heap      : aliased Task_Heap := (1 .. 0 => 0);
+
+   Idle_Task : aliased Task_Object (Proc          =>  Idle_Procedure'Access,
+                                    Base_Prio     => -1,
+                                    Stack         => Idle_Stack'Access,
+                                    Sec_Stack     => Idle_Sec_Stack'Access,
+                                    Heap          => Idle_Heap'Access);
+
    PendSV_Interrupt_ID : constant Interrupt_ID := -2;
    Running_Task : Task_Object_Access := null;
 
@@ -67,6 +80,17 @@ package body AGATE.Tasking is
    procedure Context_Switch_Handler;
    pragma Machine_Attribute (Context_Switch_Handler, "naked");
    pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
+
+   --------------------
+   -- Idle_Procedure --
+   --------------------
+
+   procedure Idle_Procedure is
+   begin
+      loop
+         Asm ("wfi", Volatile => True);
+      end loop;
+   end Idle_Procedure;
 
    -----------------------------
    -- Initialize_Task_Context --
@@ -196,6 +220,8 @@ package body AGATE.Tasking is
       if Ready_Tasks = null then
          raise Program_Error with "No task to run";
       end if;
+
+      Register (Idle_Task'Access, "idle");
 
       Running_Task := Ready_Tasks;
       Jump_In_Task (Running_Task.all);

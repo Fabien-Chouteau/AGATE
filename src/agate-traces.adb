@@ -450,7 +450,7 @@ package body AGATE.Traces is
 
    procedure Change_Priority
      (ID       : Task_ID;
-      New_Prio : Task_Priority)
+      New_Prio : Internal_Task_Priority)
    is
    begin
       Put_State_Change (ID.Trace_Data.Prio, UInt32 (New_Prio));

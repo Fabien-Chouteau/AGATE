@@ -37,7 +37,7 @@ package body AGATE.Tasking.Static_Task is
    Sec_Stack : aliased Task_Sec_Stack := (1 .. Sec_Stack_Size => 0);
 
    The_Task : aliased Task_Object (Proc      => Proc,
-                                   Base_Prio => Priority,
+                                   Base_Prio => Internal_Task_Priority (Priority),
                                    Stack     => Stack'Access,
                                    Sec_Stack => Sec_Stack'Access,
                                    Heap      => Heap'Access);

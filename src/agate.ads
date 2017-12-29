@@ -43,7 +43,8 @@ package AGATE is
 
    Invalid_Task : constant Task_ID;
 
-   type Task_Priority is new Integer;
+   type Internal_Task_Priority is range -1 .. 256;
+   subtype Task_Priority is Internal_Task_Priority range 0 .. 256;
 
    type Task_Procedure is access procedure;
 
@@ -107,12 +108,12 @@ private
    type Task_Object_Access is access all Task_Object;
 
    type Task_Object (Proc      : not null Task_Procedure;
-                     Base_Prio : Task_Priority;
+                     Base_Prio : Internal_Task_Priority;
                      Stack     : Task_Stack_Access;
                      Sec_Stack : Task_Sec_Stack_Access;
                      Heap      : Task_Heap_Access)
    is limited record
-      Current_Prio  : Task_Priority;
+      Current_Prio  : Internal_Task_Priority;
       Next          : Task_Object_Access := null;
       Stack_Pointer : Process_Stack_Pointer := Null_PSP;
       Name          : Task_Name := (others => ' ');
@@ -147,7 +148,7 @@ private
 
    -- Mutex --
 
-   type Mutex (Prio : Task_Priority)
+   type Mutex (Prio : Internal_Task_Priority)
    is limited record
       Owner        : Task_Object_Access := null;
       Waiting_List : Task_Object_Access := null;
