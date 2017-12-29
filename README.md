@@ -45,7 +45,7 @@ $ arm-eabi-gnatemu -P agate.gpr obj/main
 
 The execution of the example will produce a
 [VCD](https://en.wikipedia.org/wiki/Value_change_dump) trace file that can be
-open with PulseView or GTKwave.
+open with [GTKwave](http://gtkwave.sourceforge.net/).
 
 ```
 $ gtkwave agate_traces.vcd
@@ -56,5 +56,4 @@ T2:
 
 ![GTKwave](gtkwave_example.png)
 
-You can see that the VCD format is not great to represent RTOS events, I would
-like to display the task that owns the mutex for instance.
+You can also see T1 priority change because of the priority inheritance.
