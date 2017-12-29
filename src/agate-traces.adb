@@ -29,9 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with GNAT.OS_Lib; use GNAT.OS_Lib;
-
 with HAL;                     use HAL;
+with Semihosting;             use Semihosting;
 with AGATE.Timing;
 with AGATE_Types_Data.Traces; use AGATE_Types_Data.Traces;
 
@@ -47,7 +46,7 @@ package body AGATE.Traces is
 
    Registration_Done : Boolean := False;
 
-   FD : File_Descriptor;
+   FD : SH_Word;
 
    procedure Initialize;
    procedure Put_Line (Str : String);
@@ -89,9 +88,9 @@ package body AGATE.Traces is
 
    procedure Initialize is
    begin
-      FD := Create_File ("agate_traces.vcd", Text);
+      FD := Open ("agate_traces.vcd", OPEN_FLAG_W);
 
-      if FD = Invalid_FD then
+      if FD = SH_Word'Last or else FD = 0 then
          raise Program_Error with "Cannot create trace file";
       end if;
 
@@ -114,7 +113,7 @@ package body AGATE.Traces is
    is
       To_Put : constant String := Str & ASCII.LF;
    begin
-      if Write (FD, To_Put (To_Put'First)'Address, To_Put'Length) /= To_Put'Length then
+      if Write (FD, To_Put (To_Put'First)'Address, To_Put'Length) /= 0 then
          raise Program_Error;
       end if;
    end Put_Line;
@@ -543,8 +542,9 @@ package body AGATE.Traces is
 
    procedure Shutdown
    is
+      Unref : SH_Word with Unreferenced;
    begin
-      Close (FD);
+      Unref := Close (FD);
    end Shutdown;
 
 begin
