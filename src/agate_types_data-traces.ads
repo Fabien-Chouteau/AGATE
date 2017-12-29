@@ -34,7 +34,7 @@ package AGATE_Types_Data.Traces is
    type String_Token is new Natural;
    type Wire_Token is new Natural;
    type Reg_Token is new Natural;
-
+   type Event_Token is new Natural;
 
    type Task_Data is record
       Running : Wire_Token;

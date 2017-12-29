@@ -40,8 +40,10 @@ package body AGATE.Traces is
    Next_String_Token : String_Token := 0;
    Next_Wire_Token   : Wire_Token := 0;
    Next_Reg_Token    : Reg_Token := 0;
+   Next_Event_Token  : Event_Token := 0;
 
    Running_Task_Token : String_Token;
+   Context_Switch_Token : Event_Token;
 
    Registration_Done : Boolean := False;
 
@@ -60,19 +62,24 @@ package body AGATE.Traces is
    procedure Put_State_Change (Token : String_Token;
                                Value : String;
                                Now   : Time := 0);
+   procedure Put_State_Change (Token : Event_Token;
+                               Now   : Time := 0);
 
    function Create return String_Token;
    function Create return Wire_Token;
    function Create return Reg_Token;
+   function Create return Event_Token;
 
    function Image (Val : Natural) return String;
    function Image (Tok : String_Token) return String;
    function Image (Tok : Wire_Token) return String;
    function Image (Tok : Reg_Token) return String;
+   function Image (Tok : Event_Token) return String;
 
    procedure Declare_Var (Tok : String_Token; Name : String);
    procedure Declare_Var (Tok : Wire_Token; Name : String);
    procedure Declare_Var (Tok : Reg_Token; Name : String);
+   procedure Declare_Var (Tok : Event_Token; Name : String);
 
    function Clean (Name : String) return String;
 
@@ -90,6 +97,12 @@ package body AGATE.Traces is
 
       Put_Line ("$timescale 1 us $end");
       Put_Line ("$scope module AGATE $end");
+
+      Running_Task_Token := Create;
+      Declare_Var (Running_Task_Token, "Running_Task");
+
+      Context_Switch_Token := Create;
+      Declare_Var (Context_Switch_Token, "Context_Switch");
    end Initialize;
 
    --------------
@@ -112,9 +125,6 @@ package body AGATE.Traces is
 
    procedure End_Of_Registration is
    begin
-      Running_Task_Token := Next_String_Token;
-      Put_Line ("$var string 1 " & Image (Running_Task_Token) & " Running_Task $end");
-
       Put_Line ("$upscope $end");
       Put_Line ("$enddefinitions $end");
 
@@ -205,6 +215,22 @@ package body AGATE.Traces is
       Put_Line (Timestamp (Now) & " s" & Value & " " & Image (Token));
    end Put_State_Change;
 
+   ----------------------
+   -- Put_State_Change --
+   ----------------------
+
+   procedure Put_State_Change
+     (Token : Event_Token;
+      Now   : Time := 0)
+   is
+   begin
+      if not Registration_Done then
+         End_Of_Registration;
+      end if;
+
+      Put_Line (Timestamp (Now) & " x" & Image (Token));
+   end Put_State_Change;
+
    -----------
    -- Clean --
    -----------
@@ -263,6 +289,19 @@ package body AGATE.Traces is
       return Ret;
    end Create;
 
+   ------------
+   -- Create --
+   ------------
+
+   function Create
+     return Event_Token
+   is
+      Ret : Event_Token := Next_Event_Token;
+   begin
+      Next_Event_Token := Next_Event_Token + 1;
+      return Ret;
+   end Create;
+
    -----------
    -- Image --
    -----------
@@ -303,6 +342,15 @@ package body AGATE.Traces is
       return String
    is ("r" & Image (Natural (Tok)));
 
+   -----------
+   -- Image --
+   -----------
+
+   function Image
+     (Tok : Event_Token)
+      return String
+   is ("e" & Image (Natural (Tok)));
+
    -----------------
    -- Declare_Var --
    -----------------
@@ -337,6 +385,18 @@ package body AGATE.Traces is
    is
    begin
       Put_Line ("$var reg 32 " & Image (Tok) & " " & Name & " $end");
+   end Declare_Var;
+
+   -----------------
+   -- Declare_Var --
+   -----------------
+
+   procedure Declare_Var
+     (Tok  : Event_Token;
+      Name : String)
+   is
+   begin
+      Put_Line ("$var event 1 " & Image (Tok) & " " & Name & " $end");
    end Declare_Var;
 
    --------------
@@ -409,6 +469,7 @@ package body AGATE.Traces is
       Put_State_Change (Old.Trace_Data.Running, False, Now);
       Put_State_Change (Next.Trace_Data.Running, True, Now);
       Put_State_Change (Running_Task_Token, Clean (Next.Name), Now);
+      Put_State_Change (Context_Switch_Token, Now);
    end Context_Switch;
 
    --------------
