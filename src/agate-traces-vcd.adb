@@ -30,7 +30,7 @@
 ------------------------------------------------------------------------------
 
 with HAL;                     use HAL;
-with Semihosting;             use Semihosting;
+with AGATE.Traces_Output;     use AGATE.Traces_Output;
 with AGATE.Timing;
 with AGATE_Types_Data.Traces; use AGATE_Types_Data.Traces;
 
@@ -45,8 +45,6 @@ package body AGATE.Traces is
    Context_Switch_Token : Event_Token;
 
    Registration_Done : Boolean := False;
-
-   FD : SH_Word;
 
    procedure Initialize;
    procedure Put_Line (Str : String);
@@ -88,11 +86,7 @@ package body AGATE.Traces is
 
    procedure Initialize is
    begin
-      FD := Open ("agate_traces.vcd", OPEN_FLAG_W);
-
-      if FD = SH_Word'Last or else FD = 0 then
-         raise Program_Error with "Cannot create trace file";
-      end if;
+      Traces_Output.Initialize ("agate_traces.vcd");
 
       Put_Line ("$timescale 1 us $end");
       Put_Line ("$scope module AGATE $end");
@@ -113,7 +107,10 @@ package body AGATE.Traces is
    is
       To_Put : constant String := Str & ASCII.LF;
    begin
-      if Write (FD, To_Put (To_Put'First)'Address, To_Put'Length) /= 0 then
+
+      if Traces_Output.Write (To_Put (To_Put'First)'Address,
+                              To_Put'Length) /= To_Put'Length
+      then
          raise Program_Error;
       end if;
    end Put_Line;
@@ -542,9 +539,8 @@ package body AGATE.Traces is
 
    procedure Shutdown
    is
-      Unref : SH_Word with Unreferenced;
    begin
-      Unref := Close (FD);
+      Traces_Output.Finalize;
    end Shutdown;
 
 begin

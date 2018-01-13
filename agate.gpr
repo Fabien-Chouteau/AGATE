@@ -1,10 +1,30 @@
 
 project AGATE is
-  for Languages use ("Ada", "Asm_Cpp");
-  for Target use "arm-eabi";
-  for Runtime ("Ada") use "zfp-stm32f4";
-  for Source_Dirs use ("src");
-  for Object_Dir use "obj";
-  for Main use ("main.adb");
-  for Create_Missing_Dirs use "true";
+   for Languages use ("Ada", "Asm_Cpp");
+   for Target use "arm-eabi";
+   for Runtime ("Ada") use "zfp-stm32f4";
+   for Source_Dirs use ("src");
+   for Object_Dir use "obj";
+   for Main use ("main.adb");
+   for Create_Missing_Dirs use "true";
+
+   type Traces_Output_Kind is ("none", "arm_semihosting");
+   Traces_Output : Traces_Output_Kind := external("Traces_Output", "none");
+
+   type Traces_Kind is ("none", "vcd");
+   Traces : Traces_Kind := external("Traces", "none");
+
+   package Naming is
+
+      for Body ("AGATE.Traces_Output") use
+        "agate-traces_output-" & Traces_Output & ".adb";
+
+      for Body ("AGATE.Traces") use
+        "agate-traces-" & Traces & ".adb";
+
+      for Spec ("AGATE_Types_Data.Traces") use
+        "agate_types_data-traces-" & Traces & ".ads";
+
+   end Naming;
+
 end AGATE;
