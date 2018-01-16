@@ -57,7 +57,7 @@ package body AGATE.Timing is
 
    procedure Initialize
    is
-      CSR : UInt32 with Volatile, Address => SysTick_Periph.CSR'Address;
+      CSR : Word with Volatile, Address => SysTick_Periph.CSR'Address;
 
    begin
 

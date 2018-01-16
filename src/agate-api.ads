@@ -36,7 +36,7 @@ package AGATE.API is
 
    -- Tasking --
    procedure Yield;
-   function Clock return UInt32;
+   function Clock return Word;
    procedure Delay_Until (Wakeup_Time : Time);
 
    -- Semaphores --

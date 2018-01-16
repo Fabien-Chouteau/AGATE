@@ -68,11 +68,11 @@ package body AGATE.SysCalls is
 
    procedure SVCall_Handler
    is
-      type Stack_Array is array (1 .. 4) of UInt32
+      type Stack_Array is array (1 .. 4) of Word
         with Pack, Size => 4 * 32;
 
       PSP : System.Address;
-      Ret : UInt32;
+      Ret : Word;
       ID  : Syscall_ID;
    begin
       Asm ("mrs %0, psp",
@@ -106,7 +106,7 @@ package body AGATE.SysCalls is
 
       Asm ("mrs r1, psp"  & ASCII.LF &
            "str %0, [r1]",
-           Inputs   => UInt32'Asm_Input ("r", Ret),
+           Inputs   => Word'Asm_Input ("r", Ret),
            Volatile => True,
            Clobber  => "r1");
    end SVCall_Handler;
@@ -116,10 +116,10 @@ package body AGATE.SysCalls is
    ----------
 
    function Call (ID               : Syscall_ID;
-                  Arg1, Arg2, Arg3 : UInt32 := 0)
-                  return UInt32
+                  Arg1, Arg2, Arg3 : Word := 0)
+                  return Word
    is
-      Ret : UInt32;
+      Ret : Word;
    begin
       Asm ("mov r0, %1" & ASCII.LF &
            "mov r1, %2" & ASCII.LF &
@@ -127,11 +127,11 @@ package body AGATE.SysCalls is
            "mov r3, %4" & ASCII.LF &
            "svc 1" & ASCII.LF &
            "mov %0, r0",
-           Outputs => UInt32'Asm_Output ("=r", Ret),
+           Outputs => Word'Asm_Output ("=r", Ret),
            Inputs => (Syscall_ID'Asm_Input ("r", ID),
-                      UInt32'Asm_Input ("r", Arg1),
-                      UInt32'Asm_Input ("r", Arg2),
-                      UInt32'Asm_Input ("r", Arg3)),
+                      Word'Asm_Input ("r", Arg1),
+                      Word'Asm_Input ("r", Arg2),
+                      Word'Asm_Input ("r", Arg3)),
            Clobber => "r0,r1",
            Volatile => True);
       return Ret;
@@ -142,9 +142,9 @@ package body AGATE.SysCalls is
    ----------
 
    procedure Call (ID               : Syscall_ID;
-                   Arg1, Arg2, Arg3 : UInt32 := 0)
+                   Arg1, Arg2, Arg3 : Word := 0)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
       Unref := Call (ID, Arg1, Arg2, Arg3);
    end Call;

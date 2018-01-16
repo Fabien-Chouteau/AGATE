@@ -69,7 +69,7 @@ package body AGATE.Interrupts is
          return Ret;
       end PSP;
 
-      type Stack_Array is array (1 .. 8) of UInt32
+      type Stack_Array is array (1 .. 8) of Word
         with Pack, Size => 8 * 32;
 
       Context : Stack_Array
@@ -112,14 +112,14 @@ package body AGATE.Interrupts is
          Put_Line (" - Unaligned access       : " & SCB_Periph.UFSR.UNALIGNED'Img);
          Put_Line (" - Division by zero       : " & SCB_Periph.UFSR.DIVBYZERO'Img);
 
-         Put_Line ("R0 : " & Hex (Context (1)));
-         Put_Line ("R1 : " & Hex (Context (2)));
-         Put_Line ("R2 : " & Hex (Context (3)));
-         Put_Line ("R3 : " & Hex (Context (4)));
-         Put_Line ("R12: " & Hex (Context (5)));
-         Put_Line ("LR : " & Hex (Context (6)));
-         Put_Line ("PC : " & Hex (Context (7)));
-         Put_Line ("PSR: " & Hex (Context (8)));
+         Put_Line ("R0 : " & Hex (UInt32 (Context (1))));
+         Put_Line ("R1 : " & Hex (UInt32 (Context (2))));
+         Put_Line ("R2 : " & Hex (UInt32 (Context (3))));
+         Put_Line ("R3 : " & Hex (UInt32 (Context (4))));
+         Put_Line ("R12: " & Hex (UInt32 (Context (5))));
+         Put_Line ("LR : " & Hex (UInt32 (Context (6))));
+         Put_Line ("PC : " & Hex (UInt32 (Context (7))));
+         Put_Line ("PSR: " & Hex (UInt32 (Context (8))));
          loop
             null;
          end loop;
@@ -132,12 +132,12 @@ package body AGATE.Interrupts is
 
    procedure Initialize
    is
-      Vector : UInt32;
+      Vector : Word;
       pragma Import (C, Vector, "__vectors");
 
-      Vector_Address : constant UInt32 := UInt32 (To_Integer(Vector'Address));
+      Vector_Address : constant Word := Word (To_Integer(Vector'Address));
    begin
-      SCB_Periph.VTOR := Vector_Address;
+      SCB_Periph.VTOR := UInt32 (Vector_Address);
       Register (Hard_Fault_Handler'Access, -13, 0);
    end Initialize;
 

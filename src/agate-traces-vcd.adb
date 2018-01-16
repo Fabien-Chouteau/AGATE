@@ -51,7 +51,7 @@ package body AGATE.Traces is
    procedure End_Of_Registration;
    function Timestamp (Now : Time := 0) return String;
    procedure Put_State_Change (Token : Reg_Token;
-                               Value : UInt32;
+                               Value : Word;
                                Now   : Time := 0);
    procedure Put_State_Change (Token : Wire_Token;
                                Value : Boolean;
@@ -157,11 +157,11 @@ package body AGATE.Traces is
 
    procedure Put_State_Change
      (Token : Reg_Token;
-      Value : UInt32;
+      Value : Word;
       Now   : Time := 0)
    is
       Bin : String (1 .. 32);
-      Val : UInt32 := Value;
+      Val : Word := Value;
    begin
       if not Registration_Done then
          End_Of_Registration;
@@ -420,7 +420,7 @@ package body AGATE.Traces is
    procedure Resume (ID : Task_ID) is
    begin
       Put_State_Change (ID.Trace_Data.Status, Clean (Image (ID.Status)));
-      Put_State_Change (ID.Trace_Data.Prio, UInt32 (ID.Current_Prio));
+      Put_State_Change (ID.Trace_Data.Prio, Word (ID.Current_Prio));
    end Resume;
 
    -------------
@@ -450,7 +450,7 @@ package body AGATE.Traces is
       New_Prio : Internal_Task_Priority)
    is
    begin
-      Put_State_Change (ID.Trace_Data.Prio, UInt32 (New_Prio));
+      Put_State_Change (ID.Trace_Data.Prio, Word (New_Prio));
    end Change_Priority;
 
    --------------------
@@ -492,7 +492,7 @@ package body AGATE.Traces is
       By    : Task_ID)
    is
    begin
-      Put_State_Change (ID.Trace_Data.Token, UInt32 (Count));
+      Put_State_Change (ID.Trace_Data.Token, Word (Count));
    end Value_Changed;
 
    --------------

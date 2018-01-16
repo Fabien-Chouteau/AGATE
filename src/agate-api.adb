@@ -41,15 +41,15 @@ with AGATE.Traces;
 package body AGATE.API is
 
    procedure Initialize;
-   function Do_Yield (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Clock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Delay_Until (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Sem_Wait (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Sem_Signal (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Shutdown (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Wait_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Try_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Release (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+   function Do_Yield (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Clock (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Delay_Until (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Sem_Wait (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Sem_Signal (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Shutdown (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Wait_Lock (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Try_Lock (Arg1, Arg2, Arg3 : Word) return Word;
+   function Do_Release (Arg1, Arg2, Arg3 : Word) return Word;
 
    ----------------
    -- Initialize --
@@ -73,8 +73,8 @@ package body AGATE.API is
    --------------
 
    function Do_Yield
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       AGATE.Tasking.Yield;
@@ -86,11 +86,11 @@ package body AGATE.API is
    --------------
 
    function Do_Clock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
-      return UInt32 (AGATE.Timing.Clock);
+      return Word (AGATE.Timing.Clock);
    end Do_Clock;
 
    --------------------
@@ -98,8 +98,8 @@ package body AGATE.API is
    --------------------
 
    function Do_Delay_Until
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Timing.Delay_Until (Time (Arg1));
@@ -111,8 +111,8 @@ package body AGATE.API is
    -----------------
 
    function Do_Sem_Wait
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Semaphores.Wait_For_Signal (To_ID (Arg1));
@@ -124,8 +124,8 @@ package body AGATE.API is
    -------------------
 
    function Do_Sem_Signal
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Semaphores.Signal (To_ID (Arg1));
@@ -137,8 +137,8 @@ package body AGATE.API is
    -----------------
 
    function Do_Shutdown
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Traces.Shutdown;
@@ -151,8 +151,8 @@ package body AGATE.API is
    ------------------
 
    function Do_Wait_Lock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Mutexes.Wait_Lock (To_ID (Arg1));
@@ -164,8 +164,8 @@ package body AGATE.API is
    -----------------
 
    function Do_Try_Lock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       return (if Mutexes.Try_Lock (To_ID (Arg1)) then 1 else 0);
@@ -176,8 +176,8 @@ package body AGATE.API is
    ----------------
 
    function Do_Release
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
+     (Arg1, Arg2, Arg3 : Word)
+      return Word
    is
    begin
       Mutexes.Release (To_ID (Arg1));
@@ -198,7 +198,7 @@ package body AGATE.API is
    -- Clock --
    -----------
 
-   function Clock return UInt32
+   function Clock return Word
    is (Call (Clock));
 
    -----------------
@@ -208,9 +208,9 @@ package body AGATE.API is
    procedure Delay_Until
      (Wakeup_Time : Time)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
-      Unref := Call (Delay_Until, UInt32 (Wakeup_Time));
+      Unref := Call (Delay_Until, Word (Wakeup_Time));
    end Delay_Until;
 
    ---------------------
@@ -220,9 +220,9 @@ package body AGATE.API is
    procedure Wait_For_Signal
      (ID : Semaphore_ID)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
-      Unref := Call (Sem_Wait, To_UInt32 (ID));
+      Unref := Call (Sem_Wait, To_Word (ID));
    end Wait_For_Signal;
 
    ------------
@@ -232,9 +232,9 @@ package body AGATE.API is
    procedure Signal
      (ID : Semaphore_ID)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
-      Unref := Call (Sem_Signal, To_UInt32 (ID));
+      Unref := Call (Sem_Signal, To_Word (ID));
    end Signal;
 
    ---------------
@@ -244,9 +244,9 @@ package body AGATE.API is
    procedure Wait_Lock
      (ID : Mutex_ID)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
-      Unref := Call (Mutex_Wait_Lock, To_UInt32 (ID));
+      Unref := Call (Mutex_Wait_Lock, To_Word (ID));
    end Wait_Lock;
 
    --------------
@@ -257,9 +257,9 @@ package body AGATE.API is
      (ID : Mutex_ID)
       return Boolean
    is
-      Ret : UInt32;
+      Ret : Word;
    begin
-      Ret := Call (Mutex_Try_Lock, To_UInt32 (ID));
+      Ret := Call (Mutex_Try_Lock, To_Word (ID));
       return Ret /= 0;
    end Try_Lock;
    -------------
@@ -269,9 +269,9 @@ package body AGATE.API is
    procedure Release
      (ID : Mutex_ID)
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
-      Unref := Call (Mutex_Release, To_UInt32 (ID));
+      Unref := Call (Mutex_Release, To_Word (ID));
    end Release;
 
    ---------------------
@@ -280,7 +280,7 @@ package body AGATE.API is
 
    procedure Shutdown_System
    is
-      Unref : UInt32 with Unreferenced;
+      Unref : Word with Unreferenced;
    begin
       Unref := Call (Shutdown);
    end Shutdown_System;

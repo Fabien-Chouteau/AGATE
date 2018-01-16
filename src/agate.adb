@@ -33,47 +33,47 @@ with Ada.Unchecked_Conversion;
 
 package body AGATE is
 
-   function To_UInt32_Internal is new Ada.Unchecked_Conversion
-     (Mutex_ID, UInt32);
+   function To_Word_Internal is new Ada.Unchecked_Conversion
+     (Mutex_ID, Word);
 
    function To_ID_Internal is new Ada.Unchecked_Conversion
-     (UInt32, Mutex_ID);
+     (Word, Mutex_ID);
 
-   function To_UInt32_Internal is new Ada.Unchecked_Conversion
-     (Semaphore_ID, UInt32);
+   function To_Word_Internal is new Ada.Unchecked_Conversion
+     (Semaphore_ID, Word);
 
    function To_ID_Internal is new Ada.Unchecked_Conversion
-     (UInt32, Semaphore_ID);
+     (Word, Semaphore_ID);
 
-   ---------------
-   -- To_UInt32 --
-   ---------------
+   -------------
+   -- To_Word --
+   -------------
 
-   function To_UInt32 (ID : Mutex_ID) return UInt32
-   is (To_UInt32_Internal (ID));
+   function To_Word (ID : Mutex_ID) return Word
+   is (To_Word_Internal (ID));
 
    -----------
    -- To_ID --
    -----------
 
-   function To_ID (ID : UInt32) return Mutex_ID
+   function To_ID (ID : Word) return Mutex_ID
    is (To_ID_Internal (ID));
 
-   ---------------
-   -- To_UInt32 --
-   ---------------
+   -------------
+   -- To_Word --
+   -------------
 
-   function To_UInt32
+   function To_Word
      (ID : Semaphore_ID)
-      return UInt32
-   is (To_UInt32_Internal (ID));
+      return Word
+   is (To_Word_Internal (ID));
 
    -----------
    -- To_ID --
    -----------
 
    function To_ID
-     (ID : UInt32)
+     (ID : Word)
       return Semaphore_ID
    is (To_ID_Internal (ID));
 

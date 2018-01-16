@@ -99,7 +99,7 @@ package body AGATE.Tasking is
    procedure Initialize_Task_Context
      (T : in out Task_Object)
    is
-      type Stack_Array is array (1 .. 8) of UInt32
+      type Stack_Array is array (1 .. 8) of Word
         with Pack, Size => 8 * 32;
 
       Context : Stack_Array
@@ -110,7 +110,7 @@ package body AGATE.Tasking is
       Context (8) := 2**24; -- Set the thumb bit
 
       --  PC
-      Context (7) := UInt32 (To_Integer (T.Proc.all'Address));
+      Context (7) := Word (To_Integer (T.Proc.all'Address));
 
       --  LR
       Context (6) := 0;

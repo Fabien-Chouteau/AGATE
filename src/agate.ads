@@ -33,9 +33,13 @@ with HAL;                     use HAL;
 with System.Storage_Elements; use System.Storage_Elements;
 with Tools;                   use Tools;
 
+with AGATE_Arch_Parameters;
+
 private with AGATE_Types_Data.Traces;
 
 package AGATE is
+
+   subtype Word is AGATE_Arch_Parameters.Word;
 
    -- Task --
 
@@ -100,7 +104,7 @@ private
    function Image (P : Process_Stack_Pointer) return String
    is (Hex (UInt32 (To_Integer (System.Address (P)))));
 
-   type Task_Context is array (4 .. 12) of UInt32
+   type Task_Context is array (4 .. 12) of Word
      with Pack, Size => 9 * 32;
 
    type Task_Object;
@@ -143,8 +147,8 @@ private
 
    Invalid_Semaphore : constant Semaphore_ID := null;
 
-   function To_UInt32 (ID : Semaphore_ID) return UInt32;
-   function To_ID (ID : UInt32) return Semaphore_ID;
+   function To_Word (ID : Semaphore_ID) return Word;
+   function To_ID (ID : Word) return Semaphore_ID;
 
    -- Mutex --
 
@@ -162,7 +166,7 @@ private
 
    Invalid_Mutex : constant Mutex_ID := null;
 
-   function To_UInt32 (ID : Mutex_ID) return UInt32;
-   function To_ID (ID : UInt32) return Mutex_ID;
+   function To_Word (ID : Mutex_ID) return Word;
+   function To_ID (ID : Word) return Mutex_ID;
 
 end AGATE;

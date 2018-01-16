@@ -38,15 +38,15 @@ package AGATE.SysCalls is
                        Mutex_Release);
 
    function Call (ID               : Syscall_ID;
-                  Arg1, Arg2, Arg3 : UInt32 := 0)
-                  return UInt32;
+                  Arg1, Arg2, Arg3 : Word := 0)
+                  return Word;
 
    procedure Call (ID               : Syscall_ID;
-                   Arg1, Arg2, Arg3 : UInt32 := 0);
+                   Arg1, Arg2, Arg3 : Word := 0);
 
 
    type Syscall_Handler is access
-     function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
+     function (Arg1, Arg2, Arg3 : Word) return Word;
 
    function Registred (ID : Syscall_ID) return Boolean;
    --  Return True if a handler is registered for the given syscall

@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                    Copyright (C) 2016, AdaCore                           --
+--                   Copyright (C) 2018, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,46 +29,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System;
-with AGATE_Arch_Parameters;
+with HAL;
 
-package Semihosting is
+package AGATE_Arch_Parameters is
 
-   type SH_Word is new AGATE_Arch_Parameters.Word;
+   subtype Word is HAL.UInt32;
 
-   subtype Flag is SH_Word;
-
-   OPEN_FLAG_R         : constant Flag := 0;
-   OPEN_FLAG_RB        : constant Flag := 1;
-   OPEN_FLAG_R_PLUS    : constant Flag := 2;
-   OPEN_FLAG_R_PLUS_B  : constant Flag := 3;
-   OPEN_FLAG_W         : constant Flag := 4;
-   OPEN_FLAG_WB        : constant Flag := 5;
-   OPEN_FLAG_W_PLUS    : constant Flag := 6;
-   OPEN_FLAG_W_PLUS_B  : constant Flag := 7;
-   OPEN_FLAG_A         : constant Flag := 8;
-   OPEN_FLAG_AB        : constant Flag := 9;
-   OPEN_FLAG_A_PLUS    : constant Flag := 10;
-   OPEN_FLAG_A_PLUS_B  : constant Flag := 11;
-
-   procedure Write_C (C : Character);
-   procedure Write_0 (Str : String);
-   function Close (File_Handle : SH_Word) return SH_Word;
-   function Open (Filename : String; Mode : Flag) return SH_Word;
-   function Read (File_Handle     : SH_Word;
-                  Buffer_Address  : System.Address;
-                  Buffer_Size     : SH_Word) return SH_Word;
-   function Write (File_Handle     : SH_Word;
-                   Buffer_Address  : System.Address;
-                   Buffer_Size     : SH_Word) return SH_Word;
-   function Remove (Filename : String) return SH_Word;
-   function Seek (File_Handle : SH_Word;
-                  Absolute_Position : SH_Word) return SH_Word;
-   function Errno return SH_Word;
-
-   procedure Log (C : Character) renames Write_C;
-   procedure Log (Str : String) renames Write_0;
-   procedure Log_Line (Str : String);
-   procedure Log_New_Line;
-
-end Semihosting;
+end AGATE_Arch_Parameters;
