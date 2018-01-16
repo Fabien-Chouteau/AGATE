@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,18 +29,21 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package body AGATE.Tasking.Static_Task is
+with AGATE.Tasking;
+
+package body AGATE.API.Static_Task is
 
    --  https://stackoverflow.com/questions/33405479/how-to-pass-access-to-a-constrained-string-to-a-subprogram-in-ada
    Heap      : aliased Task_Heap := (1 ..Heap_Size => 0);
    Stack     : aliased Task_Stack := (1 .. Stack_Size => 0);
    Sec_Stack : aliased Task_Sec_Stack := (1 .. Sec_Stack_Size => 0);
 
-   The_Task : aliased Task_Object (Proc      => Proc,
-                                   Base_Prio => Internal_Task_Priority (Priority),
-                                   Stack     => Stack'Access,
-                                   Sec_Stack => Sec_Stack'Access,
-                                   Heap      => Heap'Access);
+   The_Task : aliased Task_Object
+     (Proc      => Proc,
+      Base_Prio => Internal_Task_Priority (Priority),
+      Stack     => Stack'Access,
+      Sec_Stack => Sec_Stack'Access,
+      Heap      => Heap'Access);
 
    The_Access : constant Task_Object_Access := The_Task'Access;
 
@@ -52,5 +55,5 @@ package body AGATE.Tasking.Static_Task is
    is (Task_ID (The_Access));
 
 begin
-   Register (ID, Name);
-end AGATE.Tasking.Static_Task;
+   AGATE.Tasking.Register (ID, Name);
+end AGATE.API.Static_Task;

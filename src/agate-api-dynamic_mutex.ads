@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,13 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Tasking.Dynamic_Task is
+package AGATE.API.Dynamic_Mutex is
 
-   function Create (Stack_Size     : Storage_Count;
-                    Sec_Stack_Size : Storage_Count;
-                    Heap_Size      : Storage_Count;
-                    Priority       : Task_Priority;
-                    Proc           : Task_Procedure)
-                    return Task_ID;
+   function Create
+     (Prio : Task_Priority;
+      Name : String)
+      return Mutex_ID;
 
-end AGATE.Tasking.Dynamic_Task;
+end AGATE.API.Dynamic_Mutex;

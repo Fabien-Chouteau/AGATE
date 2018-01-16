@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -30,7 +30,7 @@
 ------------------------------------------------------------------------------
 
 with Ada.Text_IO;
-with AGATE.SysCalls;
+with AGATE.API;
 with AGATE;              use AGATE;
 
 package body Test_Static_Tasks is
@@ -44,20 +44,20 @@ package body Test_Static_Tasks is
    begin
 
       Ada.Text_IO.Put_Line ("---> Static T1 Signal Static_Semaphore");
-      AGATE.SysCalls.Signal (Static_Semaphore.ID);
+      AGATE.API.Signal (Static_Semaphore.ID);
 
       loop
          Ada.Text_IO.Put_Line ("---> Static T1 Wait_Lock on Static_Mutex");
-         SysCalls.Wait_Lock (Static_Mutex.ID);
+         API.Wait_Lock (Static_Mutex.ID);
          Ada.Text_IO.Put_Line ("---> Static T1 Got the mutex");
 
-         Now := Time (AGATE.SysCalls.Clock);
+         Now := Time (AGATE.API.Clock);
 
          Ada.Text_IO.Put_Line ("---> Static T1 Clock:" & Now'Img);
-         AGATE.SysCalls.Delay_Until (Now + Test_Time_Unit * 2);
+         AGATE.API.Delay_Until (Now + Test_Time_Unit * 2);
 
          Ada.Text_IO.Put_Line ("---> Static T1 Release Static_Mutex");
-         SysCalls.Release (Static_Mutex.ID);
+         API.Release (Static_Mutex.ID);
       end loop;
    end T1_Proc;
 
@@ -71,28 +71,28 @@ package body Test_Static_Tasks is
    begin
 
       Ada.Text_IO.Put_Line ("---> Static T2 Wait_For_Signal on Static_Semaphore");
-      AGATE.SysCalls.Wait_For_Signal (Static_Semaphore.ID);
+      AGATE.API.Wait_For_Signal (Static_Semaphore.ID);
       Ada.Text_IO.Put_Line ("---> Static T2 released");
 
       loop
-         Now := Time (AGATE.SysCalls.Clock);
+         Now := Time (AGATE.API.Clock);
          Ada.Text_IO.Put_Line ("---> Static T2 Clock:" & Now'Img);
 
          Cnt := Cnt + 1;
 
          if Cnt = 2 then
             Ada.Text_IO.Put_Line ("---> Static T2 Wait_Lock on Static_Mutex");
-            SysCalls.Wait_Lock (Static_Mutex.ID);
+            API.Wait_Lock (Static_Mutex.ID);
             Ada.Text_IO.Put_Line ("---> Static T2 Got the mutex");
          elsif Cnt = 3 then
             Ada.Text_IO.Put_Line ("---> Static T2 Release Static_Mutex");
-            SysCalls.Release (Static_Mutex.ID);
+            API.Release (Static_Mutex.ID);
          elsif Cnt = 4 then
             Ada.Text_IO.Put_Line ("---> Static T2 Shuting down the system");
-            AGATE.SysCalls.Shutdown_System;
+            AGATE.API.Shutdown_System;
          end if;
 
-         AGATE.SysCalls.Delay_Until (Now + Test_Time_Unit * 10);
+         AGATE.API.Delay_Until (Now + Test_Time_Unit * 10);
 
       end loop;
    end T2_Proc;

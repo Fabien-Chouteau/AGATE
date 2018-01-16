@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -51,6 +51,8 @@ package AGATE is
    type Task_Status is (Created, Ready, Running, Suspended_Alarm,
                         Suspended_Semaphore, Suspended_Mutex);
 
+   subtype Task_Name is String (1 .. 10);
+
    function Image (Status : Task_Status) return String;
 
    function Name (ID : Task_ID) return String;
@@ -89,8 +91,6 @@ private
 
    type Task_Heap is new Storage_Array;
    type Task_Heap_Access is access all Task_Heap;
-
-   subtype Task_Name is String (1 .. 10);
 
    type Process_Stack_Pointer is new System.Address;
 

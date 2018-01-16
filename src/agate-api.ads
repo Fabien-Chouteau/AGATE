@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                   Copyright (C) 2018, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,17 +29,25 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
+with AGATE.Semaphores; use AGATE.Semaphores;
+with AGATE.Mutexes;    use AGATE.Mutexes;
 
-generic
-   Stack_Size     : Storage_Count;
-   Sec_Stack_Size : Storage_Count;
-   Heap_Size      : Storage_Count;
-   Priority       : Task_Priority;
-   Proc           : Task_Procedure;
-   Name           : String;
-package AGATE.Tasking.Static_Task is
+package AGATE.API is
 
-   function ID return Task_ID;
+   -- Tasking --
+   procedure Yield;
+   function Clock return UInt32;
+   procedure Delay_Until (Wakeup_Time : Time);
 
-end AGATE.Tasking.Static_Task;
+   -- Semaphores --
+   procedure Wait_For_Signal (ID : Semaphore_ID);
+   procedure Signal (ID : Semaphore_ID);
+
+   -- Mutexes --
+   procedure Wait_Lock (ID : Mutex_ID);
+   function Try_Lock (ID : Mutex_ID) return Boolean;
+   procedure Release (ID : Mutex_ID);
+
+   procedure Shutdown_System;
+
+end AGATE.API;

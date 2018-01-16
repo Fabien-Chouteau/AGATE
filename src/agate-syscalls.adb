@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -33,10 +33,6 @@ with Ada.Text_IO;
 
 with System.Machine_Code;     use System.Machine_Code;
 
-pragma Warnings (Off, "is an internal GNAT unit");
-with System.Machine_Reset;
-pragma Warnings (On, "is an internal GNAT unit");
-
 with System.Storage_Elements; use System.Storage_Elements;
 
 with AGATE.Interrupts;        use AGATE.Interrupts;
@@ -48,35 +44,11 @@ package body AGATE.SysCalls is
 
    SVCall_Interrupt_ID : constant Interrupt_ID := -5;
 
-   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
-                       Shutdown, Mutex_Wait_Lock, Mutex_Try_Lock,
-                       Mutex_Release);
-
-   type Syscall_Handler is access
-     function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-
    SysCall_Handler_Table : array (Syscall_ID) of Syscall_Handler
      := (others => null);
 
-   function Trig (ID               : Syscall_ID;
-                  Arg1, Arg2, Arg3 : UInt32 := 0)
-                  return UInt32;
-
-   procedure Trig (ID               : Syscall_ID;
-                   Arg1, Arg2, Arg3 : UInt32 := 0);
-
    procedure Initialize;
    procedure SVCall_Handler;
-
-   function Do_Yield (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Clock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Delay_Until (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Sem_Wait (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Sem_Signal (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Shutdown (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Wait_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Try_Lock (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-   function Do_Release (Arg1, Arg2, Arg3 : UInt32) return UInt32;
 
    ----------------
    -- Initialize --
@@ -88,136 +60,7 @@ package body AGATE.SysCalls is
       Interrupts.Register (SVCall_Handler'Access,
                            SVCall_Interrupt_ID,
                            0);
-
-      SysCall_Handler_Table (Yield) := Do_Yield'Access;
-      SysCall_Handler_Table (Clock) := Do_Clock'Access;
-      SysCall_Handler_Table (Delay_Until) := Do_Delay_Until'Access;
-      SysCall_Handler_Table (Sem_Signal) := Do_Sem_Signal'Access;
-      SysCall_Handler_Table (Sem_Wait) := Do_Sem_Wait'Access;
-      SysCall_Handler_Table (Shutdown) := Do_Shutdown'Access;
-      SysCall_Handler_Table (Mutex_Wait_Lock) := Do_Wait_Lock'Access;
-      SysCall_Handler_Table (Mutex_Try_Lock) := Do_Try_Lock'Access;
-      SysCall_Handler_Table (Mutex_Release) := Do_Release'Access;
    end Initialize;
-
-   --------------
-   -- Do_Yield --
-   --------------
-
-   function Do_Yield
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
---        Ada.Text_IO.Put_Line ("Do_Yield!!!");
-      Tasking.Yield;
-      return 0;
-   end Do_Yield;
-
-   --------------
-   -- Do_Clock --
-   --------------
-
-   function Do_Clock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
---        Ada.Text_IO.Put_Line ("Do_Clock");
-      return UInt32 (Timing.Clock);
-   end Do_Clock;
-
-   --------------------
-   -- Do_Delay_Until --
-   --------------------
-
-   function Do_Delay_Until
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
---        Ada.Text_IO.Put_Line ("Do_Delay_Until!!!");
-      Timing.Delay_Until (Time (Arg1));
-      return 0;
-   end Do_Delay_Until;
-
-   -----------------
-   -- Do_Sem_Wait --
-   -----------------
-
-   function Do_Sem_Wait
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      Semaphores.Wait_For_Signal (To_ID (Arg1));
-      return 0;
-   end Do_Sem_Wait;
-
-   -------------------
-   -- Do_Sem_Signal --
-   -------------------
-
-   function Do_Sem_Signal
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      Semaphores.Signal (To_ID (Arg1));
-      return 0;
-   end Do_Sem_Signal;
-
-   -----------------
-   -- Do_Shutdown --
-   -----------------
-
-   function Do_Shutdown
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      Traces.Shutdown;
-      System.Machine_Reset.Stop;
-      return 0;
-   end Do_Shutdown;
-
-   ------------------
-   -- Do_Wait_Lock --
-   ------------------
-
-   function Do_Wait_Lock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      Mutexes.Wait_Lock (To_ID (Arg1));
-      return 0;
-   end Do_Wait_Lock;
-
-   -----------------
-   -- Do_Try_Lock --
-   -----------------
-
-   function Do_Try_Lock
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      return (if Mutexes.Try_Lock (To_ID (Arg1)) then 1 else 0);
-   end Do_Try_Lock;
-
-   ----------------
-   -- Do_Release --
-   ----------------
-
-   function Do_Release
-     (Arg1, Arg2, Arg3 : UInt32)
-      return UInt32
-   is
-   begin
-      Mutexes.Release (To_ID (Arg1));
-      return 0;
-   end Do_Release;
 
    --------------------
    -- SVCall_Handler --
@@ -244,12 +87,6 @@ package body AGATE.SysCalls is
             Args : Stack_Array
               with Address => PSP;
          begin
---              Ada.Text_IO.Put_Line ("SVCall PSP:" & To_Integer (PSP)'Img);
---              for Index in Args'Range loop
---                 Ada.Text_IO.Put_Line ("SVCall Args (" & Index'Img & ") =>" &
---                                         Args (Index)'Img);
---              end loop;
-
             if Args (1) in
               Syscall_ID'Pos (Syscall_ID'First) .. Syscall_ID'Pos (Syscall_ID'Last)
             then
@@ -275,10 +112,10 @@ package body AGATE.SysCalls is
    end SVCall_Handler;
 
    ----------
-   -- Trig --
+   -- Call --
    ----------
 
-   function Trig (ID               : Syscall_ID;
+   function Call (ID               : Syscall_ID;
                   Arg1, Arg2, Arg3 : UInt32 := 0)
                   return UInt32
    is
@@ -298,116 +135,42 @@ package body AGATE.SysCalls is
            Clobber => "r0,r1",
            Volatile => True);
       return Ret;
-   end Trig;
+   end Call;
 
-   procedure Trig (ID               : Syscall_ID;
+   ----------
+   -- Call --
+   ----------
+
+   procedure Call (ID               : Syscall_ID;
                    Arg1, Arg2, Arg3 : UInt32 := 0)
    is
       Unref : UInt32 with Unreferenced;
    begin
-      Unref := Trig (ID, Arg1, Arg2, Arg3);
-   end Trig;
-
-   -----------
-   -- Yield --
-   -----------
-
-   procedure Yield
-   is
-   begin
-        Trig (Yield);
-   end Yield;
-
-   -----------
-   -- Clock --
-   -----------
-
-   function Clock return UInt32
-   is (Trig (Clock));
-
-   -----------------
-   -- Delay_Until --
-   -----------------
-
-   procedure Delay_Until
-     (Wakeup_Time : Time)
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Delay_Until, UInt32 (Wakeup_Time));
-   end Delay_Until;
-
-   ---------------------
-   -- Wait_For_Signal --
-   ---------------------
-
-   procedure Wait_For_Signal
-     (ID : Semaphore_ID)
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Sem_Wait, To_UInt32 (ID));
-   end Wait_For_Signal;
-
-   ------------
-   -- Signal --
-   ------------
-
-   procedure Signal
-     (ID : Semaphore_ID)
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Sem_Signal, To_UInt32 (ID));
-   end Signal;
+      Unref := Call (ID, Arg1, Arg2, Arg3);
+   end Call;
 
    ---------------
-   -- Wait_Lock --
+   -- Registred --
    ---------------
 
-   procedure Wait_Lock
-     (ID : Mutex_ID)
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Mutex_Wait_Lock, To_UInt32 (ID));
-   end Wait_Lock;
+   function Registred (ID : Syscall_ID)
+                       return Boolean
+   is (SysCall_Handler_Table (ID) /= null);
 
    --------------
-   -- Try_Lock --
+   -- Register --
    --------------
 
-   function Try_Lock
-     (ID : Mutex_ID)
-      return Boolean
+   procedure Register
+     (ID      : Syscall_ID;
+      Handler : not null Syscall_Handler)
    is
-      Ret : UInt32;
    begin
-      Ret := Trig (Mutex_Try_Lock, To_UInt32 (ID));
-      return Ret /= 0;
-   end Try_Lock;
-   -------------
-   -- Release --
-   -------------
+      if not Registred (ID) then
+         SysCall_Handler_Table (ID) := Handler;
+      end if;
+   end Register;
 
-   procedure Release
-     (ID : Mutex_ID)
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Mutex_Release, To_UInt32 (ID));
-   end Release;
-
-   ---------------------
-   -- Shutdown_System --
-   ---------------------
-
-   procedure Shutdown_System
-   is
-      Unref : UInt32 with Unreferenced;
-   begin
-      Unref := Trig (Shutdown);
-   end Shutdown_System;
 begin
    Initialize;
 end AGATE.SysCalls;

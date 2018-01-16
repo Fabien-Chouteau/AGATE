@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -36,7 +36,7 @@ package AGATE.Tasking is
 
    procedure Register (ID   : Task_ID;
                        Name : String)
-     with Pre => Name'Length <= 10;
+     with Pre => Name'Length <= Task_Name'Length;
 
    procedure Start
      with No_Return;

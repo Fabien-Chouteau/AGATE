@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,11 +29,23 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-generic
-   Priority : Task_Priority;
-   Name     : String;
-package AGATE.Mutexes.Static is
+with AGATE.Traces;
 
-   function ID return Mutex_ID;
+package body AGATE.API.Dynamic_Mutex is
 
-end AGATE.Mutexes.Static;
+   ------------
+   -- Create --
+   ------------
+
+   function Create
+     (Prio : Task_Priority;
+      Name : String)
+      return Mutex_ID
+   is
+      Ret : constant Mutex_ID := new Mutex (Prio);
+   begin
+      Traces.Register (Ret, Name);
+      return Ret;
+   end Create;
+
+end AGATE.API.Dynamic_Mutex;

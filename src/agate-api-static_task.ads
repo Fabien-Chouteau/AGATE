@@ -29,31 +29,17 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;              use HAL;
+with System.Storage_Elements; use System.Storage_Elements;
 
-package AGATE.SysCalls is
+generic
+   Stack_Size     : Storage_Count;
+   Sec_Stack_Size : Storage_Count;
+   Heap_Size      : Storage_Count;
+   Priority       : Task_Priority;
+   Proc           : Task_Procedure;
+   Name           : String;
+package AGATE.API.Static_Task is
 
-   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
-                       Shutdown, Mutex_Wait_Lock, Mutex_Try_Lock,
-                       Mutex_Release);
+   function ID return Task_ID;
 
-   function Call (ID               : Syscall_ID;
-                  Arg1, Arg2, Arg3 : UInt32 := 0)
-                  return UInt32;
-
-   procedure Call (ID               : Syscall_ID;
-                   Arg1, Arg2, Arg3 : UInt32 := 0);
-
-
-   type Syscall_Handler is access
-     function (Arg1, Arg2, Arg3 : UInt32) return UInt32;
-
-   function Registred (ID : Syscall_ID) return Boolean;
-   --  Return True if a handler is registered for the given syscall
-
-   procedure Register (ID      : Syscall_ID;
-                       Handler : not null Syscall_Handler)
-     with Pre => not Registred (ID);
-   --  Register a handler for the given syscall
-
-end AGATE.SysCalls;
+end AGATE.API.Static_Task;

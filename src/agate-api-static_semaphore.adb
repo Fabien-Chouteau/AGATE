@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,11 +29,19 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Semaphores.Dynamic is
+with AGATE.Traces;
 
-   function Create
-     (Initial_Count : Semaphore_Count := 0;
-      Name          : String)
-      return Semaphore_ID;
+package body AGATE.API.Static_Semaphore is
 
-end AGATE.Semaphores.Dynamic;
+   Sem : aliased Semaphore (initial_Count);
+
+   --------
+   -- ID --
+   --------
+
+   function ID return Semaphore_ID
+   is (Semaphore_ID'(Sem'Access));
+
+begin
+   Traces.Register (ID, Name);
+end AGATE.API.Static_Semaphore;

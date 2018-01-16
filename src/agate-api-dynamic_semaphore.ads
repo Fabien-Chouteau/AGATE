@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,23 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Traces;
-
-package body AGATE.Mutexes.Dynamic is
-
-   ------------
-   -- Create --
-   ------------
+package AGATE.API.Dynamic_Semaphore is
 
    function Create
-     (Prio : Task_Priority;
-      Name : String)
-      return Mutex_ID
-   is
-      Ret : constant Mutex_ID := new Mutex (Prio);
-   begin
-      Traces.Register (Ret, Name);
-      return Ret;
-   end Create;
+     (Initial_Count : Semaphore_Count := 0;
+      Name          : String)
+      return Semaphore_ID;
 
-end AGATE.Mutexes.Dynamic;
+end AGATE.API.Dynamic_Semaphore;

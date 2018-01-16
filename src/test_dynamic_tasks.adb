@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -30,18 +30,19 @@
 ------------------------------------------------------------------------------
 
 with AGATE;                      use AGATE;
-with AGATE.Tasking.Dynamic_Task;
+with AGATE.API.Dynamic_Task;
 with Ada.Text_IO;
-with AGATE.SysCalls;
+with AGATE.API;
 with System.Machine_Code; use System.Machine_Code;
 with Test_Static_Tasks;
 with AGATE;
-with AGATE.Semaphores.Dynamic;
+with AGATE.Tasking;
+with AGATE.API.Dynamic_Semaphore;
 
 package body Test_Dynamic_Tasks is
 
    Dyn_Semaphore : AGATE.Semaphore_ID :=
-     AGATE.Semaphores.Dynamic.Create (Name => "Dynamic Sem");
+     AGATE.API.Dynamic_Semaphore.Create (Name => "Dynamic Sem");
 
    -------------
    -- T1_Proc --
@@ -51,11 +52,11 @@ package body Test_Dynamic_Tasks is
       Now : Time;
    begin
       Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
-      AGATE.SysCalls.Signal (Dyn_Semaphore);
+      AGATE.API.Signal (Dyn_Semaphore);
       loop
-         Now := Time (AGATE.SysCalls.Clock);
+         Now := Time (AGATE.API.Clock);
          Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" & Now'Img);
-         AGATE.SysCalls.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
+         AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T1_Proc;
 
@@ -68,13 +69,13 @@ package body Test_Dynamic_Tasks is
    begin
 
       Ada.Text_IO.Put_Line ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
-      AGATE.SysCalls.Wait_For_Signal (Dyn_Semaphore);
+      AGATE.API.Wait_For_Signal (Dyn_Semaphore);
       Ada.Text_IO.Put_Line ("---> Dynamic T2 released");
 
       loop
-         Now := Time (AGATE.SysCalls.Clock);
+         Now := Time (AGATE.API.Clock);
          Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);
-         AGATE.SysCalls.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
+         AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T2_Proc;
 
@@ -85,22 +86,21 @@ package body Test_Dynamic_Tasks is
    procedure Create is
       T : AGATE.Task_ID;
    begin
-      T := AGATE.Tasking.Dynamic_Task.Create
+      T := AGATE.API.Dynamic_Task.Create
         (Stack_Size     => 1024,
          Sec_Stack_Size => 1024,
          Heap_Size      => 1024,
          Priority       => 0,
-         Proc           => T1_Proc'Access);
+         Proc           => T1_Proc'Access,
+         Name           => "Dynamic T1");
 
-      AGATE.Tasking.Register (T, "Dynamic T1");
-
-      T := AGATE.Tasking.Dynamic_Task.Create
+      T := AGATE.API.Dynamic_Task.Create
         (Stack_Size     => 1024,
          Sec_Stack_Size => 1024,
          Heap_Size      => 1024,
          Priority       => 3,
-         Proc           => T2_Proc'Access);
-      AGATE.Tasking.Register (T, "Dynamic T2");
+         Proc           => T2_Proc'Access,
+         Name           => "Dynamic T2");
    end Create;
 
    ----------------------

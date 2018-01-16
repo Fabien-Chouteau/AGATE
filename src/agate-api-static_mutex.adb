@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,11 +29,20 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-generic
-   initial_Count : Semaphore_Count := 0;
-   Name          : String;
-package AGATE.Semaphores.Static is
+with AGATE.Traces;
 
-   function ID return Semaphore_ID;
+package body AGATE.API.Static_Mutex is
 
-end AGATE.Semaphores.Static;
+   Mut : aliased Mutex (Priority);
+
+   --------
+   -- ID --
+   --------
+
+   function ID
+     return Mutex_ID
+   is (Mut'Access);
+
+begin
+   Traces.Register (ID, Name);
+end AGATE.API.Static_Mutex;

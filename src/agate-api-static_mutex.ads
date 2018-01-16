@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,20 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Traces;
+generic
+   Priority : Task_Priority;
+   Name     : String;
+package AGATE.API.Static_Mutex is
 
-package body AGATE.Mutexes.Static is
+   function ID return Mutex_ID;
 
-   Mut : aliased Mutex (Priority);
-
-   --------
-   -- ID --
-   --------
-
-   function ID
-     return Mutex_ID
-   is (Mut'Access);
-
-begin
-   Traces.Register (ID, Name);
-end AGATE.Mutexes.Static;
+end AGATE.API.Static_Mutex;

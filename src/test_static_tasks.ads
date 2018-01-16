@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,9 +29,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking.Static_Task;
-with AGATE.Semaphores.Static;
-with AGATE.Mutexes.Static;
+with AGATE.API.Static_Task;
+with AGATE.API.Static_Semaphore;
+with AGATE.API.Static_Mutex;
 
 package Test_Static_Tasks is
 
@@ -39,7 +39,7 @@ package Test_Static_Tasks is
 
    procedure T1_Proc;
 
-   package T1 is new AGATE.Tasking.Static_Task
+   package T1 is new AGATE.API.Static_Task
      (Stack_Size     => 4096,
       Sec_Stack_Size => 1024,
       Heap_Size      => 1024,
@@ -49,7 +49,7 @@ package Test_Static_Tasks is
 
    procedure T2_Proc;
 
-   package T2 is new AGATE.Tasking.Static_Task
+   package T2 is new AGATE.API.Static_Task
      (Stack_Size     => 4096,
       Sec_Stack_Size => 1024,
       Heap_Size      => 1024,
@@ -57,10 +57,10 @@ package Test_Static_Tasks is
       Proc           => T2_Proc'Access,
       Name           => "Static T2");
 
-   package Static_Semaphore is new AGATE.Semaphores.Static
+   package Static_Semaphore is new AGATE.API.Static_Semaphore
      (Name => "Static Sem");
 
-   package Static_Mutex is new AGATE.Mutexes.Static
+   package Static_Mutex is new AGATE.API.Static_Mutex
      (Priority => 5,
       Name     => "Static Mutex prio 2");
 

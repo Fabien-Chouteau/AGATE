@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,19 +29,36 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Traces;
+with AGATE.Tasking; use AGATE.Tasking;
 
-package body AGATE.Semaphores.Static is
+package body AGATE.API.Dynamic_Task is
 
-   Sem : aliased Semaphore (initial_Count);
+   ------------
+   -- Create --
+   ------------
 
-   --------
-   -- ID --
-   --------
+   function Create
+     (Stack_Size     : Storage_Count;
+      Sec_Stack_Size : Storage_Count;
+      Heap_Size      : Storage_Count;
+      Priority       : Task_Priority;
+      Proc           : Task_Procedure;
+      Name           : String)
+      return Task_ID
+   is
+      Stack     : Task_Stack_Access     := new Task_Stack (1 .. Stack_Size);
+      Sec_Stack : Task_Sec_Stack_Access := new Task_Sec_Stack (1 .. Sec_Stack_Size);
+      Heap      : Task_Heap_Access      := new Task_Heap (1 .. Heap_Size);
 
-   function ID return Semaphore_ID
-   is (Semaphore_ID'(Sem'Access));
+      The_Task  : Task_Object_Access :=
+        new Task_Object (Proc      => Proc,
+                         Base_Prio => Internal_Task_Priority (Priority),
+                         Stack     => Stack,
+                         Sec_Stack => Sec_Stack,
+                         Heap      => Heap);
+   begin
+      Register (Task_ID (The_Task), Name);
+      return Task_ID (The_Task);
+   end Create;
 
-begin
-   Traces.Register (ID, Name);
-end AGATE.Semaphores.Static;
+end AGATE.API.Dynamic_Task;

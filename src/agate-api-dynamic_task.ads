@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,32 +29,15 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package body AGATE.Tasking.Dynamic_Task is
+package AGATE.API.Dynamic_Task is
 
-   ------------
-   -- Create --
-   ------------
+   function Create (Stack_Size     : Storage_Count;
+                    Sec_Stack_Size : Storage_Count;
+                    Heap_Size      : Storage_Count;
+                    Priority       : Task_Priority;
+                    Proc           : Task_Procedure;
+                    Name           : String)
+                    return Task_ID
+     with Pre => Name'Length <= Task_Name'Length;
 
-   function Create
-     (Stack_Size     : Storage_Count;
-      Sec_Stack_Size : Storage_Count;
-      Heap_Size      : Storage_Count;
-      Priority       : Task_Priority;
-      Proc           : Task_Procedure)
-      return Task_ID
-   is
-      Stack     : Task_Stack_Access     := new Task_Stack (1 .. Stack_Size);
-      Sec_Stack : Task_Sec_Stack_Access := new Task_Sec_Stack (1 .. Sec_Stack_Size);
-      Heap      : Task_Heap_Access      := new Task_Heap (1 .. Heap_Size);
-
-      The_Task  : Task_Object_Access :=
-        new Task_Object (Proc      => Proc,
-                         Base_Prio => Internal_Task_Priority (Priority),
-                         Stack     => Stack,
-                         Sec_Stack => Sec_Stack,
-                         Heap      => Heap);
-   begin
-      return Task_ID (The_Task);
-   end Create;
-
-end AGATE.Tasking.Dynamic_Task;
+end AGATE.API.Dynamic_Task;

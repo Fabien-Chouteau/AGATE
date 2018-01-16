@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2018, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -31,7 +31,7 @@
 
 with AGATE.Traces;
 
-package body AGATE.Semaphores.Dynamic is
+package body AGATE.API.Dynamic_Semaphore is
 
    ------------
    -- Create --
@@ -48,4 +48,4 @@ package body AGATE.Semaphores.Dynamic is
       return Ret;
    end Create;
 
-end AGATE.Semaphores.Dynamic;
+end AGATE.API.Dynamic_Semaphore;
