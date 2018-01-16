@@ -104,9 +104,6 @@ private
    function Image (P : Process_Stack_Pointer) return String
    is (Hex (UInt32 (To_Integer (System.Address (P)))));
 
-   type Task_Context is array (4 .. 12) of Word
-     with Pack, Size => 9 * 32;
-
    type Task_Object;
 
    type Task_Object_Access is access all Task_Object;
@@ -121,7 +118,7 @@ private
       Next          : Task_Object_Access := null;
       Stack_Pointer : Process_Stack_Pointer := Null_PSP;
       Name          : Task_Name := (others => ' ');
-      Context       : Task_Context := (others => 0);
+      Context       : AGATE_Arch_Parameters.Task_Context;
       Alarm_Time    : Time := 0;
       Status        : Task_Status := Created;
 
