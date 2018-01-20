@@ -1,8 +1,10 @@
 
 project AGATE is
+   type Arch_Kind is ("Cortex-M4");
+
+   Arch : Arch_Kind := external("Architecture", "Cortex-M4");
+
    for Languages use ("Ada", "Asm_Cpp");
-   for Target use "arm-eabi";
-   for Runtime ("Ada") use "zfp-stm32f4";
    for Source_Dirs use ("src");
    for Object_Dir use "obj";
    for Main use ("main.adb");
@@ -14,7 +16,46 @@ project AGATE is
    type Traces_Kind is ("none", "vcd");
    Traces : Traces_Kind := external("Traces", "none");
 
+
+   type Ctx_SW_Kind is     ("none", "armvx-m");
+   type Timming_Kind is    ("none", "systick");
+   type Syscalls_Kind is   ("none", "armvx-m");
+   type Parameters_Kind is ("none", "armvx-m");
+   type Interrupts_Kind is ("none", "nvix");
+
+   Context_Switch : Ctx_SW_Kind     := "none";
+   Timming        : Timming_Kind    := "none";
+   Syscalls       : Syscalls_Kind   := "none";
+   Parameters     : Parameters_Kind := "none";
+   Interrupts     : Interrupts_Kind := "none";
+
+   case Arch is
+      when "Cortex-M4" =>
+         for Target use "arm-eabi";
+         for Runtime ("Ada") use "zfp-stm32f4";
+         Context_Switch := "armvx-m";
+         Syscalls       := "armvx-m";
+         Parameters     := "armvx-m";
+         Timming        := "systick";
+         Interrupts     := "nvic";
+   end case;
+
    package Naming is
+
+      for Body ("AGATE.Timing") use
+        "agate-timing-" & Timming & ".adb";
+
+      for Body ("AGATE.Tasking.Context_Switch") use
+        "agate-tasking-context_switch-" & Context_Switch & ".adb";
+
+      for Body ("AGATE.Syscalls") use
+        "agate-syscalls-" & Syscalls & ".adb";
+
+      for Body ("AGATE.Interrupts") use
+        "agate-interrupts-" & Interrupts & ".adb";
+
+      for Spec ("AGATE_Arch_Parameters") use
+        "agate_arch_parameters-" & Parameters & ".ads";
 
       for Body ("AGATE.Traces_Output") use
         "agate-traces_output-" & Traces_Output & ".adb";

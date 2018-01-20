@@ -37,7 +37,7 @@ package AGATE_Arch_Parameters is
 
    type Task_Context is array (4 .. 12) of Word
      with Pack, Size => 9 * 32;
-   --  For armv7-m, the context contans the registers that are not saved by the
+   --  For armvX-m, the context contans the registers that are not saved by the
    --  CPU during a trap.
 
 end AGATE_Arch_Parameters;
