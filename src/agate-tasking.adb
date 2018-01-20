@@ -29,45 +29,33 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;         use Ada.Text_IO;
-with HAL;                 use HAL;
-with System.Machine_Code; use System.Machine_Code;
-with System;              use System;
-with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
-with AGATE.Interrupts;    use AGATE.Interrupts;
+with Ada.Text_IO;          use Ada.Text_IO;
+with HAL;                  use HAL;
+with Tools;                use Tools;
+with System;               use System;
+with AGATE.Interrupts;     use AGATE.Interrupts;
 with AGATE.Traces;
+with AGATE.Tasking.Context_Switch;
+with AGATE.Arch;           use AGATE.Arch;
 
 package body AGATE.Tasking is
-
-   procedure Idle_Procedure;
-   pragma Machine_Attribute (Idle_Procedure, "naked");
 
    Idle_Stack     : aliased Task_Stack := (1 .. 256 => 0);
    Idle_Sec_Stack : aliased Task_Sec_Stack := (1 .. 0 => 0);
    Idle_Heap      : aliased Task_Heap := (1 .. 0 => 0);
 
-   Idle_Task : aliased Task_Object (Proc          =>  Idle_Procedure'Access,
+   Idle_Task : aliased Task_Object (Proc          =>  AGATE.Arch.Idle_Procedure'Access,
                                     Base_Prio     => -1,
                                     Stack         => Idle_Stack'Access,
                                     Sec_Stack     => Idle_Sec_Stack'Access,
                                     Heap          => Idle_Heap'Access);
 
    PendSV_Interrupt_ID : constant Interrupt_ID := -2;
-   Running_Task : Task_Object_Access := null;
-
-   Ready_Tasks : Task_Object_Access := null;
-
-   procedure Set_PSP (Addr : Process_Stack_Pointer);
-   function PSP return Process_Stack_Pointer;
 
    function Current_Task_Context return System.Address;
    pragma Export (C, Current_Task_Context, "current_task_context");
 
-   procedure Jump_In_Task (T : Task_Object)
-     with No_Return;
-
    function In_Ready_Tasks (ID : Task_ID) return Boolean;
-   procedure Print_Ready_Tasks;
 
    procedure Extract
      (ID : Task_ID)
@@ -76,117 +64,6 @@ package body AGATE.Tasking is
    procedure Insert
      (ID : Task_ID)
      with Pre => not In_Ready_Tasks (ID);
-
-   procedure Context_Switch_Handler;
-   pragma Machine_Attribute (Context_Switch_Handler, "naked");
-   pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
-
-   --------------------
-   -- Idle_Procedure --
-   --------------------
-
-   procedure Idle_Procedure is
-   begin
-      loop
-         Asm ("wfi", Volatile => True);
-      end loop;
-   end Idle_Procedure;
-
-   -----------------------------
-   -- Initialize_Task_Context --
-   -----------------------------
-
-   procedure Initialize_Task_Context
-     (T : in out Task_Object)
-   is
-      type Stack_Array is array (1 .. 8) of Word
-        with Pack, Size => 8 * 32;
-
-      Context : Stack_Array
-        with Address => T.Stack (T.Stack'Last)'Address + 1 - 8 * 32;
-
-   begin
-      --  xPSR
-      Context (8) := 2**24; -- Set the thumb bit
-
-      --  PC
-      Context (7) := Word (To_Integer (T.Proc.all'Address));
-
-      --  LR
-      Context (6) := 0;
-
-      --  R12
-      Context (5) := 0;
-
-      --  R3
-      Context (4) := 0;
-
-      --  R2
-      Context (3) := 0;
-
-      --  R1
-      Context (2) := 0;
-
-      --  R0
-      Context (1) := 0;
-
-      T.Stack_Pointer := Process_Stack_Pointer (Context (1)'Address);
-   end Initialize_Task_Context;
-
-   -------------
-   -- Set_PSP --
-   -------------
-
-   procedure Set_PSP
-     (Addr : Process_Stack_Pointer)
-   is
-   begin
---        Ada.Text_IO.Put_Line ("Set_PSP:" & Image (Addr));
-
-      Asm ("msr psp, %0",
-           Inputs  => Process_Stack_Pointer'Asm_Input ("r", Addr),
-           Volatile => True);
-   end Set_PSP;
-
-
-   ---------
-   -- PSP --
-   ---------
-
-   function PSP
-     return Process_Stack_Pointer
-   is
-      Ret : Process_Stack_Pointer;
-   begin
-      Asm ("mrs %0, psp",
-           Outputs  => Process_Stack_Pointer'Asm_Output ("=r", Ret),
-           Volatile => True);
-
---        Ada.Text_IO.Put_Line ("Get_PSP:" & Image (Ret));
-      return Ret;
-   end PSP;
-
-   ------------------
-   -- Jump_In_Task --
-   ------------------
-
-   procedure Jump_In_Task
-     (T : Task_Object)
-   is
-   begin
---        Ada.Text_IO.Put_Line ("Starting task at PSP:" & Image (T.Stack_Pointer));
-
-      Set_PSP (T.Stack_Pointer);
-
-      --  Return to Thread mode, exception return uses non-floating-point
-      --  state from the PSP and execution uses PSP after return.
-      Asm ("mov lr, 0xFFFFFFFD" & ASCII.LF &
-           "bx lr",
-           Volatile => True);
-      loop
-         null;
-      end loop;
-   end Jump_In_Task;
 
    --------------
    -- Register --
@@ -203,7 +80,7 @@ package body AGATE.Tasking is
       T.Name (Task_Name'First .. Task_Name'First + Name'Length - 1) := Name;
       T.Current_Prio := T.Base_Prio;
 
-      Initialize_Task_Context (T.all);
+      Initialize_Task_Context (ID);
 
       Insert (Task_ID (T));
 
@@ -224,7 +101,7 @@ package body AGATE.Tasking is
       Register (Idle_Task'Access, "idle");
 
       Running_Task := Ready_Tasks;
-      Jump_In_Task (Running_Task.all);
+      Jump_In_Task (Task_ID (Running_Task));
    end Start;
 
    ------------------
@@ -356,19 +233,13 @@ package body AGATE.Tasking is
    is
    begin
 
---        Ada.Text_IO.Put_Line ("Yield Pre Task_To_Run:" & Image (Task_To_Run));
---        Print_Ready_Tasks;
-
       Extract (Current_Task);
       Insert (Current_Task);
 
       Current_Task.Status := Ready;
 
---        Ada.Text_IO.Put_Line ("Yield Post Task_To_Run:" & Image (Task_To_Run));
---        Print_Ready_Tasks;
-
       if Context_Switch_Needed then
-         Trigger_Context_Switch;
+         Context_Switch.Switch;
       end if;
    end Yield;
 
@@ -387,7 +258,7 @@ package body AGATE.Tasking is
       Traces.Resume (ID);
 
       if Context_Switch_Needed then
-         Trigger_Context_Switch;
+         Context_Switch.Switch;
       end if;
    end Resume;
 
@@ -447,52 +318,6 @@ package body AGATE.Tasking is
    function Context_Switch_Needed
      return Boolean
    is (Task_To_Run /= Current_Task);
-
-   ----------------------------
-   -- Trigger_Context_Switch --
-   ----------------------------
-
-   procedure Trigger_Context_Switch
-   is
-   begin
-      SCB_Periph.ICSR.PENDSVSET := True;
-   end Trigger_Context_Switch;
-
-   ----------------------------
-   -- Context_Switch_Handler --
-   ----------------------------
-
-   procedure Context_Switch_Handler is
-   begin
-
-      Asm (Template =>
-             "push {lr}" & ASCII.LF &
-             "bl current_task_context" & ASCII.LF &
-             "stm  r0, {r4-r12}", -- Save extra context
-           Volatile => True);
-
---        Ada.Text_IO.Put_Line ("Context switch handler");
-
-      SCB_Periph.ICSR.PENDSVCLR := True;
-
-      Running_Task.Stack_Pointer := PSP;
-
-      Set_PSP (Ready_Tasks.Stack_Pointer);
-
-      Traces.Context_Switch (Task_ID (Running_Task),
-                             Task_ID (Ready_Tasks));
-
-      Running_Task := Ready_Tasks;
-      Running_Task.Status := Running;
-
-      Traces.Running (Current_Task);
-
-      Asm (Template =>
-             "bl current_task_context" & ASCII.LF &
-             "ldm  r0, {r4-r12}"      & ASCII.LF & -- Load extra context
-             "pop {pc}",
-           Volatile => True);
-   end Context_Switch_Handler;
 
    --------
    -- ID --

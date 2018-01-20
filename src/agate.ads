@@ -81,6 +81,8 @@ package AGATE is
 
    Invalid_Mutex : constant Mutex_ID;
 
+   type Process_Stack_Pointer is new System.Address;
+
 private
 
    -- Task --
@@ -95,8 +97,6 @@ private
 
    type Task_Heap is new Storage_Array;
    type Task_Heap_Access is access all Task_Heap;
-
-   type Process_Stack_Pointer is new System.Address;
 
    Null_PSP : constant Process_Stack_Pointer :=
      Process_Stack_Pointer (System.Null_Address);

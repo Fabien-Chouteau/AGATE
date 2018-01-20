@@ -29,11 +29,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;              use Ada.Text_IO;
+with Ada.Text_IO;                  use Ada.Text_IO;
 
 with Ada.Unchecked_Conversion;
-with AGATE.Tasking;            use AGATE.Tasking;
+with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Traces;
+with AGATE.Tasking.Context_Switch;
 
 package body AGATE.Semaphores is
 
@@ -86,7 +87,7 @@ package body AGATE.Semaphores is
             Insert_Task (Sem.all, T);
 
             if Context_Switch_Needed then
-               Trigger_Context_Switch;
+               Context_Switch.Switch;
             end if;
          end;
       end if;

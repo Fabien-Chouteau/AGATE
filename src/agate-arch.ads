@@ -29,37 +29,14 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
+package AGATE.Arch is
 
-package AGATE.Tasking is
-
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
-
-   procedure Start
+   procedure Jump_In_Task (T : Task_ID)
      with No_Return;
 
-   procedure Print_Ready_Tasks;
+   procedure Idle_Procedure;
 
-   -- Scheduler --
+   procedure Initialize_Task_Context
+     (T : Task_ID);
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
-
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
-
-   procedure Change_Priority (New_Prio : Task_Priority);
-
-   function Context_Switch_Needed return Boolean;
-
-private
-
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
-
-end AGATE.Tasking;
+end AGATE.Arch;

@@ -29,37 +29,95 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
+with Ada.Text_IO;
+with System.Machine_Code;  use System.Machine_Code;
+with AGATE.Arch.ArmvX_M;   use AGATE.Arch.ArmvX_M;
 
-package AGATE.Tasking is
+with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
+package body AGATE.Arch is
 
-   procedure Start
-     with No_Return;
+   --------------------
+   -- Idle_Procedure --
+   --------------------
 
-   procedure Print_Ready_Tasks;
+   procedure Idle_Procedure is
+   begin
+      loop
+         Asm ("wfi", Volatile => True);
+      end loop;
+   end Idle_Procedure;
 
-   -- Scheduler --
+   -----------------------------
+   -- Initialize_Task_Context --
+   -----------------------------
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
+   procedure Initialize_Task_Context
+     (T : Task_ID)
+   is
+      type Stack_Array is array (1 .. 8) of Word
+        with Pack, Size => 8 * 32;
 
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
+      Context : Stack_Array
+        with Address => T.Stack (T.Stack'Last)'Address + 1 - 8 * 32;
 
-   procedure Change_Priority (New_Prio : Task_Priority);
+   begin
+      --  xPSR
+      Context (8) := 2**24; -- Set the thumb bit
 
-   function Context_Switch_Needed return Boolean;
+      --  PC
+      Context (7) := Word (To_Integer (T.Proc.all'Address));
 
-private
+      Ada.Text_IO.Put_Line ("Set start PC address: " &  Hex (UInt32 (Context (7))));
 
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
+      --  LR
+      Context (6) := 0;
 
-end AGATE.Tasking;
+      --  R12
+      Context (5) := 0;
+
+      --  R3
+      Context (4) := 0;
+
+      --  R2
+      Context (3) := 0;
+
+      --  R1
+      Context (2) := 0;
+
+      --  R0
+      Context (1) := 0;
+
+      T.Stack_Pointer := Process_Stack_Pointer (Context (1)'Address);
+   end Initialize_Task_Context;
+
+   ------------------
+   -- Jump_In_Task --
+   ------------------
+
+   procedure Jump_In_Task
+     (T : Task_ID)
+   is
+   begin
+      Ada.Text_IO.Put_Line ("Starting task at PSP: " & Image (T.Stack_Pointer));
+
+      Set_PSP (T.Stack_Pointer);
+
+      --  Processor can enter Thread mode from any level under the control of
+      --  an EXC_RETURN value.
+      SCB_Periph.CCR.NONBASETHREADENA := On_Exc_Return;
+
+      --  No unalign access traps.
+      SCB_Periph.CCR.UNALIGNED_TRP := False;
+
+      --  Return to Thread mode, exception return uses non-floating-point
+      --  state from the PSP and execution uses PSP after return.
+      Asm ("mov lr, 0xFFFFFFFD" & ASCII.LF &
+           "bx lr",
+           Volatile => True);
+      loop
+         null;
+      end loop;
+   end Jump_In_Task;
+
+end AGATE.Arch;

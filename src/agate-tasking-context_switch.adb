@@ -29,37 +29,61 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
+with System.Machine_Code; use System.Machine_Code;
 
-package AGATE.Tasking is
+with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
+with AGATE.Traces;
+with AGATE.Arch.ArmvX_m;  use AGATE.Arch.ArmvX_m;
 
-   procedure Start
-     with No_Return;
+package body AGATE.Tasking.Context_Switch is
 
-   procedure Print_Ready_Tasks;
+   procedure Context_Switch_Handler;
+   pragma Machine_Attribute (Context_Switch_Handler, "naked");
+   pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
 
-   -- Scheduler --
+   ------------
+   -- Switch --
+   ------------
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
+   procedure Switch is
+   begin
+      --  Trigger PendSV
+      SCB_Periph.ICSR.PENDSVSET := True;
+   end Switch;
 
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
+   ----------------------------
+   -- Context_Switch_Handler --
+   ----------------------------
 
-   procedure Change_Priority (New_Prio : Task_Priority);
+   procedure Context_Switch_Handler is
+   begin
 
-   function Context_Switch_Needed return Boolean;
+      Asm (Template =>
+             "push {lr}" & ASCII.LF &
+             "bl current_task_context" & ASCII.LF &
+             "stm  r0, {r4-r12}", -- Save extra context
+           Volatile => True);
 
-private
+      SCB_Periph.ICSR.PENDSVCLR := True;
 
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
+      Running_Task.Stack_Pointer := PSP;
 
-end AGATE.Tasking;
+      Set_PSP (Ready_Tasks.Stack_Pointer);
+
+      Traces.Context_Switch (Task_ID (Running_Task),
+                             Task_ID (Ready_Tasks));
+
+      Running_Task := Ready_Tasks;
+      Running_Task.Status := Running;
+
+      Traces.Running (Current_Task);
+
+      Asm (Template =>
+             "bl current_task_context" & ASCII.LF &
+             "ldm  r0, {r4-r12}"       & ASCII.LF & -- Load extra context
+             "pop {pc}",
+           Volatile => True);
+   end Context_Switch_Handler;
+
+end AGATE.Tasking.Context_Switch;

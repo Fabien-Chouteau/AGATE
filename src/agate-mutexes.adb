@@ -29,10 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;   use Ada.Text_IO;
+with Ada.Text_IO;                  use Ada.Text_IO;
 
-with AGATE.Tasking; use AGATE.Tasking;
+with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Traces;
+with AGATE.Tasking.Context_Switch;
 
 package body AGATE.Mutexes is
 
@@ -64,7 +65,7 @@ package body AGATE.Mutexes is
          Insert_Task (Mut.all, T);
 
          if Context_Switch_Needed then
-            Trigger_Context_Switch;
+            Context_Switch.Switch;
          end if;
       end if;
    end Wait_Lock;

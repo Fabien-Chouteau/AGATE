@@ -31,9 +31,11 @@
 
 with Ada.Text_IO;
 
-with Cortex_M_SVD.SysTick; use Cortex_M_SVD.SysTick;
-with AGATE.Interrupts;     use AGATE.Interrupts;
-with AGATE.Tasking;        use AGATE.Tasking;
+with Cortex_M_SVD.SysTick;         use Cortex_M_SVD.SysTick;
+with AGATE.Interrupts;             use AGATE.Interrupts;
+with AGATE.Tasking;                use AGATE.Tasking;
+with AGATE.Tasking.Context_Switch;
+
 with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
 package body AGATE.Timing is
@@ -201,7 +203,7 @@ package body AGATE.Timing is
          Insert_Alarm (T);
 
          if Context_Switch_Needed then
-            Trigger_Context_Switch;
+            Context_Switch.Switch;
          end if;
       end if;
    end Delay_Until;
