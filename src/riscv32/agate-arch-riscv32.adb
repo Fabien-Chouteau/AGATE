@@ -29,40 +29,82 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
+with System;                use System;
+with System.Machine_Code;   use System.Machine_Code;
+with AGATE.Arch.RISCV;      use AGATE.Arch.RISCV;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
-package AGATE.Tasking is
+package body AGATE.Arch is
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
+   Kernel_Stack_Pointer : Word;
+   pragma Export (Asm, Kernel_Stack_Pointer, "__agate_kernel_stack_pointer");
 
-   procedure Start
-     with No_Return;
+   --------------------
+   -- Idle_Procedure --
+   --------------------
 
-   procedure Print_Ready_Tasks;
+   procedure Idle_Procedure is
+   begin
+      loop
+         Asm ("wfi", Volatile => True);
+      end loop;
+   end Idle_Procedure;
 
-   -- Scheduler --
+   -----------------------------
+   -- Initialize_Task_Context --
+   -----------------------------
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
+   procedure Initialize_Task_Context
+     (T : Task_ID)
+   is
+      SP : constant Address := T.Stack (T.Stack'Last)'Address + 1 - 32 * 4;
+   begin
+      T.Stack_Pointer := Process_Stack_Pointer (SP);
+      T.Context (Ctx_SP_Index) := Word (To_Integer (SP));
+      T.Context (Ctx_PC_Index) := Word (To_Integer (T.Proc.all'Address));
+   end Initialize_Task_Context;
 
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
+   ------------------
+   -- Jump_In_Task --
+   ------------------
 
-   procedure Change_Priority (New_Prio : Task_Priority);
+   procedure Jump_In_Task
+     (T : Task_ID)
+   is
+      Mstat : Mstatus_Reg;
+      Ctx : Task_Context renames T.Context;
+   begin
+      Mstat := Mstatus;
 
-   function Context_Switch_Needed return Boolean;
+      --  Set privilege mode when returning from machine interrupt
+      Mstat.MPP := 0; -- User
 
-   function Current_Task_Context return System.Address;
-   pragma Export (C, Current_Task_Context, "current_task_context");
+      --  Set interrupt enable bit that will be loaded when returning from
+      --  machine trap.
+      Mstat.MPIE := True;
 
-private
+      Write_Mstatus (Mstat);
 
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
+      --  Use the current stack as kernel stack pointer
+      Asm ("mv %0, sp",
+           Outputs => Word'Asm_Output ("=r", Kernel_Stack_Pointer),
+           Volatile => True);
 
-end AGATE.Tasking;
+      --  Save the task context pointer in the mscratch register
+      Write_Mcratch (UInt32 (To_Integer (Ctx (Ctx'First)'Address)));
+
+      --  Theard Pointer, unused at the time...
+      --  Ctx (Ctx_TP_Index) :=
+
+      Asm ("mv sp, %0"         & ASCII.LF &
+           "csrw mepc, %1"     & ASCII.LF &
+           "mret"              & ASCII.LF,
+           Inputs => (Word'Asm_Input ("r", Ctx (Ctx_SP_Index)),  -- SP
+                      Word'Asm_Input ("r", Ctx (Ctx_PC_Index))), -- PC
+           Volatile => True);
+      loop
+         null;
+      end loop;
+   end Jump_In_Task;
+
+end AGATE.Arch;

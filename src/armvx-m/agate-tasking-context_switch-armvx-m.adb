@@ -29,12 +29,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Machine_Code; use System.Machine_Code;
+with System.Machine_Code;   use System.Machine_Code;
 
-with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
+with Cortex_M_SVD.SCB;      use Cortex_M_SVD.SCB;
 
 with AGATE.Traces;
-with AGATE.Arch.ArmvX_m;  use AGATE.Arch.ArmvX_m;
+with AGATE.Arch.ArmvX_m;    use AGATE.Arch.ArmvX_m;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
 
 package body AGATE.Tasking.Context_Switch is
@@ -43,7 +44,7 @@ package body AGATE.Tasking.Context_Switch is
    pragma Machine_Attribute (Context_Switch_Handler, "naked");
    pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
 
-   PendSV_Interrupt_ID : constant Interrupt_ID := -2;
+   PendSV_Interrupt_ID : constant AGATE_Arch_Parameters.Interrupt_ID := -2;
 
    ------------
    -- Switch --

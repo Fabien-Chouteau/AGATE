@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                   Copyright (C) 2018, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,40 +29,39 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with HAL;
+with System;                  use System;
 with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
 
-package AGATE.Tasking is
+package AGATE_Arch_Parameters is
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
+   subtype Word is HAL.UInt32;
 
-   procedure Start
-     with No_Return;
+   type Context_Index is range 0 .. 31;
+   type Task_Context is array (Context_Index) of Word
+     with Pack, Size => 32 * 32;
+   --  Contains the stack pointer and PC of a task
 
-   procedure Print_Ready_Tasks;
+   Ctx_PC_Index : constant Context_Index := 0;
+   Ctx_SP_Index : constant Context_Index := 2;
+   Ctx_TP_Index : constant Context_Index := 4;
+   Ctx_A0_Index : constant Context_Index := 10;
+   Ctx_A1_Index : constant Context_Index := 11;
+   Ctx_A2_Index : constant Context_Index := 12;
+   Ctx_A3_Index : constant Context_Index := 13;
 
-   -- Scheduler --
+   type Interrupt_ID is range -24 .. -1;
+   type Interrupt_Priority is range 0 .. 0;
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
+   CLINT_Addr            : constant := 16#02000000#;
+   CLINT_Mtime_Offset    : constant := 16#BFF8#;
+   CLINT_Mtimecmp_Offset : constant := 16#4000#;
 
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
+   Mtime_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset);
+   Mtime_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset + 4);
 
-   procedure Change_Priority (New_Prio : Task_Priority);
+   Mtimecmp_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset);
+   Mtimecmp_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset + 4);
 
-   function Context_Switch_Needed return Boolean;
-
-   function Current_Task_Context return System.Address;
-   pragma Export (C, Current_Task_Context, "current_task_context");
-
-private
-
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
-
-end AGATE.Tasking;
+   Timer_Frequency : constant := 32768;
+end AGATE_Arch_Parameters;

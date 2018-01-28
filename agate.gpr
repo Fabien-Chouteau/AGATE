@@ -1,6 +1,6 @@
 
 project AGATE is
-   type Arch_Kind is ("Cortex-M4");
+   type Arch_Kind is ("Cortex-M4", "RISCV32");
 
    Arch : Arch_Kind := external("Architecture", "Cortex-M4");
 
@@ -15,19 +15,13 @@ project AGATE is
    type Traces_Kind is ("none", "vcd");
    Traces : Traces_Kind := external("Traces", "none");
 
+   Context_Switch := "none";
+   Timming        := "none";
+   Syscalls       := "none";
+   Parameters     := "none";
+   Interrupts     := "none";
 
    Src_Dir := ();
-   type Ctx_SW_Kind is     ("none", "armvx-m");
-   type Timming_Kind is    ("none", "systick");
-   type Syscalls_Kind is   ("none", "armvx-m");
-   type Parameters_Kind is ("none", "armvx-m");
-   type Interrupts_Kind is ("none", "nvix");
-
-   Context_Switch : Ctx_SW_Kind     := "none";
-   Timming        : Timming_Kind    := "none";
-   Syscalls       : Syscalls_Kind   := "none";
-   Parameters     : Parameters_Kind := "none";
-   Interrupts     : Interrupts_Kind := "none";
 
    case Arch is
       when "Cortex-M4" =>
@@ -39,6 +33,14 @@ project AGATE is
          Timming        := "systick";
          Interrupts     := "nvic";
          Src_Dir := Src_Dir & ("src/armvx-m");
+      when "RISCV32" =>
+         for Runtime ("ada") use Project'Project_Dir & "/run-times/zfp-hifive1";
+         for Target use "riscv32-unknown-elf";
+         Context_Switch := "riscv32";
+         Syscalls       := "riscv32";
+         Parameters     := "riscv32";
+         Timming        := "riscv32";
+         Interrupts     := "riscv32";
    end case;
 
    for Source_Dirs use ("src") & Src_Dir;

@@ -29,40 +29,30 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
+with System.Machine_Code; use System.Machine_Code;
 
-package AGATE.Tasking is
+with AGATE.Traces;
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
+with AGATE.Arch.RISCV; use AGATE.Arch.RISCV;
 
-   procedure Start
-     with No_Return;
+package body AGATE.Tasking.Context_Switch is
 
-   procedure Print_Ready_Tasks;
+   ------------
+   -- Switch --
+   ------------
 
-   -- Scheduler --
+   procedure Switch is
+   begin
 
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
+      Traces.Context_Switch (Task_ID (Running_Task),
+                             Task_ID (Ready_Tasks));
 
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
+      Running_Task := Ready_Tasks;
+      Running_Task.Status := Running;
 
-   procedure Change_Priority (New_Prio : Task_Priority);
+      Write_Mcratch (Word (To_Integer (Current_Task_Context)));
 
-   function Context_Switch_Needed return Boolean;
+      Traces.Running (Current_Task);
+   end Switch;
 
-   function Current_Task_Context return System.Address;
-   pragma Export (C, Current_Task_Context, "current_task_context");
-
-private
-
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
-
-end AGATE.Tasking;
+end AGATE.Tasking.Context_Switch;

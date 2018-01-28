@@ -172,6 +172,23 @@ package body AGATE.Interrupts is
       end if;
    end Enable;
 
+   -------------
+   -- Disable --
+   -------------
+
+   procedure Disable (ID : Interrupt_ID)
+   is
+   begin
+      if ID >= 0 then
+         declare
+            Reg_Index : constant Natural := Natural (ID) / 32;
+            Bit       : constant UInt32 := 2**(Natural (ID) mod 32);
+         begin
+            NVIC_Periph.NVIC_ICER (Reg_Index) := Bit;
+         end;
+      end if;
+   end Disable;
+
    -----------------
    -- IRQ_Handler --
    -----------------

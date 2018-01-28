@@ -35,9 +35,13 @@ package AGATE_Arch_Parameters is
 
    subtype Word is HAL.UInt32;
 
+   type Interrupt_ID is range -16 .. 32;
+   type Interrupt_Priority is range 0 .. 32;
+
    type Task_Context is array (4 .. 12) of Word
      with Pack, Size => 9 * 32;
    --  For armvX-m, the context contans the registers that are not saved by the
    --  CPU during a trap.
 
+   Timer_Frequency : constant := 1000;
 end AGATE_Arch_Parameters;

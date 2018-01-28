@@ -48,10 +48,6 @@ package body AGATE.Tasking is
                                     Sec_Stack     => Idle_Sec_Stack'Access,
                                     Heap          => Idle_Heap'Access);
 
-
-   function Current_Task_Context return System.Address;
-   pragma Export (C, Current_Task_Context, "current_task_context");
-
    function In_Ready_Tasks (ID : Task_ID) return Boolean;
 
    procedure Extract
@@ -117,7 +113,7 @@ package body AGATE.Tasking is
      return System.Address
    is
    begin
-      return Running_Task.Context'Address;
+      return Running_Task.Context (Running_Task.Context'First)'Address;
    end Current_Task_Context;
 
    -----------------

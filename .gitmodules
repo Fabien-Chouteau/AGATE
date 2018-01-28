@@ -1,0 +1,3 @@
+[submodule "run-times/zfp-hifive1"]
+	path = run-times/zfp-hifive1
+	url = https://github.com/Fabien-Chouteau/zfp-hifive1.git
