@@ -141,6 +141,7 @@ private
 
    type Semaphore_Access is access all Semaphore;
    type Semaphore_ID is new Semaphore_Access;
+   pragma No_Strict_Aliasing (Semaphore_ID);
 
    Invalid_Semaphore : constant Semaphore_ID := null;
 
@@ -159,7 +160,7 @@ private
 
    type Mutex_Access is access all Mutex;
    type Mutex_ID is new Mutex_Access;
-
+   pragma No_Strict_Aliasing (Mutex_ID);
 
    Invalid_Mutex : constant Mutex_ID := null;
 
