@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2018, Fabien Chouteau                    --
+--                   Copyright (C) 2017, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,39 +29,20 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;
-with System;                  use System;
-with System.Storage_Elements; use System.Storage_Elements;
+with AGATE_Arch_Parameters;
 
-package AGATE_Arch_Parameters is
+package AGATE.Traps is
 
-   subtype Word is HAL.UInt32;
+   type Trap_ID is new AGATE_Arch_Parameters.Trap_ID;
+   type Trap_Priority is new AGATE_Arch_Parameters.Trap_Priority;
 
-   type Context_Index is range 0 .. 31;
-   type Task_Context is array (Context_Index) of Word
-     with Pack, Size => 32 * 32;
-   --  Contains the stack pointer and PC of a task
+   type Trap_Handler is access procedure;
 
-   Ctx_PC_Index : constant Context_Index := 0;
-   Ctx_SP_Index : constant Context_Index := 2;
-   Ctx_TP_Index : constant Context_Index := 4;
-   Ctx_A0_Index : constant Context_Index := 10;
-   Ctx_A1_Index : constant Context_Index := 11;
-   Ctx_A2_Index : constant Context_Index := 12;
-   Ctx_A3_Index : constant Context_Index := 13;
+   procedure Register (Handler  : Trap_Handler;
+                       ID       : Trap_ID;
+                       Priority : Trap_Priority);
 
-   type Interrupt_ID is range -24 .. -1;
-   type Interrupt_Priority is range 0 .. 0;
+   procedure Enable (ID : Trap_ID);
+   procedure Disable (ID : Trap_ID);
 
-   CLINT_Addr            : constant := 16#02000000#;
-   CLINT_Mtime_Offset    : constant := 16#BFF8#;
-   CLINT_Mtimecmp_Offset : constant := 16#4000#;
-
-   Mtime_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset);
-   Mtime_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset + 4);
-
-   Mtimecmp_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset);
-   Mtimecmp_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset + 4);
-
-   Timer_Frequency : constant := 32768;
-end AGATE_Arch_Parameters;
+end AGATE.Traps;

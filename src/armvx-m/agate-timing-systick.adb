@@ -32,15 +32,14 @@
 with Ada.Text_IO;
 
 with Cortex_M_SVD.SysTick;         use Cortex_M_SVD.SysTick;
-with AGATE.Interrupts;             use AGATE.Interrupts;
+with AGATE.Traps;                  use AGATE.Traps;
 with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Tasking.Context_Switch;
 
-with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
+with Cortex_M_SVD.SCB;             use Cortex_M_SVD.SCB;
+with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
 
 package body AGATE.Timing is
-
-   SysTick_Int_ID : constant Interrupt_ID := -1;
 
    Tick_Period : constant := 168_000_000 / 1_000;
    Next_Tick   : Time;
@@ -65,7 +64,7 @@ package body AGATE.Timing is
 
       Next_Tick := Time (Tick_Period);
 
-      Interrupts.Register (Timer_Handler'Access, SysTick_Int_ID, 0);
+      Traps.Register (Timer_Handler'Access, SysTick_Trap_ID, 0);
 
       SysTick_Periph.RVR.RELOAD := Tick_Period - 1;
       SysTick_Periph.CSR.ENABLE := Enable;
@@ -77,7 +76,7 @@ package body AGATE.Timing is
       --  Workaround...
       CSR := CSR or 2**1;
 
-      Enable (SysTick_Int_ID);
+      Enable (SysTick_Trap_ID);
    end Initialize;
 
    ---------------------------

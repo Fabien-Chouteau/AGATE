@@ -34,7 +34,7 @@ with System.Machine_Code;     use System.Machine_Code;
 
 with System.Storage_Elements; use System.Storage_Elements;
 
-with AGATE.Interrupts;        use AGATE.Interrupts;
+with AGATE.Traps;             use AGATE.Traps;
 with AGATE.Timing;
 with AGATE.Tasking;
 with AGATE.Traces;

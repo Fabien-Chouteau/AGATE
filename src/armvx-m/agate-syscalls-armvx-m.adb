@@ -35,14 +35,13 @@ with System.Machine_Code;     use System.Machine_Code;
 
 with System.Storage_Elements; use System.Storage_Elements;
 
-with AGATE.Interrupts;        use AGATE.Interrupts;
+with AGATE.Traps;             use AGATE.Traps;
 with AGATE.Timing;
 with AGATE.Tasking;
 with AGATE.Traces;
+with AGATE_Arch_Parameters;   use AGATE_Arch_Parameters;
 
 package body AGATE.SysCalls is
-
-   SVCall_Interrupt_ID : constant Interrupt_ID := -5;
 
    SysCall_Handler_Table : array (Syscall_ID) of Syscall_Handler
      := (others => null);
@@ -57,9 +56,9 @@ package body AGATE.SysCalls is
    procedure Initialize
    is
    begin
-      Interrupts.Register (SVCall_Handler'Access,
-                           SVCall_Interrupt_ID,
-                           0);
+      Traps.Register (SVCall_Handler'Access,
+                      SVCall_Trap_ID,
+                      0);
    end Initialize;
 
    --------------------

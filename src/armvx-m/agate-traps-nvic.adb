@@ -37,12 +37,12 @@ with System.Machine_Code;     use System.Machine_Code;
 with Cortex_M_SVD.SCB;        use Cortex_M_SVD.SCB;
 with Cortex_M_SVD.NVIC;       use Cortex_M_SVD.NVIC;
 
-package body AGATE.Interrupts is
+package body AGATE.Traps is
 
-   Handlers_Table : array (Interrupt_ID) of Interrupt_Handler
+   Handlers_Table : array (Trap_ID) of Trap_Handler
      := (others => null);
-   Priorities_Table : array (Interrupt_ID) of Interrupt_Priority
-     := (others => Interrupt_Priority'First);
+   Priorities_Table : array (Trap_ID) of Trap_Priority
+     := (others => Trap_Priority'First);
 
    procedure IRQ_Handler;
    pragma Export (C, IRQ_Handler, "__gnat_irq_trap");
@@ -146,9 +146,9 @@ package body AGATE.Interrupts is
    --------------
 
    procedure Register
-     (Handler  : Interrupt_Handler;
-      ID       : Interrupt_ID;
-      Priority : Interrupt_Priority)
+     (Handler  : Trap_Handler;
+      ID       : Trap_ID;
+      Priority : Trap_Priority)
    is
    begin
       Handlers_Table (ID) := Handler;
@@ -159,7 +159,7 @@ package body AGATE.Interrupts is
    -- Enable --
    ------------
 
-   procedure Enable (ID : Interrupt_ID)
+   procedure Enable (ID : Trap_ID)
    is
    begin
       if ID >= 0 then
@@ -176,7 +176,7 @@ package body AGATE.Interrupts is
    -- Disable --
    -------------
 
-   procedure Disable (ID : Interrupt_ID)
+   procedure Disable (ID : Trap_ID)
    is
    begin
       if ID >= 0 then
@@ -195,8 +195,8 @@ package body AGATE.Interrupts is
 
    procedure IRQ_Handler
    is
-      ID : constant Interrupt_ID :=
-        Interrupt_ID (Integer (SCB_Periph.ICSR.VECTACTIVE) - 16);
+      ID : constant Trap_ID :=
+        Trap_ID (Integer (SCB_Periph.ICSR.VECTACTIVE) - 16);
    begin
       if Handlers_Table (ID) /= null then
          Handlers_Table (ID).all;
@@ -210,4 +210,4 @@ package body AGATE.Interrupts is
 
 begin
    Initialize;
-end AGATE.Interrupts;
+end AGATE.Traps;

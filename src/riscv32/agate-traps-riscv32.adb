@@ -33,16 +33,16 @@ with System.Machine_Code; use System.Machine_Code;
 
 with AGATE.Arch.RISCV;    use AGATE.Arch.RISCV;
 
-package body AGATE.Interrupts is
+package body AGATE.Traps is
 
    procedure Initialize;
    procedure Trap_Entry;
    pragma Import (C, Trap_Entry, "trap_entry");
 
-   procedure Trap_Handler (Mcause : Word);
-   pragma Export (C, Trap_Handler, "trap_handler");
+   procedure Risc_Trap_Handler (Mcause : Word);
+   pragma Export (C, Risc_Trap_Handler, "trap_handler");
 
-   Handlers_Table : array (Interrupt_ID) of Interrupt_Handler :=
+   Handlers_Table : array (Trap_ID) of Trap_Handler :=
      (others => null);
 
    ----------------
@@ -56,27 +56,27 @@ package body AGATE.Interrupts is
       Write_Mtvec (Word (To_Integer(Trap_Entry'Address)));
    end Initialize;
 
-   ------------------
-   -- Trap_Handler --
-   ------------------
+   -----------------------
+   -- Risc_Trap_Handler --
+   -----------------------
 
-   procedure Trap_Handler (Mcause : Word)
+   procedure Risc_Trap_Handler (Mcause : Word)
    is
       Code     : constant Integer := Integer (Mcause and 16#FFFF#);
-      ID       : Interrupt_ID;
+      ID       : Trap_ID;
       Bad_Addr : constant Word := Mbadaddr;
    begin
       if (Mcause and 16#8000_0000#) /= 0 then
          --  Asynchronous
          if Code <= 11 then
-            ID := Interrupt_ID (-24 + Code);
+            ID := Trap_ID (-24 + Code);
          else
             raise Program_Error;
          end if;
       else
          --  Synchronous
          if Code <= 11 then
-            ID := Interrupt_ID (-12 + Code);
+            ID := Trap_ID (-12 + Code);
          else
             raise Program_Error;
          end if;
@@ -87,16 +87,16 @@ package body AGATE.Interrupts is
       else
          raise Program_Error with "No handler for this trap";
       end if;
-   end Trap_Handler;
+   end Risc_Trap_Handler;
 
    --------------
    -- Register --
    --------------
 
    procedure Register
-     (Handler  : Interrupt_Handler;
-      ID       : Interrupt_ID;
-      Priority : Interrupt_Priority)
+     (Handler  : Trap_Handler;
+      ID       : Trap_ID;
+      Priority : Trap_Priority)
    is
    begin
       Handlers_Table (ID) := Handler;
@@ -106,7 +106,7 @@ package body AGATE.Interrupts is
    -- Enable --
    ------------
 
-   procedure Enable (ID : Interrupt_ID)
+   procedure Enable (ID : Trap_ID)
    is
       IE : Interrupt_Register;
    begin
@@ -124,7 +124,7 @@ package body AGATE.Interrupts is
    -- Disable --
    -------------
 
-   procedure Disable (ID : Interrupt_ID)
+   procedure Disable (ID : Trap_ID)
    is
       IE : Interrupt_Register;
    begin
@@ -140,4 +140,4 @@ package body AGATE.Interrupts is
 
 begin
    Initialize;
-end AGATE.Interrupts;
+end AGATE.Traps;

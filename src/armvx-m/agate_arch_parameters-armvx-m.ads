@@ -35,8 +35,13 @@ package AGATE_Arch_Parameters is
 
    subtype Word is HAL.UInt32;
 
-   type Interrupt_ID is range -15 .. 32;
-   type Interrupt_Priority is range 0 .. 32;
+   type Trap_ID is range -15 .. 32;
+   type Trap_Priority is range 0 .. 32;
+
+   SVCall_Trap_ID  : constant := -5;
+   PendSV_Trap_ID  : constant := -2;
+   SysTick_Trap_ID : constant := -1;
+
 
    type Task_Context is array (4 .. 12) of Word
      with Pack, Size => 9 * 32;

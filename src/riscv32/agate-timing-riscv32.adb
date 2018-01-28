@@ -30,7 +30,7 @@
 ------------------------------------------------------------------------------
 
 with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
-with AGATE.Interrupts;             use AGATE.Interrupts;
+with AGATE.Traps;                  use AGATE.Traps;
 with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Tasking.Context_Switch;
 

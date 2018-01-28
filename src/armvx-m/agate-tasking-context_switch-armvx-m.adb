@@ -44,8 +44,6 @@ package body AGATE.Tasking.Context_Switch is
    pragma Machine_Attribute (Context_Switch_Handler, "naked");
    pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
 
-   PendSV_Interrupt_ID : constant AGATE_Arch_Parameters.Interrupt_ID := -2;
-
    ------------
    -- Switch --
    ------------
