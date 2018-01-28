@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;                  use Ada.Text_IO;
-
 with Ada.Unchecked_Conversion;
 with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Traces;

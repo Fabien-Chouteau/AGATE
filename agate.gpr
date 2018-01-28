@@ -5,7 +5,6 @@ project AGATE is
    Arch : Arch_Kind := external("Architecture", "Cortex-M4");
 
    for Languages use ("Ada", "Asm_Cpp");
-   for Source_Dirs use ("src");
    for Object_Dir use "obj";
    for Main use ("main.adb");
    for Create_Missing_Dirs use "true";
@@ -17,6 +16,7 @@ project AGATE is
    Traces : Traces_Kind := external("Traces", "none");
 
 
+   Src_Dir := ();
    type Ctx_SW_Kind is     ("none", "armvx-m");
    type Timming_Kind is    ("none", "systick");
    type Syscalls_Kind is   ("none", "armvx-m");
@@ -38,7 +38,10 @@ project AGATE is
          Parameters     := "armvx-m";
          Timming        := "systick";
          Interrupts     := "nvic";
+         Src_Dir := Src_Dir & ("src/armvx-m");
    end case;
+
+   for Source_Dirs use ("src") & Src_Dir;
 
    package Naming is
 
@@ -53,6 +56,9 @@ project AGATE is
 
       for Body ("AGATE.Interrupts") use
         "agate-interrupts-" & Interrupts & ".adb";
+
+      for Body ("AGATE.Arch") use
+        "agate-arch-" & Parameters & ".adb";
 
       for Spec ("AGATE_Arch_Parameters") use
         "agate_arch_parameters-" & Parameters & ".ads";

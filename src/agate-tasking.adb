@@ -29,11 +29,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;          use Ada.Text_IO;
 with HAL;                  use HAL;
 with Tools;                use Tools;
 with System;               use System;
-with AGATE.Interrupts;     use AGATE.Interrupts;
 with AGATE.Traces;
 with AGATE.Tasking.Context_Switch;
 with AGATE.Arch;           use AGATE.Arch;
@@ -50,7 +48,6 @@ package body AGATE.Tasking is
                                     Sec_Stack     => Idle_Sec_Stack'Access,
                                     Heap          => Idle_Heap'Access);
 
-   PendSV_Interrupt_ID : constant Interrupt_ID := -2;
 
    function Current_Task_Context return System.Address;
    pragma Export (C, Current_Task_Context, "current_task_context");
@@ -156,9 +153,9 @@ package body AGATE.Tasking is
    is
       T : Task_Object_Access := Ready_Tasks;
    begin
-      Ada.Text_IO.Put_Line ("Ready tasks:");
+      --  Ada.Text_IO.Put_Line ("Ready tasks:");
       while T /= null loop
-         Ada.Text_IO.Put_Line ("   - " & Image (Task_ID (T)));
+         --  Ada.Text_IO.Put_Line ("   - " & Image (Task_ID (T)));
          T := T.Next;
       end loop;
    end Print_Ready_Tasks;

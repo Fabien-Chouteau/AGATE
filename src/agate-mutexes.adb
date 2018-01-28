@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;                  use Ada.Text_IO;
-
 with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Traces;
 with AGATE.Tasking.Context_Switch;

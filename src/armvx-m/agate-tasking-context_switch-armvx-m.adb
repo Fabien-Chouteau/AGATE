@@ -36,11 +36,14 @@ with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
 with AGATE.Traces;
 with AGATE.Arch.ArmvX_m;  use AGATE.Arch.ArmvX_m;
 
+
 package body AGATE.Tasking.Context_Switch is
 
    procedure Context_Switch_Handler;
    pragma Machine_Attribute (Context_Switch_Handler, "naked");
    pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
+
+   PendSV_Interrupt_ID : constant Interrupt_ID := -2;
 
    ------------
    -- Switch --

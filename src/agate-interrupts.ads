@@ -29,10 +29,12 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with AGATE_Arch_Parameters;
+
 package AGATE.Interrupts is
 
-   type Interrupt_ID is range -16 .. 32;
-   type Interrupt_Priority is range 0 .. 32;
+   type Interrupt_ID is new AGATE_Arch_Parameters.Interrupt_ID;
+   type Interrupt_Priority is new AGATE_Arch_Parameters.Interrupt_Priority;
 
    type Interrupt_Handler is access procedure;
 
@@ -41,5 +43,6 @@ package AGATE.Interrupts is
                        Priority : Interrupt_Priority);
 
    procedure Enable (ID : Interrupt_ID);
+   procedure Disable (ID : Interrupt_ID);
 
 end AGATE.Interrupts;
