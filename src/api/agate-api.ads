@@ -45,6 +45,11 @@ package AGATE.API is
    function Try_Lock (ID : Mutex_ID) return Boolean;
    procedure Release (ID : Mutex_ID);
 
+   -- System --
    procedure Shutdown_System;
+
+   -- IO --
+   procedure Print (Str : String);
+   procedure Print_Line (Str : String);
 
 end AGATE.API;

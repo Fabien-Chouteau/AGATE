@@ -29,9 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
---  with Ada.Text_IO;
-with AGATE.API;
-with AGATE;              use AGATE;
+with AGATE.API; use AGATE.API;
+with AGATE;     use AGATE;
 
 package body Test_Static_Tasks is
 
@@ -43,20 +42,20 @@ package body Test_Static_Tasks is
       Now : Time;
    begin
 
-      --  Ada.Text_IO.Put_Line ("---> Static T1 Signal Static_Semaphore");
+      Print_Line ("---> Static T1 Signal Static_Semaphore");
       AGATE.API.Signal (Static_Semaphore.ID);
 
       loop
-         --  Ada.Text_IO.Put_Line ("---> Static T1 Wait_Lock on Static_Mutex");
+         Print_Line ("---> Static T1 Wait_Lock on Static_Mutex");
          API.Wait_Lock (Static_Mutex.ID);
-         --  Ada.Text_IO.Put_Line ("---> Static T1 Got the mutex");
+         Print_Line ("---> Static T1 Got the mutex");
 
          Now := AGATE.API.Clock;
 
-         --  Ada.Text_IO.Put_Line ("---> Static T1 Clock:" & Now'Img);
+         Print_Line ("---> Static T1 Clock:" & Now'Img);
          AGATE.API.Delay_Until (Now + Test_Time_Unit * 2);
 
-         --  Ada.Text_IO.Put_Line ("---> Static T1 Release Static_Mutex");
+         Print_Line ("---> Static T1 Release Static_Mutex");
          API.Release (Static_Mutex.ID);
       end loop;
    end T1_Proc;
@@ -70,27 +69,25 @@ package body Test_Static_Tasks is
       Cnt : Natural := 0;
    begin
 
-      --  Ada.Text_IO.Put_Line
-      --  ("---> Static T2 Wait_For_Signal on Static_Semaphore");
+      Print_Line ("---> Static T2 Wait_For_Signal on Static_Semaphore");
       AGATE.API.Wait_For_Signal (Static_Semaphore.ID);
-      --  Ada.Text_IO.Put_Line ("---> Static T2 released");
+      Print_Line ("---> Static T2 released");
 
       loop
          Now := AGATE.API.Clock;
-         --  Ada.Text_IO.Put_Line ("---> Static T2 Clock:" & Now'Img);
+         Print_Line ("---> Static T2 Clock:" & Now'Img);
 
          Cnt := Cnt + 1;
 
          if Cnt = 2 then
-            --  Ada.Text_IO.Put_Line
-            --  ("---> Static T2 Wait_Lock on Static_Mutex");
+            Print_Line ("---> Static T2 Wait_Lock on Static_Mutex");
             API.Wait_Lock (Static_Mutex.ID);
-            --  Ada.Text_IO.Put_Line ("---> Static T2 Got the mutex");
+            Print_Line ("---> Static T2 Got the mutex");
          elsif Cnt = 3 then
-            --  Ada.Text_IO.Put_Line ("---> Static T2 Release Static_Mutex");
+            Print_Line ("---> Static T2 Release Static_Mutex");
             API.Release (Static_Mutex.ID);
          elsif Cnt = 4 then
-            --  Ada.Text_IO.Put_Line ("---> Static T2 Shuting down the system");
+            Print_Line ("---> Static T2 Shuting down the system");
             AGATE.API.Shutdown_System;
          end if;
 

@@ -15,8 +15,9 @@ project AGATE is
    type Traces_Kind is ("none", "vcd");
    Traces : Traces_Kind := external("Traces", "none");
 
-   Timming        := "none";
-   Interrupts     := "none";
+   Timer   := "none";
+   Traps   := "none";
+   Console := "none";
 
    Src_Dir := ();
 
@@ -24,26 +25,33 @@ project AGATE is
       when "Cortex-M4" =>
          for Target use "arm-eabi";
          for Runtime ("Ada") use "zfp-stm32f4";
-         Timming        := "systick";
-         Interrupts     := "nvic";
+         Timer   := "systick";
+         Traps   := "nvic";
+         Console := "adatextio";
          Src_Dir := Src_Dir & ("src/armvx-m");
       when "RISCV32" =>
          for Runtime ("ada") use Project'Project_Dir & "/run-times/zfp-hifive1";
          for Target use "riscv32-unknown-elf";
-         Timming        := "riscv32";
-         Interrupts     := "riscv32";
+         Timer   := "riscv32";
+         Traps   := "riscv32";
+         Console := "none";
          Src_Dir := Src_Dir & ("src/riscv32");
    end case;
 
-   for Source_Dirs use ("src", "src/api", "src/traces", "src/timers") & Src_Dir;
+   for Source_Dirs use ("src",
+                        "src/api",
+                        "src/traces",
+                        "src/timers",
+                        "src/console")
+                        & Src_Dir;
 
    package Naming is
 
       for Body ("AGATE.Timer") use
-        "agate-timer-" & Timming & ".adb";
+        "agate-timer-" & Timer & ".adb";
 
       for Body ("AGATE.Traps") use
-        "agate-traps-" & Interrupts & ".adb";
+        "agate-traps-" & Traps & ".adb";
 
       for Body ("AGATE.Traces_Output") use
         "agate-traces_output-" & Traces_Output & ".adb";
@@ -53,6 +61,9 @@ project AGATE is
 
       for Spec ("AGATE_Types_Data.Traces") use
         "agate_types_data-traces-" & Traces & ".ads";
+
+      for Body ("AGATE.Console") use
+        "agate-console-" & Console & ".adb";
 
    end Naming;
 

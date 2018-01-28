@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                   Copyright (C) 2018, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,29 +29,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.SysCalls is
+package AGATE.Console is
 
-   type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
-                       Shutdown, Mutex_Wait_Lock, Mutex_Try_Lock,
-                       Mutex_Release, Print);
+   procedure Print (C : Character);
+   procedure Print (Str : String);
+   procedure Print_Line (Str : String);
 
-   function Call (ID               : Syscall_ID;
-                  Arg1, Arg2, Arg3 : Word := 0)
-                  return UInt64;
-
-   procedure Call (ID               : Syscall_ID;
-                   Arg1, Arg2, Arg3 : Word := 0);
-
-
-   type Syscall_Handler is access
-     function (Arg1, Arg2, Arg3 : Word) return UInt64;
-
-   function Registred (ID : Syscall_ID) return Boolean;
-   --  Return True if a handler is registered for the given syscall
-
-   procedure Register (ID      : Syscall_ID;
-                       Handler : not null Syscall_Handler)
-     with Pre => not Registred (ID);
-   --  Register a handler for the given syscall
-
-end AGATE.SysCalls;
+end AGATE.Console;

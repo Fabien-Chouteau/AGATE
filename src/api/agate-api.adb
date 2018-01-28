@@ -39,6 +39,7 @@ with AGATE.Timer;
 with AGATE.Traces;
 with AGATE.Semaphores;
 with AGATE.Mutexes;
+with AGATE.Console;
 
 package body AGATE.API is
 
@@ -52,6 +53,7 @@ package body AGATE.API is
    function Do_Wait_Lock (Arg1, Arg2, Arg3 : Word) return UInt64;
    function Do_Try_Lock (Arg1, Arg2, Arg3 : Word) return UInt64;
    function Do_Release (Arg1, Arg2, Arg3 : Word) return UInt64;
+   function Do_Print (Arg1, Arg2, Arg3 : Word) return UInt64;
 
    ----------------
    -- Initialize --
@@ -68,6 +70,7 @@ package body AGATE.API is
       Register (Mutex_Wait_Lock, Do_Wait_Lock'Access);
       Register (Mutex_Try_Lock, Do_Try_Lock'Access);
       Register (Mutex_Release, Do_Release'Access);
+      Register (Print, Do_Print'Access);
    end Initialize;
 
    --------------
@@ -195,6 +198,25 @@ package body AGATE.API is
       return 0;
    end Do_Release;
 
+   --------------
+   -- Do_Print --
+   --------------
+
+   function Do_Print
+     (Arg1, Arg2, Arg3 : Word)
+      return UInt64
+   is
+      pragma Unreferenced (Arg3);
+      Addr : constant System.Address := To_Address (Integer_Address (Arg1));
+      Len  : Word renames Arg2;
+      Str  : array (1 .. Len) of Character with Address => Addr;
+   begin
+      for C of Str loop
+         AGATE.Console.Print (C);
+      end loop;
+      return 0;
+   end Do_Print;
+
    -----------
    -- Yield --
    -----------
@@ -290,6 +312,28 @@ package body AGATE.API is
    begin
       Call (Shutdown);
    end Shutdown_System;
+
+   -----------
+   -- Print --
+   -----------
+
+   procedure Print
+     (Str : String)
+   is
+   begin
+      Call (Print,
+            Word (To_Integer (Str (Str'First)'Address)),
+            Word (Str'Length));
+   end Print;
+
+   ----------------
+   -- Print_Line --
+   ----------------
+
+   procedure Print_Line (Str : String) is
+   begin
+      Print (Str & ASCII.CR & ASCII.LF);
+   end Print_Line;
 
 begin
    Initialize;

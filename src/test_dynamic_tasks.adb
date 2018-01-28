@@ -30,9 +30,8 @@
 ------------------------------------------------------------------------------
 
 with AGATE;                      use AGATE;
+with AGATE.API;                  use AGATE.API;
 with AGATE.API.Dynamic_Task;
---  with Ada.Text_IO;
-with AGATE.API;
 with Test_Static_Tasks;
 with AGATE.API.Dynamic_Semaphore;
 
@@ -51,11 +50,11 @@ package body Test_Dynamic_Tasks is
    procedure T1_Proc is
       Now : Time;
    begin
-      --  Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
+      Print_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
       AGATE.API.Signal (Dyn_Semaphore);
       loop
          Now := AGATE.API.Clock;
-         --  Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" & Now'Img);
+         Print_Line ("---> Dynamic T1 Clock:" & Now'Img);
          AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T1_Proc;
@@ -68,15 +67,14 @@ package body Test_Dynamic_Tasks is
       Now : Time;
    begin
 
---        Ada.Text_IO.Put_Line
---          ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
+      Print_Line ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
 
       AGATE.API.Wait_For_Signal (Dyn_Semaphore);
-      --  Ada.Text_IO.Put_Line ("---> Dynamic T2 released");
+      Print_Line ("---> Dynamic T2 released");
 
       loop
          Now := AGATE.API.Clock;
-         --  Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);
+         Print_Line ("---> Dynamic T2 Clock:" & Now'Img);
          AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T2_Proc;
