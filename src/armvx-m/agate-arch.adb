@@ -31,7 +31,7 @@
 
 with Ada.Text_IO;
 with System.Machine_Code;  use System.Machine_Code;
-with AGATE.Arch.ArmvX_M;   use AGATE.Arch.ArmvX_M;
+with AGATE.Arch.ArmvX_m;   use AGATE.Arch.ArmvX_m;
 
 with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
@@ -68,7 +68,8 @@ package body AGATE.Arch is
       --  PC
       Context (7) := Word (To_Integer (T.Proc.all'Address));
 
-      Ada.Text_IO.Put_Line ("Set start PC address: " &  Hex (UInt32 (Context (7))));
+      Ada.Text_IO.Put_Line ("Set start PC address: " &
+                              Hex (UInt32 (Context (7))));
 
       --  LR
       Context (6) := 0;

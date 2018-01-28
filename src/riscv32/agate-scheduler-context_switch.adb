@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Machine_Code; use System.Machine_Code;
-
 with AGATE.Traces;
 
 with AGATE.Arch.RISCV; use AGATE.Arch.RISCV;

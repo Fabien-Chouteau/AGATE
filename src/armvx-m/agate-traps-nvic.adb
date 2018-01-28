@@ -29,13 +29,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;             use Ada.Text_IO;
-with HAL;                     use HAL;
-with Tools;                   use Tools;
-with System.Storage_Elements; use System.Storage_Elements;
-with System.Machine_Code;     use System.Machine_Code;
-with Cortex_M_SVD.SCB;        use Cortex_M_SVD.SCB;
-with Cortex_M_SVD.NVIC;       use Cortex_M_SVD.NVIC;
+with Ada.Text_IO;         use Ada.Text_IO;
+with System.Machine_Code; use System.Machine_Code;
+with Cortex_M_SVD.SCB;    use Cortex_M_SVD.SCB;
+with Cortex_M_SVD.NVIC;   use Cortex_M_SVD.NVIC;
 
 package body AGATE.Traps is
 
@@ -43,12 +40,13 @@ package body AGATE.Traps is
      := (others => null);
    Priorities_Table : array (Trap_ID) of Trap_Priority
      := (others => Trap_Priority'First);
+   pragma Unreferenced (Priorities_Table);
 
    procedure IRQ_Handler;
    pragma Export (C, IRQ_Handler, "__gnat_irq_trap");
 
+   procedure Initialize;
    procedure Hard_Fault_Handler;
-
 
    ------------------------
    -- Hard_Fault_Handler --
@@ -56,6 +54,8 @@ package body AGATE.Traps is
 
    procedure Hard_Fault_Handler
    is
+
+      function PSP return System.Address;
 
       function PSP
         return System.Address
@@ -74,43 +74,45 @@ package body AGATE.Traps is
 
       Context : Stack_Array
         with Address => PSP;
+
+      SCB : SCB_Peripheral renames SCB_Periph;
    begin
       Put_Line ("In HardFault");
       if SCB_Periph.HFSR.FORCED then
          Put_Line ("Forced HardFault");
 
-         Put_Line ("Vector table read         : " & SCB_Periph.HFSR.VECTTBL'Img);
+         Put_Line ("Vector table read         : " & SCB.HFSR.VECTTBL'Img);
 
          Put_Line ("MemManage:");
-         Put_Line (" - Instruction access     : " & SCB_Periph.MMSR.IACCVIOL'Img);
-         Put_Line (" - Data access            : " & SCB_Periph.MMSR.DACCVIOL'Img);
-         Put_Line (" - Unstacking from excp   : " & SCB_Periph.MMSR.MUNSTKERR'Img);
-         Put_Line (" - Stacking for excp      : " & SCB_Periph.MMSR.MSTKERR'Img);
-         Put_Line (" - FPU Lazy state preserv : " & SCB_Periph.MMSR.MLSPERR'Img);
+         Put_Line (" - Instruction access     : " & SCB.MMSR.IACCVIOL'Img);
+         Put_Line (" - Data access            : " & SCB.MMSR.DACCVIOL'Img);
+         Put_Line (" - Unstacking from excp   : " & SCB.MMSR.MUNSTKERR'Img);
+         Put_Line (" - Stacking for excp      : " & SCB.MMSR.MSTKERR'Img);
+         Put_Line (" - FPU Lazy state preserv : " & SCB.MMSR.MLSPERR'Img);
 
-         if SCB_Periph.MMSR.MMARVALID then
-            Put_Line ("-> address : " & SCB_Periph.MMAR'Img);
+         if SCB.MMSR.MMARVALID then
+            Put_Line ("-> address : " & SCB.MMAR'Img);
          end if;
 
          Put_Line ("BusFault:");
-         Put_Line (" - Instruction bus error  : " & SCB_Periph.BFSR.IBUSERR'Img);
-         Put_Line (" - Precise data bus error : " & SCB_Periph.BFSR.PRECISERR'Img);
-         Put_Line (" - Imprecise data bus err : " & SCB_Periph.BFSR.IMPRECISERR'Img);
-         Put_Line (" - Unstacking from excp   : " & SCB_Periph.BFSR.UNSTKERR'Img);
-         Put_Line (" - Stacking for excp      : " & SCB_Periph.BFSR.STKERR'Img);
-         Put_Line (" - FPU Lazy state preserv : " & SCB_Periph.BFSR.LSPERR'Img);
+         Put_Line (" - Instruction bus error  : " & SCB.BFSR.IBUSERR'Img);
+         Put_Line (" - Precise data bus error : " & SCB.BFSR.PRECISERR'Img);
+         Put_Line (" - Imprecise data bus err : " & SCB.BFSR.IMPRECISERR'Img);
+         Put_Line (" - Unstacking from excp   : " & SCB.BFSR.UNSTKERR'Img);
+         Put_Line (" - Stacking for excp      : " & SCB.BFSR.STKERR'Img);
+         Put_Line (" - FPU Lazy state preserv : " & SCB.BFSR.LSPERR'Img);
 
-         if SCB_Periph.BFSR.BFARVALID then
-            Put_Line ("-> address : " & SCB_Periph.BFAR'Img);
+         if SCB.BFSR.BFARVALID then
+            Put_Line ("-> address : " & SCB.BFAR'Img);
          end if;
 
          Put_Line ("UsageFault:");
-         Put_Line (" - Undefined instruction  : " & SCB_Periph.UFSR.UNDEFINSTR'Img);
-         Put_Line (" - Invalid state          : " & SCB_Periph.UFSR.INVSTATE'Img);
-         Put_Line (" - Invalid PC load        : " & SCB_Periph.UFSR.INVPC'Img);
-         Put_Line (" - No co-processor        : " & SCB_Periph.UFSR.NOCP'Img);
-         Put_Line (" - Unaligned access       : " & SCB_Periph.UFSR.UNALIGNED'Img);
-         Put_Line (" - Division by zero       : " & SCB_Periph.UFSR.DIVBYZERO'Img);
+         Put_Line (" - Undefined instruction  : " & SCB.UFSR.UNDEFINSTR'Img);
+         Put_Line (" - Invalid state          : " & SCB.UFSR.INVSTATE'Img);
+         Put_Line (" - Invalid PC load        : " & SCB.UFSR.INVPC'Img);
+         Put_Line (" - No co-processor        : " & SCB.UFSR.NOCP'Img);
+         Put_Line (" - Unaligned access       : " & SCB.UFSR.UNALIGNED'Img);
+         Put_Line (" - Division by zero       : " & SCB.UFSR.DIVBYZERO'Img);
 
          Put_Line ("R0 : " & Hex (UInt32 (Context (1))));
          Put_Line ("R1 : " & Hex (UInt32 (Context (2))));
@@ -135,7 +137,7 @@ package body AGATE.Traps is
       Vector : Word;
       pragma Import (C, Vector, "__vectors");
 
-      Vector_Address : constant Word := Word (To_Integer(Vector'Address));
+      Vector_Address : constant Word := Word (To_Integer (Vector'Address));
    begin
       SCB_Periph.VTOR := UInt32 (Vector_Address);
       Register (Hard_Fault_Handler'Access, -13, 0);

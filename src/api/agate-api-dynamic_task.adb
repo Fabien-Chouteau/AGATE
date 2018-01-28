@@ -46,11 +46,16 @@ package body AGATE.API.Dynamic_Task is
       Name           : String)
       return Task_ID
    is
-      Stack     : Task_Stack_Access     := new Task_Stack (1 .. Stack_Size);
-      Sec_Stack : Task_Sec_Stack_Access := new Task_Sec_Stack (1 .. Sec_Stack_Size);
-      Heap      : Task_Heap_Access      := new Task_Heap (1 .. Heap_Size);
+      Stack     : constant Task_Stack_Access     :=
+        new Task_Stack (1 .. Stack_Size);
 
-      The_Task  : Task_Object_Access :=
+      Sec_Stack : constant Task_Sec_Stack_Access :=
+        new Task_Sec_Stack (1 .. Sec_Stack_Size);
+
+      Heap      : constant Task_Heap_Access      :=
+        new Task_Heap (1 .. Heap_Size);
+
+      The_Task  : constant Task_Object_Access :=
         new Task_Object (Proc      => Proc,
                          Base_Prio => Internal_Task_Priority (Priority),
                          Stack     => Stack,

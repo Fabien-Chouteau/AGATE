@@ -59,8 +59,11 @@ package AGATE_Arch_Parameters is
    Mtime_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset);
    Mtime_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtime_Offset + 4);
 
-   Mtimecmp_Lo_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset);
-   Mtimecmp_Hi_Addr : Address := To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset + 4);
+   Mtimecmp_Lo_Addr : Address :=
+     To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset);
+
+   Mtimecmp_Hi_Addr : Address :=
+     To_Address (CLINT_Addr + CLINT_Mtimecmp_Offset + 4);
 
    Timer_Frequency : constant := 32768;
 end AGATE_Arch_Parameters;

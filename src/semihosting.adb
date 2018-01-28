@@ -29,11 +29,10 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Machine_Code; use System.Machine_Code;
-with HAL;                 use HAL;
+with System.Machine_Code;      use System.Machine_Code;
+with HAL;                      use HAL;
 with Ada.Unchecked_Conversion;
-with Interfaces.C;        use Interfaces.C;
-with Cortex_M_SVD.Debug;
+with Interfaces.C;             use Interfaces.C;
 
 package body Semihosting is
 
@@ -97,7 +96,11 @@ package body Semihosting is
    -- Generic_SH_Call --
    ---------------------
 
-   function Generic_SH_Call (R0 : SH_Word; R1 : System.Address) return SH_Word is
+   function Generic_SH_Call
+     (R0 : SH_Word;
+      R1 : System.Address)
+      return SH_Word
+   is
    begin
       return Generic_SH_Call (R0, To_SH_u32 (R1));
    end Generic_SH_Call;

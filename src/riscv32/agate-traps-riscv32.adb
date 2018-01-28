@@ -29,9 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Machine_Code; use System.Machine_Code;
-
-with AGATE.Arch.RISCV;    use AGATE.Arch.RISCV;
+with AGATE.Arch.RISCV; use AGATE.Arch.RISCV;
 
 package body AGATE.Traps is
 
@@ -52,8 +50,8 @@ package body AGATE.Traps is
    procedure Initialize is
       Unused : Word;
    begin
-      Write_Stvec (Word (To_Integer(Trap_Entry'Address)));
-      Write_Mtvec (Word (To_Integer(Trap_Entry'Address)));
+      Write_Stvec (Word (To_Integer (Trap_Entry'Address)));
+      Write_Mtvec (Word (To_Integer (Trap_Entry'Address)));
    end Initialize;
 
    -----------------------
@@ -65,6 +63,7 @@ package body AGATE.Traps is
       Code     : constant Integer := Integer (Mcause and 16#FFFF#);
       ID       : Trap_ID;
       Bad_Addr : constant Word := Mbadaddr;
+      pragma Unreferenced (Bad_Addr);
    begin
       if (Mcause and 16#8000_0000#) /= 0 then
          --  Asynchronous
@@ -98,6 +97,7 @@ package body AGATE.Traps is
       ID       : Trap_ID;
       Priority : Trap_Priority)
    is
+      pragma Unreferenced (Priority);
    begin
       Handlers_Table (ID) := Handler;
    end Register;

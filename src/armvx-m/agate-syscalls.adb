@@ -31,15 +31,9 @@
 
 with Ada.Text_IO;
 
-with System.Machine_Code;     use System.Machine_Code;
-
-with System.Storage_Elements; use System.Storage_Elements;
-
-with AGATE.Traps;             use AGATE.Traps;
-with AGATE.Timer;
-with AGATE.Scheduler;
-with AGATE.Traces;
-with AGATE_Arch_Parameters;   use AGATE_Arch_Parameters;
+with System.Machine_Code;   use System.Machine_Code;
+with AGATE.Traps;           use AGATE.Traps;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
 package body AGATE.SysCalls is
 
@@ -89,7 +83,8 @@ package body AGATE.SysCalls is
               with Address => PSP;
          begin
             if Args (1) in
-              Syscall_ID'Pos (Syscall_ID'First) .. Syscall_ID'Pos (Syscall_ID'Last)
+              Syscall_ID'Pos (Syscall_ID'First) ..
+              Syscall_ID'Pos (Syscall_ID'Last)
             then
                ID := Syscall_ID'Val (Args (1));
                if SysCall_Handler_Table (ID) /= null then
@@ -142,7 +137,7 @@ package body AGATE.SysCalls is
                       Word'Asm_Input ("r", Arg3)),
            Clobber => "r0,r1,r2,r3",
            Volatile => True);
-      return Shift_Left (UInt64 (Ret_Hi), 32) or Uint64 (Ret_Lo);
+      return Shift_Left (UInt64 (Ret_Hi), 32) or UInt64 (Ret_Lo);
    end Call;
 
    ----------

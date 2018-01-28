@@ -76,7 +76,8 @@ package body AGATE.Semaphores is
          Traces.Value_Changed (Sem, Sem.Count, Current_Task);
       else
          declare
-            T : constant Task_Object_Access := Task_Object_Access (Current_Task);
+            T : constant Task_Object_Access :=
+              Task_Object_Access (Current_Task);
          begin
             --  Suspend the current task
             Scheduler.Suspend (Scheduler.Semaphore);

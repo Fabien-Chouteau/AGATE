@@ -33,10 +33,12 @@ pragma Warnings (Off, "is an internal GNAT unit");
 with System.Machine_Reset;
 pragma Warnings (On, "is an internal GNAT unit");
 
-with AGATE.SysCalls; use AGATE.SysCalls;
+with AGATE.SysCalls;  use AGATE.SysCalls;
 with AGATE.Scheduler;
 with AGATE.Timer;
 with AGATE.Traces;
+with AGATE.Semaphores;
+with AGATE.Mutexes;
 
 package body AGATE.API is
 
@@ -76,6 +78,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2, Arg1);
    begin
       AGATE.Scheduler.Yield;
       return 0;
@@ -85,14 +88,11 @@ package body AGATE.API is
    -- Do_Clock --
    --------------
 
-   --------------
-   -- Do_Clock --
-   --------------
-
    function Do_Clock
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2, Arg1);
    begin
       return UInt64 (AGATE.Timer.Clock);
    end Do_Clock;
@@ -105,6 +105,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg2, Arg3);
    begin
       Scheduler.Delay_Until (Time (Arg1));
       return 0;
@@ -118,8 +119,9 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2);
    begin
-      Semaphores.Wait_For_Signal (To_ID (Arg1));
+      AGATE.Semaphores.Wait_For_Signal (To_ID (Arg1));
       return 0;
    end Do_Sem_Wait;
 
@@ -131,6 +133,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2);
    begin
       Semaphores.Signal (To_ID (Arg1));
       return 0;
@@ -144,6 +147,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2, Arg1);
    begin
       Traces.Shutdown;
       System.Machine_Reset.Stop;
@@ -158,8 +162,9 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2);
    begin
-      Mutexes.Wait_Lock (To_ID (Arg1));
+      AGATE.Mutexes.Wait_Lock (To_ID (Arg1));
       return 0;
    end Do_Wait_Lock;
 
@@ -171,6 +176,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2);
    begin
       return (if Mutexes.Try_Lock (To_ID (Arg1)) then 1 else 0);
    end Do_Try_Lock;
@@ -183,6 +189,7 @@ package body AGATE.API is
      (Arg1, Arg2, Arg3 : Word)
       return UInt64
    is
+      pragma Unreferenced (Arg3, Arg2);
    begin
       Mutexes.Release (To_ID (Arg1));
       return 0;

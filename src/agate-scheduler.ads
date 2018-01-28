@@ -29,9 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Storage_Elements; use System.Storage_Elements;
-with HAL;                     use HAL;
-
 package AGATE.Scheduler is
 
    procedure Register (ID   : Task_ID;

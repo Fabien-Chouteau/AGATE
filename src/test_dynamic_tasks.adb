@@ -31,18 +31,18 @@
 
 with AGATE;                      use AGATE;
 with AGATE.API.Dynamic_Task;
-with Ada.Text_IO;
+--  with Ada.Text_IO;
 with AGATE.API;
-with System.Machine_Code; use System.Machine_Code;
 with Test_Static_Tasks;
-with AGATE;
-with AGATE.Tasking;
 with AGATE.API.Dynamic_Semaphore;
 
 package body Test_Dynamic_Tasks is
 
-   Dyn_Semaphore : AGATE.Semaphore_ID :=
+   Dyn_Semaphore : constant AGATE.Semaphore_ID :=
      AGATE.API.Dynamic_Semaphore.Create (Name => "Dynamic Sem");
+
+   procedure T1_Proc;
+   procedure T2_Proc;
 
    -------------
    -- T1_Proc --
@@ -51,11 +51,11 @@ package body Test_Dynamic_Tasks is
    procedure T1_Proc is
       Now : Time;
    begin
-      Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
+      --  Ada.Text_IO.Put_Line ("---> Dynamic T1 Signal Dynamic_Semaphore");
       AGATE.API.Signal (Dyn_Semaphore);
       loop
-         Now := Time (AGATE.API.Clock);
-         Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" & Now'Img);
+         Now := AGATE.API.Clock;
+         --  Ada.Text_IO.Put_Line ("---> Dynamic T1 Clock:" & Now'Img);
          AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T1_Proc;
@@ -68,13 +68,15 @@ package body Test_Dynamic_Tasks is
       Now : Time;
    begin
 
-      Ada.Text_IO.Put_Line ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
+--        Ada.Text_IO.Put_Line
+--          ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
+
       AGATE.API.Wait_For_Signal (Dyn_Semaphore);
-      Ada.Text_IO.Put_Line ("---> Dynamic T2 released");
+      --  Ada.Text_IO.Put_Line ("---> Dynamic T2 released");
 
       loop
-         Now := Time (AGATE.API.Clock);
-         Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);
+         Now := AGATE.API.Clock;
+         --  Ada.Text_IO.Put_Line ("---> Dynamic T2 Clock:" & Now'Img);
          AGATE.API.Delay_Until (Now + Test_Static_Tasks.Test_Time_Unit);
       end loop;
    end T2_Proc;
@@ -84,7 +86,7 @@ package body Test_Dynamic_Tasks is
    ------------
 
    procedure Create is
-      T : AGATE.Task_ID;
+      T : AGATE.Task_ID with Unreferenced;
    begin
       T := AGATE.API.Dynamic_Task.Create
         (Stack_Size     => 1024,

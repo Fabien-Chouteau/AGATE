@@ -74,7 +74,7 @@ package AGATE.Arch.RISCV is
       WPRI_2 : UInt2;   -- Reserved Writes Preserve Values, Reads Ignore
       SD     : Boolean;
    end record
-     with Pack, Size => 32;
+     with Size => 32;
 
    for Mstatus_Reg use record
       UIE    at 0 range 0 .. 0;
@@ -120,7 +120,7 @@ package AGATE.Arch.RISCV is
       MEI      : Boolean;
       Reserved : UInt18;
    end record
-     with Pack, Size => 32;
+     with Size => 32;
 
    for Interrupt_Register use record
       USI      at 0 range 0 .. 0;

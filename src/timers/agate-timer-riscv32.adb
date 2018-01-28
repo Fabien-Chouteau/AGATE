@@ -29,10 +29,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
-with AGATE.Traps;                  use AGATE.Traps;
-with AGATE.Scheduler;                use AGATE.Scheduler;
-with AGATE.Scheduler.Context_Switch;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
+with AGATE.Traps;           use AGATE.Traps;
+with AGATE.Scheduler;       use AGATE.Scheduler;
 
 package body AGATE.Timer is
 

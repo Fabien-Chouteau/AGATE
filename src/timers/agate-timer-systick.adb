@@ -29,15 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Text_IO;
-
-with Cortex_M_SVD.SysTick;         use Cortex_M_SVD.SysTick;
-with AGATE.Traps;                  use AGATE.Traps;
-with AGATE.Scheduler;                use AGATE.Scheduler;
-with AGATE.Scheduler.Context_Switch;
-
-with Cortex_M_SVD.SCB;             use Cortex_M_SVD.SCB;
-with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
+with Cortex_M_SVD.SysTick;  use Cortex_M_SVD.SysTick;
+with AGATE.Traps;           use AGATE.Traps;
+with AGATE.Scheduler;       use AGATE.Scheduler;
+with Cortex_M_SVD.SCB;      use Cortex_M_SVD.SCB;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
 package body AGATE.Timer is
 
@@ -113,7 +109,7 @@ package body AGATE.Timer is
          Ret := Next_Tick - Time (Count);
       end if;
 
-      return Time (Ret);
+      return Ret;
    end Clock;
 
    ---------------

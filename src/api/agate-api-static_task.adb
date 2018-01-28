@@ -33,8 +33,9 @@ with AGATE.Scheduler;
 
 package body AGATE.API.Static_Task is
 
-   --  https://stackoverflow.com/questions/33405479/how-to-pass-access-to-a-constrained-string-to-a-subprogram-in-ada
-   Heap      : aliased Task_Heap := (1 ..Heap_Size => 0);
+   --  https://stackoverflow.com/questions/33405479/
+   --  how-to-pass-access-to-a-constrained-string-to-a-subprogram-in-ada
+   Heap      : aliased Task_Heap := (1 .. Heap_Size => 0);
    Stack     : aliased Task_Stack := (1 .. Stack_Size => 0);
    Sec_Stack : aliased Task_Sec_Stack := (1 .. Sec_Stack_Size => 0);
 

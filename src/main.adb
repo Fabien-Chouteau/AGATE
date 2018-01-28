@@ -30,13 +30,14 @@
 ------------------------------------------------------------------------------
 
 with Test_Static_Tasks;
+pragma Unreferenced (Test_Static_Tasks);
 with Test_Dynamic_Tasks;
 
-with AGATE.Tasking;
+with AGATE.Scheduler;
 
 procedure Main is
 begin
    Test_Dynamic_Tasks.Create;
 
-   AGATE.Tasking.Start;
+   AGATE.Scheduler.Start;
 end Main;

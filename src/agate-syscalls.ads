@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;              use HAL;
-
 package AGATE.SysCalls is
 
    type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,

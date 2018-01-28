@@ -35,8 +35,6 @@ with Cortex_M_SVD.SCB;      use Cortex_M_SVD.SCB;
 
 with AGATE.Traces;
 with AGATE.Arch.ArmvX_m;    use AGATE.Arch.ArmvX_m;
-with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
-
 
 package body AGATE.Scheduler.Context_Switch is
 

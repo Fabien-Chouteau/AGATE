@@ -30,15 +30,10 @@
 ------------------------------------------------------------------------------
 
 
-with System.Machine_Code;     use System.Machine_Code;
-
-with System.Storage_Elements; use System.Storage_Elements;
-
-with AGATE.Traps;             use AGATE.Traps;
-with AGATE.Timer;
+with System.Machine_Code;   use System.Machine_Code;
+with AGATE.Traps;           use AGATE.Traps;
 with AGATE.Scheduler;
-with AGATE.Traces;
-with AGATE_Arch_Parameters;   use AGATE_Arch_Parameters;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
 package body AGATE.SysCalls is
 
@@ -66,7 +61,7 @@ package body AGATE.SysCalls is
    --------------------------
 
    procedure Syscall_Trap_Handler is
-      ID_Word , Arg1, Arg2, Arg3 : Word;
+      ID_Word, Arg1, Arg2, Arg3 : Word;
       ID : Syscall_ID;
       Ctx : Task_Context renames Scheduler.Current_Task.Context;
       Ret : UInt64;
@@ -85,8 +80,12 @@ package body AGATE.SysCalls is
          ID := Syscall_ID'Val (ID_Word);
          if SysCall_Handler_Table (ID) /= null then
             Ret := SysCall_Handler_Table (ID) (Arg1, Arg2, Arg3);
+
             Ctx (Ctx_A0_Index) := Word (Ret and 16#FFFF_FFFF#);
-            Ctx (Ctx_A1_Index) := Word (Shift_Right (Ret, 32) and 16#FFFF_FFFF#);
+
+            Ctx (Ctx_A1_Index) :=
+              Word (Shift_Right (Ret, 32) and 16#FFFF_FFFF#);
+
          else
             raise Program_Error with "No handler for Syscall";
          end if;

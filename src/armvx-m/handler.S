@@ -13,21 +13,21 @@
 __vectors:
 	/* Cortex-M core interrupts */
 	.word 0                      /* stack top address */
-	.word __gnat_irq_trap        /* 1 Reset.  */
-	.word __gnat_irq_trap        /* 2 NMI. */
-	.word __gnat_irq_trap        /* 3 Hard fault. */
-	.word __gnat_irq_trap        /* 4 Mem manage. */
-	.word __gnat_irq_trap        /* 5 Bus fault. */
-	.word __gnat_irq_trap        /* 6 Usage fault. */
-	.word __gnat_irq_trap        /* 7 reserved. */
-	.word __gnat_irq_trap        /* 8 reserved. */
-	.word __gnat_irq_trap        /* 9 reserved. */
-	.word __gnat_irq_trap        /* 10 reserved. */
-	.word __gnat_irq_trap        /* 11 SVCall. */
-	.word __gnat_irq_trap        /* 12 Breakpoint. */
-	.word __gnat_irq_trap        /* 13 reserved. */
-	.word PendSV_Handler         /* 14 PendSV. */
-	.word __gnat_irq_trap        /* 15 Systick. */
+	.word __gnat_irq_trap        /* -15 Reset.  */
+	.word __gnat_irq_trap        /* -14 NMI. */
+	.word __gnat_irq_trap        /* -13 Hard fault. */
+	.word __gnat_irq_trap        /* -12 Mem manage. */
+	.word __gnat_irq_trap        /* -11 Bus fault. */
+	.word __gnat_irq_trap        /* -10 Usage fault. */
+	.word __gnat_irq_trap        /* -9 reserved. */
+	.word __gnat_irq_trap        /* -8 reserved. */
+	.word __gnat_irq_trap        /* -7 reserved. */
+	.word __gnat_irq_trap        /* -6 reserved. */
+	.word __gnat_irq_trap        /* -5 SVCall. */
+	.word __gnat_irq_trap        /* -4 Breakpoint. */
+	.word __gnat_irq_trap        /* -3 reserved. */
+	.word PendSV_Handler         /* -2 PendSV. */
+	.word __gnat_irq_trap        /* -1 Systick. */
 	/* MCU interrupts */
 	.word __gnat_irq_trap        /* 16 WWDG_IRQ */
 	.word __gnat_irq_trap        /* 17 PVD_IRQ */

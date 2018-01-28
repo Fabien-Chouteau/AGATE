@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL; use HAL;
-
 package AGATE.Timer is
 
    function Clock return Time;

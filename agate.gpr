@@ -56,4 +56,27 @@ project AGATE is
 
    end Naming;
 
+   type BUILD_TYPE is ("Debug", "Production");
+   Build : BUILD_Type := external ("BUILD", "Debug");
+
+   package Compiler is
+      case Build is
+         when "Production" =>
+            for Default_Switches ("Ada") use
+              ("-g", "-O3", "-gnatp", "-gnatn");
+         when "Debug" =>
+            for Default_Switches ("Ada") use
+              ("-g", "-O0", "-gnata");
+      end case;
+      for Default_Switches ("ada") use Compiler'Default_Switches ("Ada") &
+        ("-gnatwa", "-gnatwe", "-gnatQ", "-gnatw.X", "-gnaty", "-gnatyO",
+         "-gnatwC", "-gnatyM80", "-ffunction-sections", "-fdata-sections");
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("Ada") use
+        ("-Wl,--gc-sections",
+         "-Wl,--print-memory-usage");
+   end Linker;
+
 end AGATE;

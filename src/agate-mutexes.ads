@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL; use HAL;
-
 package AGATE.Mutexes is
 
    procedure Wait_Lock (Mut : Mutex_ID);

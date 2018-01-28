@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL; use HAL;
-
 package AGATE.Semaphores is
 
    function Count (Sem : Semaphore_ID)

@@ -73,19 +73,19 @@ package body AGATE.Arch.RISCV is
    function Stvec return Word renames I_Stvec;
 
    procedure I_Write_Stvec is new Write_CSR ("stvec", Word);
-   procedure Write_Stvec (Val :Word) renames I_Write_Stvec;
+   procedure Write_Stvec (Val : Word) renames I_Write_Stvec;
 
    function I_Mtvec is new Read_CSR ("mtvec", Word);
    function Mtvec return Word renames I_Mtvec;
 
    procedure I_Write_Mtvec is new Write_CSR ("mtvec", Word);
-   procedure Write_Mtvec (Val :Word) renames I_Write_Mtvec;
+   procedure Write_Mtvec (Val : Word) renames I_Write_Mtvec;
 
    function I_Mscratch is new Read_CSR ("mscratch", Word);
    function Mscratch return Word renames I_Mscratch;
 
    procedure I_Write_Mscratch is new Write_CSR ("mscratch", Word);
-   procedure Write_Mcratch (Val :Word) renames I_Write_Mscratch;
+   procedure Write_Mcratch (Val : Word) renames I_Write_Mscratch;
 
    function I_Mbadaddr is new Read_CSR ("mbadaddr", Word);
    function Mbadaddr return Word renames I_Mbadaddr;

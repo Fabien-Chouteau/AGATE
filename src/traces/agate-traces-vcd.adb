@@ -29,7 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;                     use HAL;
 with AGATE.Traces_Output;     use AGATE.Traces_Output;
 with AGATE.Timer;
 with AGATE_Types_Data.Traces; use AGATE_Types_Data.Traces;
@@ -145,7 +144,7 @@ package body AGATE.Traces is
      (Now : Time := 0)
      return String
    is
-      T   : Constant Time := (if Now /= 0 then Now else Timer.Clock);
+      T   : constant Time := (if Now /= 0 then Now else Timer.Clock);
       Img : constant String := T'Img;
    begin
       return "#" & Img (Img'First + 1 .. Img'Last);
@@ -173,7 +172,7 @@ package body AGATE.Traces is
       end loop;
 
       --  TODO: print the boolean value of the integer (e.g. b100101)
-      Put_Line (Timestamp (Now) & " b" & bin & " " & Image (Token));
+      Put_Line (Timestamp (Now) & " b" & Bin & " " & Image (Token));
    end Put_State_Change;
 
    ----------------------
@@ -191,7 +190,7 @@ package body AGATE.Traces is
       end if;
 
       Put_Line (Timestamp (Now) & (if Value then " 1" else " 0") &
-                  Image(Token));
+                  Image (Token));
    end Put_State_Change;
 
    ----------------------
@@ -252,7 +251,7 @@ package body AGATE.Traces is
    function Create
      return String_Token
    is
-      Ret : String_Token := Next_String_Token;
+      Ret : constant String_Token := Next_String_Token;
    begin
       Next_String_Token := Next_String_Token + 1;
       return Ret;
@@ -266,7 +265,7 @@ package body AGATE.Traces is
    function Create
      return Wire_Token
    is
-      Ret : Wire_Token := Next_Wire_Token;
+      Ret : constant Wire_Token := Next_Wire_Token;
    begin
       Next_Wire_Token := Next_Wire_Token + 1;
       return Ret;
@@ -279,7 +278,7 @@ package body AGATE.Traces is
    function Create
      return Reg_Token
    is
-      Ret : Reg_Token := Next_Reg_Token;
+      Ret : constant Reg_Token := Next_Reg_Token;
    begin
       Next_Reg_Token := Next_Reg_Token + 1;
       return Ret;
@@ -292,7 +291,7 @@ package body AGATE.Traces is
    function Create
      return Event_Token
    is
-      Ret : Event_Token := Next_Event_Token;
+      Ret : constant Event_Token := Next_Event_Token;
    begin
       Next_Event_Token := Next_Event_Token + 1;
       return Ret;
@@ -491,6 +490,7 @@ package body AGATE.Traces is
       Count : Semaphore_Count;
       By    : Task_ID)
    is
+      pragma Unreferenced (By);
    begin
       Put_State_Change (ID.Trace_Data.Token, Word (Count));
    end Value_Changed;
@@ -529,6 +529,7 @@ package body AGATE.Traces is
      (ID : Mutex_ID;
       By : Task_ID)
    is
+      pragma Unreferenced (By);
    begin
       Put_State_Change (ID.Trace_Data.Token, "unlocked");
    end Release;

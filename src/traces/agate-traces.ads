@@ -29,9 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Semaphores; use AGATE.Semaphores;
-with AGATE.Mutexes;    use AGATE.Mutexes;
-
 package AGATE.Traces is
 
    -- Tasks --

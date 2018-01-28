@@ -77,13 +77,6 @@ package body AGATE is
       return Semaphore_ID
    is (To_ID_Internal (ID));
 
-   --------
-   -- ID --
-   --------
-
-   function ID (T : Task_Object_Access) return Task_ID
-   is (Task_ID (T));
-
    -----------
    -- Image --
    -----------

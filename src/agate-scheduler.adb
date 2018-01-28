@@ -29,8 +29,6 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with HAL;                  use HAL;
-with Tools;                use Tools;
 with System;               use System;
 with AGATE.Traces;
 with AGATE.Scheduler.Context_Switch;
@@ -45,20 +43,18 @@ package body AGATE.Scheduler is
    Idle_Sec_Stack : aliased Task_Sec_Stack := (1 .. 0 => 0);
    Idle_Heap      : aliased Task_Heap := (1 .. 0 => 0);
 
-   Idle_Task : aliased Task_Object (Proc          =>  AGATE.Arch.Idle_Procedure'Access,
-                                    Base_Prio     => -1,
-                                    Stack         => Idle_Stack'Access,
-                                    Sec_Stack     => Idle_Sec_Stack'Access,
-                                    Heap          => Idle_Heap'Access);
+   Idle_Task : aliased Task_Object
+     (Proc      =>  AGATE.Arch.Idle_Procedure'Access,
+      Base_Prio => -1,
+      Stack     => Idle_Stack'Access,
+      Sec_Stack => Idle_Sec_Stack'Access,
+      Heap      => Idle_Heap'Access);
 
    function In_Ready_Tasks (ID : Task_ID) return Boolean;
 
-   procedure Extract
-     (ID : Task_ID)
-     with Pre => ID = Task_To_Run;
+   procedure Extract (ID : Task_ID);
 
-   procedure Insert
-     (ID : Task_ID)
+   procedure Insert (ID : Task_ID)
      with Pre => not In_Ready_Tasks (ID);
 
    procedure Insert_Alarm
@@ -93,7 +89,6 @@ package body AGATE.Scheduler is
    -----------
 
    procedure Start is
-      First_Context : System.Address := Null_Address;
    begin
       if Ready_Tasks = null then
          raise Program_Error with "No task to run";
@@ -206,7 +201,7 @@ package body AGATE.Scheduler is
    procedure Insert
      (ID : Task_ID)
    is
-      Acc  : Task_Object_Access := Task_Object_Access(ID);
+      Acc  : constant Task_Object_Access := Task_Object_Access (ID);
       Cur  : Task_Object_Access := Ready_Tasks;
       Prev : Task_Object_Access := null;
    begin
@@ -319,8 +314,8 @@ package body AGATE.Scheduler is
    procedure Delay_Until
      (Wake_Up_Time : Time)
    is
-      T   : Task_Object_Access := Task_Object_Access (Current_Task);
-      Now : Time := AGATE.Timer.Clock;
+      T   : constant Task_Object_Access := Task_Object_Access (Current_Task);
+      Now : constant Time := AGATE.Timer.Clock;
    begin
       if Wake_Up_Time <= Now then
          Scheduler.Yield;
@@ -402,23 +397,5 @@ package body AGATE.Scheduler is
    function Context_Switch_Needed
      return Boolean
    is (Task_To_Run /= Current_Task);
-
-   --------
-   -- ID --
-   --------
-
-   function ID (T : Task_Object_Access) return Task_ID
-   is (Task_ID (T));
-
-   -----------
-   -- Image --
-   -----------
-
-   function Image (ID : Task_ID) return String
-   is
-      T : constant Task_Object_Access := Task_Object_Access (ID);
-   begin
-      return To_Integer (T.all'Address)'Img;
-   end Image;
 
 end AGATE.Scheduler;
