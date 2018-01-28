@@ -44,7 +44,7 @@ project AGATE is
          Src_Dir := Src_Dir & ("src/riscv32");
    end case;
 
-   for Source_Dirs use ("src") & Src_Dir;
+   for Source_Dirs use ("src", "src/api", "src/traces") & Src_Dir;
 
    package Naming is
 
