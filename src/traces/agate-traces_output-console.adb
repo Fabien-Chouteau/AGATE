@@ -29,6 +29,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with AGATE.Console; use AGATE.Console;
+
 package body AGATE.Traces_Output is
 
    Init_Done : Boolean := False;
@@ -49,11 +51,7 @@ package body AGATE.Traces_Output is
    -- Finalize --
    --------------
 
-   procedure Finalize
-   is
-   begin
-      null;
-   end Finalize;
+   procedure Finalize is null;
 
    -----------------
    -- Initialized --
@@ -73,8 +71,12 @@ package body AGATE.Traces_Output is
       Buffer_Size     : Natural)
       return Natural
    is
-      pragma Unreferenced (Buffer_Address);
+      Str : array (1 .. Buffer_Size) of Character
+        with Address => Buffer_Address;
    begin
+      for C of Str loop
+         AGATE.Console.Print (C);
+      end loop;
       return Buffer_Size;
    end Write;
 

@@ -9,7 +9,7 @@ project AGATE is
    for Main use ("main.adb");
    for Create_Missing_Dirs use "true";
 
-   type Traces_Output_Kind is ("none", "arm_semihosting");
+   type Traces_Output_Kind is ("none", "arm_semihosting", "console");
    Traces_Output : Traces_Output_Kind := external("Traces_Output", "none");
 
    type Traces_Kind is ("none", "vcd");
