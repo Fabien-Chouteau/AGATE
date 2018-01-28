@@ -39,14 +39,14 @@ package AGATE.SysCalls is
 
    function Call (ID               : Syscall_ID;
                   Arg1, Arg2, Arg3 : Word := 0)
-                  return Word;
+                  return UInt64;
 
    procedure Call (ID               : Syscall_ID;
                    Arg1, Arg2, Arg3 : Word := 0);
 
 
    type Syscall_Handler is access
-     function (Arg1, Arg2, Arg3 : Word) return Word;
+     function (Arg1, Arg2, Arg3 : Word) return UInt64;
 
    function Registred (ID : Syscall_ID) return Boolean;
    --  Return True if a handler is registered for the given syscall

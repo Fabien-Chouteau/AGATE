@@ -71,9 +71,11 @@ package body AGATE.SysCalls is
       type Stack_Array is array (1 .. 4) of Word
         with Pack, Size => 4 * 32;
 
-      PSP : System.Address;
-      Ret : Word;
-      ID  : Syscall_ID;
+      PSP    : System.Address;
+      Ret    : UInt64;
+      Ret_Lo : Word;
+      Ret_Hi : Word;
+      ID     : Syscall_ID;
    begin
       Asm ("mrs %0, psp",
            Outputs  => System.Address'Asm_Output ("=r", PSP),
@@ -95,6 +97,7 @@ package body AGATE.SysCalls is
                   Ret := SysCall_Handler_Table (ID) (Args (2),
                                                      Args (3),
                                                      Args (4));
+
                else
                   raise Program_Error with "No handler for Syscall";
                end if;
@@ -104,9 +107,13 @@ package body AGATE.SysCalls is
          end;
       end if;
 
+      Ret_Lo := Word (Ret and 16#FFFF_FFFF#);
+      Ret_Hi := Word (Shift_Right (Ret, 32) and 16#FFFF_FFFF#);
       Asm ("mrs r1, psp"  & ASCII.LF &
-           "str %0, [r1]",
-           Inputs   => Word'Asm_Input ("r", Ret),
+           "str %0, [r1]" & ASCII.LF &
+           "str %1, [r1, 4]",
+           Inputs   => (Word'Asm_Input ("r", Ret_Lo),
+                        Word'Asm_Input ("r", Ret_Hi)),
            Volatile => True,
            Clobber  => "r1");
    end SVCall_Handler;
@@ -117,24 +124,26 @@ package body AGATE.SysCalls is
 
    function Call (ID               : Syscall_ID;
                   Arg1, Arg2, Arg3 : Word := 0)
-                  return Word
+                  return UInt64
    is
-      Ret : Word;
+      Ret_Lo, Ret_Hi : Word;
    begin
-      Asm ("mov r0, %1" & ASCII.LF &
-           "mov r1, %2" & ASCII.LF &
-           "mov r2, %3" & ASCII.LF &
-           "mov r3, %4" & ASCII.LF &
-           "svc 1" & ASCII.LF &
-           "mov %0, r0",
-           Outputs => Word'Asm_Output ("=r", Ret),
+      Asm ("mov r0, %2" & ASCII.LF &
+           "mov r1, %3" & ASCII.LF &
+           "mov r2, %4" & ASCII.LF &
+           "mov r3, %5" & ASCII.LF &
+           "svc 1"      & ASCII.LF &
+           "mov %0, r0" & ASCII.LF &
+           "mov %1, r1",
+           Outputs => (Word'Asm_Output ("=r", Ret_Lo),
+                       Word'Asm_Output ("=r", Ret_Hi)),
            Inputs => (Syscall_ID'Asm_Input ("r", ID),
                       Word'Asm_Input ("r", Arg1),
                       Word'Asm_Input ("r", Arg2),
                       Word'Asm_Input ("r", Arg3)),
-           Clobber => "r0,r1",
+           Clobber => "r0,r1,r2,r3",
            Volatile => True);
-      return Ret;
+      return Shift_Left (UInt64 (Ret_Hi), 32) or Uint64 (Ret_Lo);
    end Call;
 
    ----------
@@ -144,7 +153,7 @@ package body AGATE.SysCalls is
    procedure Call (ID               : Syscall_ID;
                    Arg1, Arg2, Arg3 : Word := 0)
    is
-      Unref : Word with Unreferenced;
+      Unref : UInt64 with Unreferenced;
    begin
       Unref := Call (ID, Arg1, Arg2, Arg3);
    end Call;
