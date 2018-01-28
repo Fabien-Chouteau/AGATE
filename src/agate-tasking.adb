@@ -204,7 +204,7 @@ package body AGATE.Tasking is
    begin
       Acc.Next := null;
 
-      while Cur /= null and then Cur.Current_Prio > Acc.Current_Prio loop
+      while Cur /= null and then Cur.Current_Prio >= Acc.Current_Prio loop
          Prev := Cur;
          Cur := Cur.Next;
       end loop;
