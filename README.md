@@ -14,10 +14,8 @@ available on the AdaCore website:
 
 To build the project, simply run `gprbuild`:
 ```
-$ gprbuild -j0 -P agate.gpr -XGNATEMU_BOARD=STM32F4
+$ gprbuild -j0 -P agate.gpr -XArchitecture=Cortex-M4 
 ```
-
-(Don't mind the warnings...)
 
 ## Run
 You can try the project in GNATemulator (QEMU) provided with GNAT:
@@ -45,7 +43,7 @@ $ arm-eabi-gnatemu -P agate.gpr obj/main
 
 The execution of the example will produce a
 [VCD](https://en.wikipedia.org/wiki/Value_change_dump) trace file that can be
-open with [GTKwave](http://gtkwave.sourceforge.net/).
+opened with [GTKwave](http://gtkwave.sourceforge.net/).
 
 ```
 $ gtkwave agate_traces.vcd
