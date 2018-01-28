@@ -30,9 +30,9 @@
 ------------------------------------------------------------------------------
 
 with Ada.Unchecked_Conversion;
-with AGATE.Tasking;                use AGATE.Tasking;
+with AGATE.Scheduler;                use AGATE.Scheduler;
 with AGATE.Traces;
-with AGATE.Tasking.Context_Switch;
+with AGATE.Scheduler.Context_Switch;
 
 package body AGATE.Semaphores is
 
@@ -79,7 +79,7 @@ package body AGATE.Semaphores is
             T : constant Task_Object_Access := Task_Object_Access (Current_Task);
          begin
             --  Suspend the current task
-            Tasking.Suspend (Tasking.Semaphore);
+            Scheduler.Suspend (Scheduler.Semaphore);
 
             --  Add it to the waiting queue
             Insert_Task (Sem.all, T);
@@ -117,7 +117,7 @@ package body AGATE.Semaphores is
       T := Sem.Waiting_List;
       Sem.Waiting_List := T.Next;
 
-      Tasking.Resume (Task_ID (T));
+      Scheduler.Resume (Task_ID (T));
    end Resume_One_Task;
 
 

@@ -34,7 +34,7 @@ with System.Machine_Reset;
 pragma Warnings (On, "is an internal GNAT unit");
 
 with AGATE.SysCalls; use AGATE.SysCalls;
-with AGATE.Tasking;
+with AGATE.Scheduler;
 with AGATE.Timer;
 with AGATE.Traces;
 
@@ -77,7 +77,7 @@ package body AGATE.API is
       return UInt64
    is
    begin
-      AGATE.Tasking.Yield;
+      AGATE.Scheduler.Yield;
       return 0;
    end Do_Yield;
 
@@ -106,7 +106,7 @@ package body AGATE.API is
       return UInt64
    is
    begin
-      Tasking.Delay_Until (Time (Arg1));
+      Scheduler.Delay_Until (Time (Arg1));
       return 0;
    end Do_Delay_Until;
 

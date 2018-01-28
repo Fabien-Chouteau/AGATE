@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking; use AGATE.Tasking;
+with AGATE.Scheduler; use AGATE.Scheduler;
 
 package body AGATE.API.Dynamic_Task is
 

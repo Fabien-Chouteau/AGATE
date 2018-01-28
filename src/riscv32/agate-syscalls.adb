@@ -36,7 +36,7 @@ with System.Storage_Elements; use System.Storage_Elements;
 
 with AGATE.Traps;             use AGATE.Traps;
 with AGATE.Timer;
-with AGATE.Tasking;
+with AGATE.Scheduler;
 with AGATE.Traces;
 with AGATE_Arch_Parameters;   use AGATE_Arch_Parameters;
 
@@ -68,7 +68,7 @@ package body AGATE.SysCalls is
    procedure Syscall_Trap_Handler is
       ID_Word , Arg1, Arg2, Arg3 : Word;
       ID : Syscall_ID;
-      Ctx : Task_Context renames Tasking.Current_Task.Context;
+      Ctx : Task_Context renames Scheduler.Current_Task.Context;
       Ret : UInt64;
    begin
       --  Increase the task PC to not execute the ecall instruction again

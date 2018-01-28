@@ -33,11 +33,11 @@ with HAL;                  use HAL;
 with Tools;                use Tools;
 with System;               use System;
 with AGATE.Traces;
-with AGATE.Tasking.Context_Switch;
+with AGATE.Scheduler.Context_Switch;
 with AGATE.Arch;           use AGATE.Arch;
 with AGATE.Timer;
 
-package body AGATE.Tasking is
+package body AGATE.Scheduler is
 
    Alarm_List : Task_Object_Access := null;
 
@@ -323,9 +323,9 @@ package body AGATE.Tasking is
       Now : Time := AGATE.Timer.Clock;
    begin
       if Wake_Up_Time <= Now then
-         Tasking.Yield;
+         Scheduler.Yield;
       else
-         Tasking.Suspend (Alarm);
+         Scheduler.Suspend (Alarm);
          T.Alarm_Time := Wake_Up_Time;
          Insert_Alarm (T);
 
@@ -375,7 +375,7 @@ package body AGATE.Tasking is
       while Alarm_List /= null and then Alarm_List.Alarm_Time <= Now loop
          T := Alarm_List;
          Alarm_List := T.Next;
-         Tasking.Resume (Task_ID (T));
+         Scheduler.Resume (Task_ID (T));
       end loop;
 
       Update_Alarm_Time;
@@ -421,4 +421,4 @@ package body AGATE.Tasking is
       return To_Integer (T.all'Address)'Img;
    end Image;
 
-end AGATE.Tasking;
+end AGATE.Scheduler;

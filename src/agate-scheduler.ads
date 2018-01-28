@@ -29,8 +29,44 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Tasking.Context_Switch is
+with System.Storage_Elements; use System.Storage_Elements;
+with HAL;                     use HAL;
 
-   procedure Switch;
+package AGATE.Scheduler is
 
-end AGATE.Tasking.Context_Switch;
+   procedure Register (ID   : Task_ID;
+                       Name : String)
+     with Pre => Name'Length <= Task_Name'Length;
+
+   procedure Start
+     with No_Return;
+
+   procedure Print_Ready_Tasks;
+
+   -- Scheduler --
+
+   function Current_Task return Task_ID;
+   function Task_To_Run return Task_ID;
+   procedure Yield;
+   procedure Resume (ID : Task_ID);
+
+   type Suspend_Reason is (Alarm, Semaphore, Mutex);
+   procedure Suspend (Reason : Suspend_Reason);
+
+   procedure Change_Priority (New_Prio : Task_Priority);
+
+   procedure Delay_Until (Wake_Up_Time : Time);
+
+   procedure Wakeup_Expired_Alarms;
+
+   function Context_Switch_Needed return Boolean;
+
+   function Current_Task_Context return System.Address;
+   pragma Export (C, Current_Task_Context, "current_task_context");
+
+private
+
+   Running_Task : Task_Object_Access := null;
+   Ready_Tasks  : Task_Object_Access := null;
+
+end AGATE.Scheduler;

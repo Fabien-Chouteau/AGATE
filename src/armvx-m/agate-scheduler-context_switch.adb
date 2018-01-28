@@ -29,13 +29,20 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with System.Machine_Code; use System.Machine_Code;
+with System.Machine_Code;   use System.Machine_Code;
+
+with Cortex_M_SVD.SCB;      use Cortex_M_SVD.SCB;
 
 with AGATE.Traces;
+with AGATE.Arch.ArmvX_m;    use AGATE.Arch.ArmvX_m;
+with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
 
-with AGATE.Arch.RISCV; use AGATE.Arch.RISCV;
 
-package body AGATE.Tasking.Context_Switch is
+package body AGATE.Scheduler.Context_Switch is
+
+   procedure Context_Switch_Handler;
+   pragma Machine_Attribute (Context_Switch_Handler, "naked");
+   pragma Export (C, Context_Switch_Handler, "PendSV_Handler");
 
    ------------
    -- Switch --
@@ -43,6 +50,28 @@ package body AGATE.Tasking.Context_Switch is
 
    procedure Switch is
    begin
+      --  Trigger PendSV
+      SCB_Periph.ICSR.PENDSVSET := True;
+   end Switch;
+
+   ----------------------------
+   -- Context_Switch_Handler --
+   ----------------------------
+
+   procedure Context_Switch_Handler is
+   begin
+
+      Asm (Template =>
+             "push {lr}" & ASCII.LF &
+             "bl current_task_context" & ASCII.LF &
+             "stm  r0, {r4-r12}", -- Save extra context
+           Volatile => True);
+
+      SCB_Periph.ICSR.PENDSVCLR := True;
+
+      Running_Task.Stack_Pointer := PSP;
+
+      Set_PSP (Ready_Tasks.Stack_Pointer);
 
       Traces.Context_Switch (Task_ID (Running_Task),
                              Task_ID (Ready_Tasks));
@@ -50,9 +79,13 @@ package body AGATE.Tasking.Context_Switch is
       Running_Task := Ready_Tasks;
       Running_Task.Status := Running;
 
-      Write_Mcratch (Word (To_Integer (Current_Task_Context)));
-
       Traces.Running (Current_Task);
-   end Switch;
 
-end AGATE.Tasking.Context_Switch;
+      Asm (Template =>
+             "bl current_task_context" & ASCII.LF &
+             "ldm  r0, {r4-r12}"       & ASCII.LF & -- Load extra context
+             "pop {pc}",
+           Volatile => True);
+   end Context_Switch_Handler;
+
+end AGATE.Scheduler.Context_Switch;

@@ -33,8 +33,8 @@ with Ada.Text_IO;
 
 with Cortex_M_SVD.SysTick;         use Cortex_M_SVD.SysTick;
 with AGATE.Traps;                  use AGATE.Traps;
-with AGATE.Tasking;                use AGATE.Tasking;
-with AGATE.Tasking.Context_Switch;
+with AGATE.Scheduler;                use AGATE.Scheduler;
+with AGATE.Scheduler.Context_Switch;
 
 with Cortex_M_SVD.SCB;             use Cortex_M_SVD.SCB;
 with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
@@ -91,7 +91,7 @@ package body AGATE.Timer is
    procedure Timer_Handler
    is
    begin
-      AGATE.Tasking.Wakeup_Expired_Alarms;
+      AGATE.Scheduler.Wakeup_Expired_Alarms;
       Clear_Timer_Interrupt;
    end Timer_Handler;
 

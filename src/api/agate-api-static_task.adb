@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking;
+with AGATE.Scheduler;
 
 package body AGATE.API.Static_Task is
 
@@ -55,5 +55,5 @@ package body AGATE.API.Static_Task is
    is (Task_ID (The_Access));
 
 begin
-   AGATE.Tasking.Register (ID, Name);
+   AGATE.Scheduler.Register (ID, Name);
 end AGATE.API.Static_Task;

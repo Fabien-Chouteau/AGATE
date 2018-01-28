@@ -29,9 +29,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with AGATE.Tasking;                use AGATE.Tasking;
+with AGATE.Scheduler;                use AGATE.Scheduler;
 with AGATE.Traces;
-with AGATE.Tasking.Context_Switch;
+with AGATE.Scheduler.Context_Switch;
 
 package body AGATE.Mutexes is
 
@@ -57,7 +57,7 @@ package body AGATE.Mutexes is
          Traces.Lock (Mut, Task_ID (Mut.Owner));
       else
          --  Suspend the current task
-         Tasking.Suspend (Tasking.Mutex);
+         Scheduler.Suspend (Scheduler.Mutex);
 
          --  Add it to the waiting queue
          Insert_Task (Mut.all, T);
@@ -121,7 +121,7 @@ package body AGATE.Mutexes is
 
          Traces.Lock (Mut, Task_ID (Mut.Owner));
 
-         Tasking.Resume (Task_ID (Mut.Owner));
+         Scheduler.Resume (Task_ID (Mut.Owner));
       end if;
    end Release;
 
