@@ -36,7 +36,7 @@ with System.Machine_Code;     use System.Machine_Code;
 with System.Storage_Elements; use System.Storage_Elements;
 
 with AGATE.Traps;             use AGATE.Traps;
-with AGATE.Timing;
+with AGATE.Timer;
 with AGATE.Tasking;
 with AGATE.Traces;
 with AGATE_Arch_Parameters;   use AGATE_Arch_Parameters;

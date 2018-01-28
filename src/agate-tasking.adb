@@ -35,8 +35,11 @@ with System;               use System;
 with AGATE.Traces;
 with AGATE.Tasking.Context_Switch;
 with AGATE.Arch;           use AGATE.Arch;
+with AGATE.Timer;
 
 package body AGATE.Tasking is
+
+   Alarm_List : Task_Object_Access := null;
 
    Idle_Stack     : aliased Task_Stack := (1 .. 256 => 0);
    Idle_Sec_Stack : aliased Task_Sec_Stack := (1 .. 0 => 0);
@@ -57,6 +60,11 @@ package body AGATE.Tasking is
    procedure Insert
      (ID : Task_ID)
      with Pre => not In_Ready_Tasks (ID);
+
+   procedure Insert_Alarm
+     (T : Task_Object_Access);
+
+   procedure Update_Alarm_Time;
 
    --------------
    -- Register --
@@ -303,6 +311,89 @@ package body AGATE.Tasking is
          Insert (T);
       end if;
    end Change_Priority;
+
+   -----------------
+   -- Delay_Until --
+   -----------------
+
+   procedure Delay_Until
+     (Wake_Up_Time : Time)
+   is
+      T   : Task_Object_Access := Task_Object_Access (Current_Task);
+      Now : Time := AGATE.Timer.Clock;
+   begin
+      if Wake_Up_Time <= Now then
+         Tasking.Yield;
+      else
+         Tasking.Suspend (Alarm);
+         T.Alarm_Time := Wake_Up_Time;
+         Insert_Alarm (T);
+
+         if Context_Switch_Needed then
+            Context_Switch.Switch;
+         end if;
+      end if;
+   end Delay_Until;
+
+   ------------------
+   -- Insert_Alarm --
+   ------------------
+
+   procedure Insert_Alarm
+     (T : Task_Object_Access)
+   is
+      Cur : Task_Object_Access := Alarm_List;
+      Prev : Task_Object_Access := null;
+   begin
+
+      while Cur /= null and then Cur.Alarm_Time < T.Alarm_Time loop
+         Prev := Cur;
+         Cur := Cur.Next;
+      end loop;
+
+      if Prev = null then
+         --  Head insertion
+         T.Next := Alarm_List;
+         Alarm_List := T;
+      else
+         Prev.Next := T;
+         T.Next := Cur;
+      end if;
+
+      Update_Alarm_Time;
+   end Insert_Alarm;
+
+   ---------------------------
+   -- Wakeup_Expired_Alarms --
+   ---------------------------
+
+   procedure Wakeup_Expired_Alarms
+   is
+      Now : constant Time := AGATE.Timer.Clock;
+      T   : Task_Object_Access := Alarm_List;
+   begin
+      while Alarm_List /= null and then Alarm_List.Alarm_Time <= Now loop
+         T := Alarm_List;
+         Alarm_List := T.Next;
+         Tasking.Resume (Task_ID (T));
+      end loop;
+
+      Update_Alarm_Time;
+   end Wakeup_Expired_Alarms;
+
+   -----------------------
+   -- Update_Alarm_Time --
+   -----------------------
+
+   procedure Update_Alarm_Time
+   is
+   begin
+      if Alarm_List = null then
+         AGATE.Timer.Set_Alarm (Time'Last);
+      else
+         AGATE.Timer.Set_Alarm (Alarm_List.Alarm_Time);
+      end if;
+   end Update_Alarm_Time;
 
    ---------------------------
    -- Context_Switch_Needed --

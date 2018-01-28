@@ -39,18 +39,14 @@ with AGATE.Tasking.Context_Switch;
 with Cortex_M_SVD.SCB;             use Cortex_M_SVD.SCB;
 with AGATE_Arch_Parameters;        use AGATE_Arch_Parameters;
 
-package body AGATE.Timing is
+package body AGATE.Timer is
 
    Tick_Period : constant := 168_000_000 / 1_000;
    Next_Tick   : Time;
 
-   Alarm_List : Task_Object_Access := null;
-
    procedure Initialize;
    procedure Timer_Handler;
    procedure Clear_Timer_Interrupt;
-   procedure Wakeup_Expired_Alarms (Now : Time);
-   procedure Print_Alarm_List;
 
    ----------------
    -- Initialize --
@@ -70,7 +66,6 @@ package body AGATE.Timing is
       SysTick_Periph.CSR.ENABLE := Enable;
 
       Clear_Timer_Interrupt;
-
 
       --  SysTick_Periph.CSR.TICKINT := Enable;
       --  Workaround...
@@ -96,7 +91,7 @@ package body AGATE.Timing is
    procedure Timer_Handler
    is
    begin
-      Wakeup_Expired_Alarms (Clock);
+      AGATE.Tasking.Wakeup_Expired_Alarms;
       Clear_Timer_Interrupt;
    end Timer_Handler;
 
@@ -121,92 +116,18 @@ package body AGATE.Timing is
       return Time (Ret);
    end Clock;
 
-   ------------------
-   -- Insert_Alarm --
-   ------------------
+   ---------------
+   -- Set_Alarm --
+   ---------------
 
-   procedure Insert_Alarm
-     (T : Task_Object_Access)
+   procedure Set_Alarm (Alarm_Time : Time)
    is
-      Cur : Task_Object_Access := Alarm_List;
-      Prev : Task_Object_Access := null;
    begin
-
-      while Cur /= null and then Cur.Alarm_Time < T.Alarm_Time loop
-         Prev := Cur;
-         Cur := Cur.Next;
-      end loop;
-
-      if Prev = null then
-         --  Head insertion
-         T.Next := Alarm_List;
-         Alarm_List := T;
-      else
-         Prev.Next := T;
-         T.Next := Cur;
-      end if;
-   end Insert_Alarm;
-
-   ---------------------------
-   -- Wakeup_Expired_Alarms --
-   ---------------------------
-
-   procedure Wakeup_Expired_Alarms
-     (Now : Time)
-   is
-      T : Task_Object_Access := Alarm_List;
-   begin
---        Ada.Text_IO.Put_Line ("Wakeup_Expired_Alarms");
-      while Alarm_List /= null and then Alarm_List.Alarm_Time <= Now loop
-         T := Alarm_List;
-         Alarm_List := T.Next;
-         Tasking.Resume (Task_ID (T));
-      end loop;
-   end Wakeup_Expired_Alarms;
-
-   ----------------------
-   -- Print_Alarm_List --
-   ----------------------
-
-   procedure Print_Alarm_List
-   is
-      T : Task_Object_Access := Alarm_List;
-   begin
-      Ada.Text_IO.Put_Line ("Alarm list:");
-      if T = null then
-         Ada.Text_IO.Put_Line ("   No alarms");
-      else
-         while T /= null loop
-            Ada.Text_IO.Put_Line ("   - " & T.Alarm_Time'Img &
-                                    " - " & Image (Task_ID (T)));
-            T := T.Next;
-         end loop;
-      end if;
-   end Print_Alarm_List;
-
-   -----------------
-   -- Delay_Until --
-   -----------------
-
-   procedure Delay_Until
-     (Wake_Up_Time : Time)
-   is
-      T   : Task_Object_Access := Task_Object_Access (Current_Task);
-      Now : Time := Clock;
-   begin
-      if Wake_Up_Time <= Now then
-         Tasking.Yield;
-      else
-         Tasking.Suspend (Alarm);
-         T.Alarm_Time := Wake_Up_Time;
-         Insert_Alarm (T);
-
-         if Context_Switch_Needed then
-            Context_Switch.Switch;
-         end if;
-      end if;
-   end Delay_Until;
+      --  There's no alarm timer in the SysTick implementation. Instead the
+      --  system gets an interrupt at a given frequency (the tick).
+      null;
+   end Set_Alarm;
 
 begin
    Initialize;
-end AGATE.Timing;
+end AGATE.Timer;

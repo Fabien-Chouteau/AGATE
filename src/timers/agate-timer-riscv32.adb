@@ -34,7 +34,7 @@ with AGATE.Traps;                  use AGATE.Traps;
 with AGATE.Tasking;                use AGATE.Tasking;
 with AGATE.Tasking.Context_Switch;
 
-package body AGATE.Timing is
+package body AGATE.Timer is
 
    Mtime_Lo : Word with Volatile_Full_Access, Address => Mtime_Lo_Addr;
    Mtime_Hi : Word with Volatile_Full_Access, Address => Mtime_Hi_Addr;
@@ -42,14 +42,8 @@ package body AGATE.Timing is
    Mtimecmp_Lo : Word with Volatile_Full_Access, Address => Mtimecmp_Lo_Addr;
    Mtimecmp_Hi : Word with Volatile_Full_Access, Address => Mtimecmp_Hi_Addr;
 
-   Current_Compare_Time : Time;
-
-   Alarm_List : Task_Object_Access := null;
-
    procedure Initialize;
    procedure Timer_Handler;
-   procedure Wakeup_Expired_Alarms (Now : Time);
-   procedure Update_Comparator;
 
    Timer_Trap_ID : constant := -17;
 
@@ -60,8 +54,7 @@ package body AGATE.Timing is
    procedure Initialize is
    begin
       Register (Timer_Handler'Access, Timer_Trap_ID, 0);
-      Update_Comparator;
-      Disable (Timer_Trap_ID);
+      Set_Alarm (Time'Last);
    end Initialize;
 
    -------------------
@@ -70,30 +63,8 @@ package body AGATE.Timing is
 
    procedure Timer_Handler is
    begin
-      Wakeup_Expired_Alarms (Clock);
+      AGATE.Tasking.Wakeup_Expired_Alarms;
    end Timer_Handler;
-
-   -----------------------
-   -- Update_Comparator --
-   -----------------------
-
-   procedure Update_Comparator is
-   begin
-      if Alarm_List = null then
-         Current_Compare_Time := Time'Last;
-         Disable (Timer_Trap_ID);
-
-      else
-         Current_Compare_Time := Alarm_List.Alarm_Time;
-      end if;
-
-      Mtimecmp_Lo := Word (Current_Compare_Time and 16#FFFF_FFFF#);
-      Mtimecmp_Hi := Word (Shift_Right (Current_Compare_Time, 32) and 16#FFFF_FFFF#);
-
-      if Current_Compare_Time /= Time'Last then
-         Enable (Timer_Trap_ID);
-      end if;
-   end Update_Comparator;
 
    -----------
    -- Clock --
@@ -113,85 +84,24 @@ package body AGATE.Timing is
       end if;
    end Clock;
 
-   ------------------
-   -- Insert_Alarm --
-   ------------------
+   ---------------
+   -- Set_Alarm --
+   ---------------
 
-   procedure Insert_Alarm
-     (T : Task_Object_Access)
+   procedure Set_Alarm (Alarm_Time : Time)
    is
-      Cur : Task_Object_Access := Alarm_List;
-      Prev : Task_Object_Access := null;
    begin
+      Disable (Timer_Trap_ID);
 
-      while Cur /= null and then Cur.Alarm_Time < T.Alarm_Time loop
-         Prev := Cur;
-         Cur := Cur.Next;
-      end loop;
+      Mtimecmp_Lo := Word (Alarm_Time and 16#FFFF_FFFF#);
+      Mtimecmp_Hi := Word (Shift_Right (Alarm_Time, 32) and 16#FFFF_FFFF#);
 
-      if Prev = null then
-         --  Head insertion
-         T.Next := Alarm_List;
-         Alarm_List := T;
-      else
-         Prev.Next := T;
-         T.Next := Cur;
+      if Alarm_Time /= Time'Last then
+         Enable (Timer_Trap_ID);
       end if;
-
-      Update_Comparator;
-   end Insert_Alarm;
-
-   ---------------------------
-   -- Wakeup_Expired_Alarms --
-   ---------------------------
-
-   procedure Wakeup_Expired_Alarms
-     (Now : Time)
-   is
-      T : Task_Object_Access := Alarm_List;
-   begin
-      while Alarm_List /= null and then Alarm_List.Alarm_Time <= Now loop
-         T := Alarm_List;
-         Alarm_List := T.Next;
-         Tasking.Resume (Task_ID (T));
-      end loop;
-      Update_Comparator;
-   end Wakeup_Expired_Alarms;
-
-   ----------------------
-   -- Print_Alarm_List --
-   ----------------------
-
-   procedure Print_Alarm_List
-   is
-   begin
-      null;
-   end Print_Alarm_List;
-
-   -----------------
-   -- Delay_Until --
-   -----------------
-
-   procedure Delay_Until
-     (Wake_Up_Time : Time)
-   is
-      T   : Task_Object_Access := Task_Object_Access (Current_Task);
-      Now : Time := Clock;
-   begin
-      if Wake_Up_Time <= Now then
-         Tasking.Yield;
-      else
-         Tasking.Suspend (Alarm);
-         T.Alarm_Time := Wake_Up_Time;
-         Insert_Alarm (T);
-
-         if Context_Switch_Needed then
-            Context_Switch.Switch;
-         end if;
-      end if;
-   end Delay_Until;
+   end Set_Alarm;
 
 begin
    Initialize;
-end AGATE.Timing;
+end AGATE.Timer;
 

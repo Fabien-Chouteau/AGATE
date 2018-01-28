@@ -39,8 +39,8 @@ project AGATE is
 
    package Naming is
 
-      for Body ("AGATE.Timing") use
-        "agate-timing-" & Timming & ".adb";
+      for Body ("AGATE.Timer") use
+        "agate-timer-" & Timming & ".adb";
 
       for Body ("AGATE.Traps") use
         "agate-traps-" & Interrupts & ".adb";

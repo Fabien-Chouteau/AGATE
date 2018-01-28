@@ -55,6 +55,10 @@ package AGATE.Tasking is
 
    procedure Change_Priority (New_Prio : Task_Priority);
 
+   procedure Delay_Until (Wake_Up_Time : Time);
+
+   procedure Wakeup_Expired_Alarms;
+
    function Context_Switch_Needed return Boolean;
 
    function Current_Task_Context return System.Address;

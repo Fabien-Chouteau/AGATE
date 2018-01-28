@@ -31,7 +31,7 @@
 
 with HAL;                     use HAL;
 with AGATE.Traces_Output;     use AGATE.Traces_Output;
-with AGATE.Timing;
+with AGATE.Timer;
 with AGATE_Types_Data.Traces; use AGATE_Types_Data.Traces;
 
 package body AGATE.Traces is
@@ -145,7 +145,7 @@ package body AGATE.Traces is
      (Now : Time := 0)
      return String
    is
-      T   : Constant Time := (if Now /= 0 then Now else Timing.Clock);
+      T   : Constant Time := (if Now /= 0 then Now else Timer.Clock);
       Img : constant String := T'Img;
    begin
       return "#" & Img (Img'First + 1 .. Img'Last);
@@ -460,7 +460,7 @@ package body AGATE.Traces is
    procedure Context_Switch
      (Old, Next : Task_ID)
    is
-      Now : constant Time := Timing.Clock;
+      Now : constant Time := Timer.Clock;
    begin
       Put_State_Change (Old.Trace_Data.Running, False, Now);
       Put_State_Change (Next.Trace_Data.Running, True, Now);

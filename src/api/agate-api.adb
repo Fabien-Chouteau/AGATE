@@ -35,7 +35,7 @@ pragma Warnings (On, "is an internal GNAT unit");
 
 with AGATE.SysCalls; use AGATE.SysCalls;
 with AGATE.Tasking;
-with AGATE.Timing;
+with AGATE.Timer;
 with AGATE.Traces;
 
 package body AGATE.API is
@@ -94,7 +94,7 @@ package body AGATE.API is
       return UInt64
    is
    begin
-      return UInt64 (AGATE.Timing.Clock);
+      return UInt64 (AGATE.Timer.Clock);
    end Do_Clock;
 
    --------------------
@@ -106,7 +106,7 @@ package body AGATE.API is
       return UInt64
    is
    begin
-      Timing.Delay_Until (Time (Arg1));
+      Tasking.Delay_Until (Time (Arg1));
       return 0;
    end Do_Delay_Until;
 

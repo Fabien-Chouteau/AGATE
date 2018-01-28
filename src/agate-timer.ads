@@ -31,10 +31,10 @@
 
 with HAL; use HAL;
 
-package AGATE.Timing is
+package AGATE.Timer is
 
    function Clock return Time;
 
-   procedure Delay_Until (Wake_Up_Time : Time);
+   procedure Set_Alarm (Alarm_Time : Time);
 
-end AGATE.Timing;
+end AGATE.Timer;
