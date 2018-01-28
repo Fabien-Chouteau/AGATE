@@ -40,9 +40,9 @@ package Test_Static_Tasks is
    procedure T1_Proc;
 
    package T1 is new AGATE.API.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
+     (Stack_Size     => 512,
+      Sec_Stack_Size => 0,
+      Heap_Size      => 0,
       Priority       => 1,
       Proc           => T1_Proc'Access,
       Name           => "Static T1");
@@ -50,9 +50,9 @@ package Test_Static_Tasks is
    procedure T2_Proc;
 
    package T2 is new AGATE.API.Static_Task
-     (Stack_Size     => 4096,
-      Sec_Stack_Size => 1024,
-      Heap_Size      => 1024,
+     (Stack_Size     => 512,
+      Sec_Stack_Size => 0,
+      Heap_Size      => 0,
       Priority       => 2,
       Proc           => T2_Proc'Access,
       Name           => "Static T2");

@@ -87,17 +87,17 @@ package body Test_Dynamic_Tasks is
       T : AGATE.Task_ID with Unreferenced;
    begin
       T := AGATE.API.Dynamic_Task.Create
-        (Stack_Size     => 1024,
-         Sec_Stack_Size => 1024,
-         Heap_Size      => 1024,
+        (Stack_Size     => 512,
+         Sec_Stack_Size => 0,
+         Heap_Size      => 0,
          Priority       => 0,
          Proc           => T1_Proc'Access,
          Name           => "Dynamic T1");
 
       T := AGATE.API.Dynamic_Task.Create
-        (Stack_Size     => 1024,
-         Sec_Stack_Size => 1024,
-         Heap_Size      => 1024,
+        (Stack_Size     => 512,
+         Sec_Stack_Size => 0,
+         Heap_Size      => 0,
          Priority       => 3,
          Proc           => T2_Proc'Access,
          Name           => "Dynamic T2");
