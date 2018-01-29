@@ -52,6 +52,12 @@ package AGATE.Arch.RISCV is
    function Mbadaddr return Word
      with Inline_Always;
 
+   function Mcycle_Low return Word
+     with Inline_Always;
+
+   function Mcycle_Hi return Word
+     with Inline_Always;
+
    type Mstatus_Reg is record
       UIE    : Boolean;
       SIE    : Boolean;

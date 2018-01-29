@@ -90,6 +90,12 @@ package body AGATE.Arch.RISCV is
    function I_Mbadaddr is new Read_CSR ("mbadaddr", Word);
    function Mbadaddr return Word renames I_Mbadaddr;
 
+   function I_Mcycle_Low is new Read_CSR ("mcycle", Word);
+   function Mcycle_Low return Word renames I_Mcycle_Low;
+
+   function I_Mcycle_Hi is new Read_CSR ("mcycleh", Word);
+   function Mcycle_Hi return Word renames I_Mcycle_Hi;
+
    function I_Mstatus is new Read_CSR ("mstatus", Mstatus_Reg);
    function Mstatus return Mstatus_Reg renames I_Mstatus;
 

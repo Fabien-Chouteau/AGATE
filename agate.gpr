@@ -34,7 +34,7 @@ project AGATE is
          for Target use "riscv32-unknown-elf";
          Timer   := "riscv32";
          Traps   := "riscv32";
-         Console := "none";
+         Console := "fe310";
          Src_Dir := Src_Dir & ("src/riscv32");
    end case;
 
