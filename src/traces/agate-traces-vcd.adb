@@ -104,7 +104,7 @@ package body AGATE.Traces is
    procedure Put_Line
      (Str : String)
    is
-      To_Put : constant String := Str & ASCII.LF;
+      To_Put : constant String := Str & ASCII.CR & ASCII.LF;
    begin
 
       if Traces_Output.Write (To_Put (To_Put'First)'Address,
