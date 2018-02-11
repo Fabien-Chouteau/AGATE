@@ -14,13 +14,13 @@ available on the AdaCore website:
 
 To build the project, simply run `gprbuild`:
 ```
-$ gprbuild -j0 -P agate.gpr -XArchitecture=Cortex-M4 
+$ gprbuild -j0 -P example/agate_example.gpr -XArchitecture=Cortex-M4
 ```
 
 ## Run
 You can try the project in GNATemulator (QEMU) provided with GNAT:
 ```
-$ arm-eabi-gnatemu -P agate.gpr obj/main
+$ arm-eabi-gnatemu -P example/agate_example.gpr example/obj/main
 ---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore
 ---> Static T2 Wait_For_Signal on Static_Semaphore
 ---> Static T1 Signal Static_Semaphore

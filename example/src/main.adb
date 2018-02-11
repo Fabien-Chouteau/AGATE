@@ -33,11 +33,11 @@ with Test_Static_Tasks;
 pragma Unreferenced (Test_Static_Tasks);
 with Test_Dynamic_Tasks;
 
-with AGATE.Scheduler;
+with AGATE.API;
 
 procedure Main is
 begin
    Test_Dynamic_Tasks.Create;
 
-   AGATE.Scheduler.Start;
+   AGATE.API.Start;
 end Main;

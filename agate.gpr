@@ -6,7 +6,6 @@ project AGATE is
 
    for Languages use ("Ada", "Asm_Cpp");
    for Object_Dir use "obj";
-   for Main use ("main.adb");
    for Create_Missing_Dirs use "true";
 
    type Traces_Output_Kind is ("none", "arm_semihosting", "console");
