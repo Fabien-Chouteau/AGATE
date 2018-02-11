@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Arch is
+private package AGATE.Arch is
 
    procedure Jump_In_Task (T : Task_ID)
      with No_Return;

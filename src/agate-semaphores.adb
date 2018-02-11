@@ -32,7 +32,6 @@
 with Ada.Unchecked_Conversion;
 with AGATE.Scheduler;                use AGATE.Scheduler;
 with AGATE.Traces;
-with AGATE.Scheduler.Context_Switch;
 
 package body AGATE.Semaphores is
 
@@ -86,7 +85,7 @@ package body AGATE.Semaphores is
             Insert_Task (Sem.all, T);
 
             if Context_Switch_Needed then
-               Context_Switch.Switch;
+               Do_Context_Switch;
             end if;
          end;
       end if;

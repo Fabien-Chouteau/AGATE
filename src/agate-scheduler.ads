@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Scheduler is
+private package AGATE.Scheduler is
 
    procedure Register (ID   : Task_ID;
                        Name : String)
@@ -57,6 +57,7 @@ package AGATE.Scheduler is
    procedure Wakeup_Expired_Alarms;
 
    function Context_Switch_Needed return Boolean;
+   procedure Do_Context_Switch;
 
    function Current_Task_Context return System.Address;
    pragma Export (C, Current_Task_Context, "current_task_context");

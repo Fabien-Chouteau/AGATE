@@ -73,6 +73,12 @@ package body AGATE.API is
       Register (Print, Do_Print'Access);
    end Initialize;
 
+   -----------
+   -- Start --
+   -----------
+
+   procedure Start renames Scheduler.Start;
+
    --------------
    -- Do_Yield --
    --------------

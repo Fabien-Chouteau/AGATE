@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Scheduler.Context_Switch is
+private package AGATE.Scheduler.Context_Switch is
 
    procedure Switch;
 

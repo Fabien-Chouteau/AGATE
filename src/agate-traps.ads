@@ -31,7 +31,7 @@
 
 with AGATE_Arch_Parameters;
 
-package AGATE.Traps is
+private package AGATE.Traps is
 
    type Trap_ID is new AGATE_Arch_Parameters.Trap_ID;
    type Trap_Priority is new AGATE_Arch_Parameters.Trap_Priority;

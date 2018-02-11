@@ -31,7 +31,6 @@
 
 with AGATE.Scheduler;                use AGATE.Scheduler;
 with AGATE.Traces;
-with AGATE.Scheduler.Context_Switch;
 
 package body AGATE.Mutexes is
 
@@ -63,7 +62,7 @@ package body AGATE.Mutexes is
          Insert_Task (Mut.all, T);
 
          if Context_Switch_Needed then
-            Context_Switch.Switch;
+            Do_Context_Switch;
          end if;
       end if;
    end Wait_Lock;

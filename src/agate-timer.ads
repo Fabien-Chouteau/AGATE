@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Timer is
+private package AGATE.Timer is
 
    function Clock return Time;
 

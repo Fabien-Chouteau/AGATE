@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Console is
+private package AGATE.Console is
 
    procedure Print (C : Character);
    procedure Print (Str : String);

@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Traces_Output is
+private package AGATE.Traces_Output is
 
    procedure Initialize (Filename : String)
      with Post => Initialized;

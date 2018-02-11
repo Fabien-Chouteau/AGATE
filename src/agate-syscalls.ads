@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.SysCalls is
+private package AGATE.SysCalls is
 
    type Syscall_ID is (Yield, Clock, Delay_Until, Sem_Signal, Sem_Wait,
                        Shutdown, Mutex_Wait_Lock, Mutex_Try_Lock,

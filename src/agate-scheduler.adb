@@ -398,4 +398,10 @@ package body AGATE.Scheduler is
      return Boolean
    is (Task_To_Run /= Current_Task);
 
+   -----------------------
+   -- Do_Context_Switch --
+   -----------------------
+
+   procedure Do_Context_Switch renames AGATE.Scheduler.Context_Switch.Switch;
+
 end AGATE.Scheduler;

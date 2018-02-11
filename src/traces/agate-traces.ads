@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Traces is
+private package AGATE.Traces is
 
    -- Tasks --
    procedure Register (ID   : Task_ID;

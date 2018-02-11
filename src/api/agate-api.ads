@@ -31,6 +31,9 @@
 
 package AGATE.API is
 
+   procedure Start
+     with No_Return;
+
    -- Tasking --
    procedure Yield;
    function Clock return Time;

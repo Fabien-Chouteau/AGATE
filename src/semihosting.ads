@@ -32,7 +32,7 @@
 with System;
 with AGATE_Arch_Parameters;
 
-package Semihosting is
+private package Semihosting is
 
    type SH_Word is new AGATE_Arch_Parameters.Word;
 

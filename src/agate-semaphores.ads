@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Semaphores is
+private package AGATE.Semaphores is
 
    function Count (Sem : Semaphore_ID)
                    return Semaphore_Count;

@@ -29,7 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-package AGATE.Mutexes is
+private package AGATE.Mutexes is
 
    procedure Wait_Lock (Mut : Mutex_ID);
 
