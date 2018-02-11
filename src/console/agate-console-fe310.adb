@@ -43,8 +43,8 @@ package body AGATE.Console is
 
    procedure Initialize is
    begin
-      GPIO0_Periph.IO_FUNC_SEL.Arr (17) := True;
-      GPIO0_Periph.IO_FUNC_SEL.Arr (18) := True;
+      GPIO0_Periph.IO_FUNC_SEL.Arr (17) := False;
+      GPIO0_Periph.IO_FUNC_SEL.Arr (18) := False;
 
       GPIO0_Periph.IO_FUNC_EN.Arr (18) := True;
       GPIO0_Periph.IO_FUNC_EN.Arr (17) := True;
