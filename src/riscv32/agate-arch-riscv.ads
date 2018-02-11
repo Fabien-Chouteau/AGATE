@@ -31,6 +31,8 @@
 
 package AGATE.Arch.RISCV is
 
+   function CPU_Frequency return Word;
+
    function Stvec return Word
      with Inline_Always;
 

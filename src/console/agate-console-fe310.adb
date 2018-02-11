@@ -29,72 +29,13 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with FE310_SVD.GPIO;        use FE310_SVD.GPIO;
-with FE310_SVD.UART;        use FE310_SVD.UART;
-with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
-with AGATE.Arch.RISCV;      use AGATE.Arch.RISCV;
+with FE310_SVD.GPIO;   use FE310_SVD.GPIO;
+with FE310_SVD.UART;   use FE310_SVD.UART;
+with AGATE.Arch.RISCV; use AGATE.Arch.RISCV;
 
 package body AGATE.Console is
 
-   CPU_Frequency_Calc : Word := 0;
-
-   function CPU_Frequency return Word;
    procedure Initialize;
-
-   -------------------
-   -- CPU_Frequency --
-   -------------------
-
-   function CPU_Frequency return Word is
-
-      function Measure_Freq (Count : Word) return Word;
-
-      ------------------
-      -- Measure_Freq --
-      ------------------
-
-      function Measure_Freq (Count : Word) return Word is
-         Start_Mtime  : Word;
-         Delta_Mtime  : Word;
-         Mtime_Freq   : constant Word := Timer_Frequency;
-         Start_Mcycle : Word;
-         Delta_Mcycle : Word;
-         Tmp          : Word;
-
-         Mtime_Lo : Word with Volatile_Full_Access, Address => Mtime_Lo_Addr;
-         Mtime_Hi : Word with Volatile_Full_Access, Address => Mtime_Hi_Addr;
-      begin
-
-         Tmp := Mtime_Lo;
-         loop
-            Start_Mtime := Mtime_Lo;
-            exit when Start_Mtime /= Tmp;
-         end loop;
-
-         Start_Mcycle := Mcycle_Low;
-
-         loop
-            Delta_Mtime := Mtime_Lo - Start_Mtime;
-            exit when Delta_Mtime > Count;
-         end loop;
-
-         Delta_Mcycle := Mcycle_Low - Start_Mcycle;
-
-         return (Delta_Mcycle / Delta_Mtime) * Mtime_Freq
-           + ((Delta_Mcycle mod Delta_Mtime) * Mtime_Freq) / Delta_Mtime;
-      end Measure_Freq;
-
-   begin
-      if CPU_Frequency_Calc = 0 then
-         --  Warm up
-         CPU_Frequency_Calc := Measure_Freq (1);
-
-         --  measure for real
-         CPU_Frequency_Calc := Measure_Freq (10);
-      end if;
-
-      return CPU_Frequency_Calc;
-   end CPU_Frequency;
 
    ----------------
    -- Initialize --
