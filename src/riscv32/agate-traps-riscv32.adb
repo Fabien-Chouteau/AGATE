@@ -50,7 +50,6 @@ package body AGATE.Traps is
    procedure Initialize is
       Unused : Word;
    begin
-      Write_Stvec (Word (To_Integer (Trap_Entry'Address)));
       Write_Mtvec (Word (To_Integer (Trap_Entry'Address)));
    end Initialize;
 
