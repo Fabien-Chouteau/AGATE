@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -40,6 +40,9 @@ package body Test_Dynamic_Tasks is
    Dyn_Semaphore : constant AGATE.Semaphore_ID :=
      AGATE.API.Dynamic_Semaphore.Create (Name => "Dynamic Sem");
 
+   T1, T2 : AGATE.Task_ID := Invalid_Task;
+   pragma Unreferenced (T2, T1);
+
    procedure T1_Proc;
    procedure T2_Proc;
 
@@ -66,7 +69,6 @@ package body Test_Dynamic_Tasks is
    procedure T2_Proc is
       Now : Time;
    begin
-
       Print_Line ("---> Dynamic T2 Wait_For_Signal on Dynamic_Semaphore");
 
       AGATE.API.Wait_For_Signal (Dyn_Semaphore);
@@ -84,18 +86,17 @@ package body Test_Dynamic_Tasks is
    ------------
 
    procedure Create is
-      T : AGATE.Task_ID with Unreferenced;
    begin
-      T := AGATE.API.Dynamic_Task.Create
-        (Stack_Size     => 512,
+      T1 := AGATE.API.Dynamic_Task.Create
+        (Stack_Size     => 4096,
          Sec_Stack_Size => 0,
          Heap_Size      => 0,
          Priority       => 0,
          Proc           => T1_Proc'Access,
          Name           => "Dynamic T1");
 
-      T := AGATE.API.Dynamic_Task.Create
-        (Stack_Size     => 512,
+      T2 := AGATE.API.Dynamic_Task.Create
+        (Stack_Size     => 4096,
          Sec_Stack_Size => 0,
          Heap_Size      => 0,
          Priority       => 3,

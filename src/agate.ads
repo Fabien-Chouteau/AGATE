@@ -87,8 +87,11 @@ private
 
    -- Task --
 
-   type Task_Stack is new Storage_Array
-     with Alignment => 8 * 8;
+   type Task_Stack is new Storage_Array;
+
+   pragma Warnings (Off, "suspiciously large alignment");
+   for Task_Stack'Alignment use 8 * 8;
+   pragma Warnings (On, "suspiciously large alignment");
 
    type Task_Stack_Access is access all Task_Stack;
 

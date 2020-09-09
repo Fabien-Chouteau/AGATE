@@ -39,7 +39,7 @@ package body AGATE.Scheduler is
 
    Alarm_List : Task_Object_Access := null;
 
-   Idle_Stack     : aliased Task_Stack := (1 .. 256 => 0);
+   Idle_Stack     : aliased Task_Stack := (1 .. 512 => 0);
    Idle_Sec_Stack : aliased Task_Sec_Stack := (1 .. 0 => 0);
    Idle_Heap      : aliased Task_Heap := (1 .. 0 => 0);
 

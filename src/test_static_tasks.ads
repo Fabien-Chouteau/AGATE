@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -40,7 +40,7 @@ package Test_Static_Tasks is
    procedure T1_Proc;
 
    package T1 is new AGATE.API.Static_Task
-     (Stack_Size     => 512,
+     (Stack_Size     => 4096,
       Sec_Stack_Size => 0,
       Heap_Size      => 0,
       Priority       => 1,
@@ -50,7 +50,7 @@ package Test_Static_Tasks is
    procedure T2_Proc;
 
    package T2 is new AGATE.API.Static_Task
-     (Stack_Size     => 512,
+     (Stack_Size     => 4096,
       Sec_Stack_Size => 0,
       Heap_Size      => 0,
       Priority       => 2,
