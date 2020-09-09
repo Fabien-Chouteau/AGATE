@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,11 +29,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Cortex_M_SVD.SysTick;  use Cortex_M_SVD.SysTick;
-with AGATE.Traps;           use AGATE.Traps;
-with AGATE.Scheduler;       use AGATE.Scheduler;
-with Cortex_M_SVD.SCB;      use Cortex_M_SVD.SCB;
-with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
+with Cortex_M_SVD.SysTick; use Cortex_M_SVD.SysTick;
+with AGATE.Scheduler;      use AGATE.Scheduler;
+with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
 package body AGATE.Timer is
 
@@ -42,6 +40,7 @@ package body AGATE.Timer is
 
    procedure Initialize;
    procedure Timer_Handler;
+   pragma Export (C, Timer_Handler, "SysTick_Handler");
    procedure Clear_Timer_Interrupt;
 
    ----------------
@@ -56,8 +55,6 @@ package body AGATE.Timer is
 
       Next_Tick := Time (Tick_Period);
 
-      Traps.Register (Timer_Handler'Access, SysTick_Trap_ID, 0);
-
       SysTick_Periph.RVR.RELOAD := Tick_Period - 1;
       SysTick_Periph.CSR.ENABLE := Enable;
 
@@ -67,7 +64,6 @@ package body AGATE.Timer is
       --  Workaround...
       CSR := CSR or 2**1;
 
-      Enable (SysTick_Trap_ID);
    end Initialize;
 
    ---------------------------

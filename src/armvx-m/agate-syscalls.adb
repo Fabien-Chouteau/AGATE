@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -31,29 +31,16 @@
 
 with Ada.Text_IO;
 
-with System.Machine_Code;   use System.Machine_Code;
-with AGATE.Traps;           use AGATE.Traps;
-with AGATE_Arch_Parameters; use AGATE_Arch_Parameters;
+with System.Machine_Code; use System.Machine_Code;
+with AGATE.Arch.ArmvX_m;
 
 package body AGATE.SysCalls is
 
    SysCall_Handler_Table : array (Syscall_ID) of Syscall_Handler
      := (others => null);
 
-   procedure Initialize;
    procedure SVCall_Handler;
-
-   ----------------
-   -- Initialize --
-   ----------------
-
-   procedure Initialize
-   is
-   begin
-      Traps.Register (SVCall_Handler'Access,
-                      SVCall_Trap_ID,
-                      0);
-   end Initialize;
+   pragma Export (C, SVCall_Handler, "SVC_Handler");
 
    --------------------
    -- SVCall_Handler --
@@ -64,23 +51,23 @@ package body AGATE.SysCalls is
       type Stack_Array is array (1 .. 4) of Word
         with Pack, Size => 4 * 32;
 
-      PSP    : System.Address;
+      SP : System.Address;
+
       Ret    : UInt64;
       Ret_Lo : Word;
       Ret_Hi : Word;
       ID     : Syscall_ID;
    begin
-      Asm ("mrs %0, psp",
-           Outputs  => System.Address'Asm_Output ("=r", PSP),
-           Volatile => True);
 
-      if PSP mod Stack_Array'Alignment /= 0 then
-         Ada.Text_IO.Put_Line ("Invalid PSP address");
+      SP := System.Address (Arch.ArmvX_m.PSP);
+
+      if SP mod Stack_Array'Alignment /= 0 then
+         Ada.Text_IO.Put_Line ("Invalid SP address");
       else
          declare
 
             Args : Stack_Array
-              with Address => PSP;
+              with Address => SP;
          begin
             if Args (1) in
               Syscall_ID'Pos (Syscall_ID'First) ..
@@ -174,6 +161,4 @@ package body AGATE.SysCalls is
       end if;
    end Register;
 
-begin
-   Initialize;
 end AGATE.SysCalls;

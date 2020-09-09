@@ -34,6 +34,11 @@ with System.Machine_Code;  use System.Machine_Code;
 
 with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
+--  AGATE.Traps is necessary for fault handlers but not imported anywhere at the
+--  moment...
+with AGATE.Traps;
+pragma Unreferenced (AGATE.Traps);
+
 package body AGATE.Arch is
 
    --------------------
