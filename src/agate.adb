@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -88,6 +88,7 @@ package body AGATE is
           when Created             => "Created",
           when Ready               => "Ready",
           when Running             => "Running",
+          when Fault               => "Fault",
           when Suspended_Alarm     => "Waiting for alarm",
           when Suspended_Semaphore => "Waiting on semaphore",
           when Suspended_Mutex     => "Waiting on mutex");

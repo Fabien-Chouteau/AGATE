@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -52,7 +52,7 @@ package AGATE is
 
    type Task_Procedure is access procedure;
 
-   type Task_Status is (Created, Ready, Running, Suspended_Alarm,
+   type Task_Status is (Created, Ready, Running, Fault, Suspended_Alarm,
                         Suspended_Semaphore, Suspended_Mutex);
 
    subtype Task_Name is String (1 .. 10);

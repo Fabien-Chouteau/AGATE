@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -38,6 +38,7 @@ private package AGATE.Traces is
 
    procedure Resume (ID : Task_ID);
    procedure Suspend (ID : Task_ID);
+   procedure Fault (ID : Task_ID);
    procedure Running (ID : Task_ID);
    procedure Change_Priority (ID       : Task_ID;
                               New_Prio : Internal_Task_Priority);

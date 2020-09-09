@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -49,6 +49,9 @@ private package AGATE.Scheduler is
 
    type Suspend_Reason is (Alarm, Semaphore, Mutex);
    procedure Suspend (Reason : Suspend_Reason);
+
+   procedure Fault;
+   --  Signal a fault from the running task
 
    procedure Change_Priority (New_Prio : Task_Priority);
 

@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -61,6 +61,15 @@ package body AGATE.Traces is
    begin
       null;
    end Suspend;
+
+   -----------
+   -- Fault --
+   -----------
+
+   procedure Fault (ID : Task_ID) is
+   begin
+      null;
+   end Fault;
 
    -------------
    -- Running --

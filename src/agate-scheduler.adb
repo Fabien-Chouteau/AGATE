@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -275,6 +275,17 @@ package body AGATE.Scheduler is
 
       Traces.Suspend (Current_Task);
    end Suspend;
+
+   -----------
+   -- Fault --
+   -----------
+
+   procedure Fault is
+   begin
+      Extract (Current_Task);
+      Current_Task.Status := Fault;
+      Traces.Fault (Current_Task);
+   end Fault;
 
    ---------------------
    -- Change_Priority --
