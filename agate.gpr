@@ -23,7 +23,7 @@ project AGATE is
    case Arch is
       when "Cortex-M4" =>
          for Target use "arm-eabi";
-         for Runtime ("Ada") use "zfp-stm32f4";
+         for Runtime ("Ada") use "zfp-cortex-m4f";
          Timer   := "systick";
          Traps   := "nvic";
          Console := "adatextio";
@@ -82,11 +82,5 @@ project AGATE is
         ("-gnatwa", "-gnatwe", "-gnatQ", "-gnatw.X", "-gnaty", "-gnatyO",
          "-gnatwC", "-gnatyM80", "-ffunction-sections", "-fdata-sections");
    end Compiler;
-
-   package Linker is
-      for Default_Switches ("Ada") use
-        ("-Wl,--gc-sections",
-         "-Wl,--print-memory-usage");
-   end Linker;
 
 end AGATE;
