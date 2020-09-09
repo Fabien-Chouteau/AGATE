@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -61,5 +61,115 @@ package body AGATE.Arch.ArmvX_m is
            Volatile => True);
       return Ret;
    end PSP;
+
+   -------------
+   -- Set_MSP --
+   -------------
+
+   procedure Set_MSP
+     (Addr : Process_Stack_Pointer)
+   is
+   begin
+      Asm ("msr msp, %0",
+           Inputs  => Process_Stack_Pointer'Asm_Input ("r", Addr),
+           Volatile => True);
+   end Set_MSP;
+
+   ---------
+   -- MSP --
+   ---------
+
+   function MSP
+     return Process_Stack_Pointer
+   is
+      Ret : Process_Stack_Pointer;
+   begin
+      Asm ("mrs %0, msp",
+           Outputs  => Process_Stack_Pointer'Asm_Output ("=r", Ret),
+           Volatile => True);
+      return Ret;
+   end MSP;
+
+   -----------------
+   -- Set_Control --
+   -----------------
+
+   procedure Set_Control (Val : Word) is
+   begin
+      Asm ("msr control, %0",
+           Inputs  => Word'Asm_Input ("r", Val),
+           Volatile => True);
+   end Set_Control;
+
+   -------------
+   -- Control --
+   -------------
+
+   function Control return Word is
+      Ret : Word;
+   begin
+      Asm ("mrs %0, control",
+           Outputs  => Word'Asm_Output ("=r", Ret),
+           Volatile => True);
+      return Ret;
+   end Control;
+
+   -------------------
+   -- Enable_Faults --
+   -------------------
+
+   procedure Enable_Faults is
+   begin
+      Asm ("cpsie f",
+           Volatile => True);
+   end Enable_Faults;
+
+   --------------------
+   -- Disable_Faults --
+   --------------------
+
+   procedure Disable_Faults is
+   begin
+      Asm ("cpsid f",
+           Volatile => True);
+   end Disable_Faults;
+
+   ----------------
+   -- Enable_IRQ --
+   ----------------
+
+   procedure Enable_IRQ is
+   begin
+      Asm ("cpsie i",
+           Volatile => True);
+   end Enable_IRQ;
+
+   -----------------
+   -- Disable_IRQ --
+   -----------------
+
+   procedure Disable_IRQ is
+   begin
+      Asm ("cpsid i",
+           Volatile => True);
+   end Disable_IRQ;
+
+   -----------------------------
+   -- Set_Thread_Unprivileged --
+   -----------------------------
+
+   procedure Set_Thread_Unprivileged is
+   begin
+      Set_Control (Control or 1);
+   end Set_Thread_Unprivileged;
+
+   ----------------------------
+   -- Set_Thread_Mode_On_PSP --
+   ----------------------------
+
+   procedure Set_Thread_Mode_On_PSP is
+   begin
+      Set_Control (Control or 2);
+   end Set_Thread_Mode_On_PSP;
 
 end AGATE.Arch.ArmvX_m;

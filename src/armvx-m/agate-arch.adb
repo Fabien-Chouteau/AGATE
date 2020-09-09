@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -31,7 +31,6 @@
 
 with Ada.Text_IO;
 with System.Machine_Code;  use System.Machine_Code;
-with AGATE.Arch.ArmvX_m;   use AGATE.Arch.ArmvX_m;
 
 with Cortex_M_SVD.SCB;     use Cortex_M_SVD.SCB;
 
@@ -100,25 +99,24 @@ package body AGATE.Arch is
      (T : Task_ID)
    is
    begin
+
       Ada.Text_IO.Put_Line ("Starting task at PSP: " & Image (T.Stack_Pointer));
 
-      Set_PSP (T.Stack_Pointer);
+      Asm (
+           --  Set thread mode stack (PSP)
+           "msr psp, %0" & ASCII.LF &
 
-      --  Processor can enter Thread mode from any level under the control of
-      --  an EXC_RETURN value.
-      SCB_Periph.CCR.NONBASETHREADENA := On_Exc_Return;
+           --  Switch thread mode to use PSP, and thread mode unpriviledge
+           "msr control, %1" & ASCII.LF &
 
-      --  No unalign access traps.
-      SCB_Periph.CCR.UNALIGNED_TRP := False;
-
-      --  Return to Thread mode, exception return uses non-floating-point
-      --  state from the PSP and execution uses PSP after return.
-      Asm ("mov lr, 0xFFFFFFFD" & ASCII.LF &
-           "bx lr",
+           --  Call task procedure
+           "blx %2",
+           Inputs => (Process_Stack_Pointer'Asm_Input ("r", T.Stack_Pointer),
+                      Word'Asm_Input ("r", 2#11#),
+                      Task_Procedure'Asm_Input ("r", T.Proc)),
            Volatile => True);
-      loop
-         null;
-      end loop;
+
+      raise Program_Error;
    end Jump_In_Task;
 
 end AGATE.Arch;

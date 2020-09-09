@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2018, Fabien Chouteau                  --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -34,7 +34,21 @@ with AGATE; use AGATE;
 package AGATE.Arch.ArmvX_m is
 
    procedure Set_PSP (Addr : Process_Stack_Pointer);
-
    function PSP return Process_Stack_Pointer;
+
+   procedure Set_MSP (Addr : Process_Stack_Pointer);
+   function MSP return Process_Stack_Pointer;
+
+   procedure Set_Control (Val : Word);
+   function Control return Word;
+
+   procedure Enable_Faults;
+   procedure Disable_Faults;
+
+   procedure Enable_IRQ;
+   procedure Disable_IRQ;
+
+   procedure Set_Thread_Unprivileged;
+   procedure Set_Thread_Mode_On_PSP;
 
 end AGATE.Arch.ArmvX_m;
