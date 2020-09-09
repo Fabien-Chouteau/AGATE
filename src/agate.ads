@@ -124,6 +124,7 @@ private
       Context       : AGATE_Arch_Parameters.Task_Context;
       Alarm_Time    : Time := 0;
       Status        : Task_Status := Created;
+      All_Task_Next : Task_Object_Access := null;
 
       Trace_Data    : AGATE_Types_Data.Traces.Task_Data;
    end record;
@@ -132,6 +133,7 @@ private
 
    Invalid_Task : constant Task_ID := null;
 
+   All_Tasks_List : Task_Object_Access := null;
    -- Semaphore --
 
    type Semaphore (Initial_Count : Semaphore_Count := 0)

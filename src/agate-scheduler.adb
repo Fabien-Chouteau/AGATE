@@ -81,6 +81,9 @@ package body AGATE.Scheduler is
 
       Insert (Task_ID (T));
 
+      ID.All_Task_Next := All_Tasks_List;
+      All_Tasks_List := Task_Object_Access (ID);
+
       Traces.Register (Task_ID (T), T.Name);
    end Register;
 

@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -116,6 +116,7 @@ package body AGATE.Semaphores is
    begin
       T := Sem.Waiting_List;
       Sem.Waiting_List := T.Next;
+      T.Next := null;
 
       Scheduler.Resume (Task_ID (T));
    end Resume_One_Task;

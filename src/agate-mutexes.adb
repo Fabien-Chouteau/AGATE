@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                   Copyright (C) 2017, Fabien Chouteau                    --
+--                Copyright (C) 2017-2020, Fabien Chouteau                  --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -117,6 +117,7 @@ package body AGATE.Mutexes is
 
       if Mut.Owner /= null then
          Mut.Waiting_List := Mut.Owner.Next;
+         Mut.Owner.Next := null;
 
          Traces.Lock (Mut, Task_ID (Mut.Owner));
 
