@@ -47,22 +47,22 @@ project AGATE is
    package Naming is
 
       for Body ("AGATE.Timer") use
-        "agate-timer-" & Timer & ".adb";
+        "agate-timer__" & Timer & ".adb";
 
       for Body ("AGATE.Traps") use
-        "agate-traps-" & Traps & ".adb";
+        "agate-traps__" & Traps & ".adb";
 
       for Body ("AGATE.Traces_Output") use
-        "agate-traces_output-" & Traces_Output & ".adb";
+        "agate-traces_output__" & Traces_Output & ".adb";
 
       for Body ("AGATE.Traces") use
-        "agate-traces-" & Traces & ".adb";
+        "agate-traces__" & Traces & ".adb";
 
       for Spec ("AGATE_Types_Data.Traces") use
-        "agate_types_data-traces-" & Traces & ".ads";
+        "agate_types_data-traces__" & Traces & ".ads";
 
       for Body ("AGATE.Console") use
-        "agate-console-" & Console & ".adb";
+        "agate-console__" & Console & ".adb";
 
    end Naming;
 
