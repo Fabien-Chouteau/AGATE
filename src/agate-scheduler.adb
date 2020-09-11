@@ -34,6 +34,7 @@ with AGATE.Traces;
 with AGATE.Scheduler.Context_Switch;
 with AGATE.Arch;           use AGATE.Arch;
 with AGATE.Timer;
+with AGATE.Stack_Canaries_Enable;
 
 package body AGATE.Scheduler is
 
@@ -78,6 +79,10 @@ package body AGATE.Scheduler is
       T.Current_Prio := T.Base_Prio;
 
       Initialize_Task_Context (ID);
+
+      if AGATE.Stack_Canaries_Enable.Enabled then
+         Set_Stack_Canary (ID);
+      end if;
 
       Insert (Task_ID (T));
 
@@ -283,11 +288,20 @@ package body AGATE.Scheduler is
    -- Fault --
    -----------
 
+   procedure Fault (ID : Task_ID) is
+   begin
+      Extract (ID);
+      ID.Status := Fault;
+      Traces.Fault (ID);
+   end Fault;
+
+   -----------
+   -- Fault --
+   -----------
+
    procedure Fault is
    begin
-      Extract (Current_Task);
-      Current_Task.Status := Fault;
-      Traces.Fault (Current_Task);
+      Fault (Current_Task);
    end Fault;
 
    ---------------------

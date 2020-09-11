@@ -14,6 +14,11 @@ project AGATE is
    type Traces_Kind is ("none", "vcd");
    Traces : Traces_Kind := external("Traces", "none");
 
+   type Enabled_Disabled is ("enabled", "disabled");
+
+   Stack_Canaries : Enabled_Disabled := external("AGATE_Stack_Canaries",
+                                                 "disabled");
+
    Timer   := "none";
    Traps   := "none";
    Console := "none";
@@ -63,6 +68,9 @@ project AGATE is
 
       for Body ("AGATE.Console") use
         "agate-console__" & Console & ".adb";
+
+      for Spec ("AGATE.Stack_Canaries_Enable") use
+        "agate-stack_canaries_enable__" & Stack_Canaries & ".ads";
 
    end Naming;
 

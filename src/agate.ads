@@ -117,6 +117,7 @@ private
                      Sec_Stack : Task_Sec_Stack_Access;
                      Heap      : Task_Heap_Access)
    is limited record
+      Canary        : UInt32;
       Current_Prio  : Internal_Task_Priority;
       Next          : Task_Object_Access := null;
       Stack_Pointer : Process_Stack_Pointer := Null_PSP;
@@ -134,6 +135,11 @@ private
    Invalid_Task : constant Task_ID := null;
 
    All_Tasks_List : Task_Object_Access := null;
+
+   procedure Set_Stack_Canary (T : Task_ID);
+   procedure Check_Stack_Canary (T : Task_ID);
+   procedure Check_All_Stack_Canaries;
+
    -- Semaphore --
 
    type Semaphore (Initial_Count : Semaphore_Count := 0)

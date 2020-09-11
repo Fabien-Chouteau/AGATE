@@ -29,7 +29,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Text_IO;
+
 with Ada.Unchecked_Conversion;
+with AGATE.Stack_Canaries_Enable;
+with AGATE.Scheduler;
 
 package body AGATE is
 
@@ -116,5 +120,69 @@ package body AGATE is
         " - PSP:" & Image (T.Stack_Pointer) &
         " - " & Image (T.Status);
    end Image;
+
+   ----------------------
+   -- Set_Stack_Canary --
+   ----------------------
+
+   procedure Set_Stack_Canary (T : Task_ID) is
+   begin
+      T.Canary := 16#DEADCAFE#;
+      if T.Stack'Length < 4 then
+         raise Program_Error;
+      end if;
+
+      T.Stack (1 .. 4) := (1, 2, 3, 4);
+   end Set_Stack_Canary;
+
+   ------------------------
+   -- Check_Stack_Canary --
+   ------------------------
+
+   procedure Check_Stack_Canary (T : Task_ID) is
+      Overflow : Boolean := False;
+   begin
+      if AGATE.Stack_Canaries_Enable.Enabled then
+
+         if T.Canary /= 16#DEADCAFE# then
+            Overflow := True;
+            Ada.Text_IO.Put_Line
+              ("Stack Overflow (Task Canary): " & Image (T));
+         end if;
+
+         if T.Stack'First /= 1 then
+            Overflow := True;
+            Ada.Text_IO.Put_Line
+              ("Stack Overflow (T.Stack'First /= 1): " &
+                 Image (T));
+         end if;
+
+         if T.Stack (1 .. 4) /= (1, 2, 3, 4) then
+            Overflow := True;
+            Ada.Text_IO.Put_Line
+              ("Stack Overflow (Stack Canary): " & Image (T));
+         end if;
+
+         if Overflow then
+            Scheduler.Fault (T);
+         end if;
+      end if;
+   end Check_Stack_Canary;
+
+   ------------------------------
+   -- Check_All_Stack_Canaries --
+   ------------------------------
+
+   procedure Check_All_Stack_Canaries is
+      T : Task_Object_Access := All_Tasks_List;
+   begin
+      if AGATE.Stack_Canaries_Enable.Enabled then
+         while T /= null loop
+            Check_Stack_Canary (Task_ID (T));
+            T := T.All_Task_Next;
+         end loop;
+      end if;
+   end Check_All_Stack_Canaries;
+
 
 end AGATE;

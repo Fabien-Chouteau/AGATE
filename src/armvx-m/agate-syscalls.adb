@@ -59,6 +59,8 @@ package body AGATE.SysCalls is
       ID     : Syscall_ID;
    begin
 
+      Check_All_Stack_Canaries;
+
       SP := System.Address (Arch.ArmvX_m.PSP);
 
       if SP mod Stack_Array'Alignment /= 0 then

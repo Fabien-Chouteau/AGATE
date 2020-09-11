@@ -1,6 +1,6 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                Copyright (C) 2017-2020, Fabien Chouteau                  --
+--                   Copyright (C) 2020, Fabien Chouteau                    --
 --                                                                          --
 --  Redistribution and use in source and binary forms, with or without      --
 --  modification, are permitted provided that the following conditions are  --
@@ -29,48 +29,7 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-private package AGATE.Scheduler is
+private package AGATE.Stack_Canaries_Enable is
+   Enabled : constant Boolean := False;
+end AGATE.Stack_Canaries_Enable;
 
-   procedure Register (ID   : Task_ID;
-                       Name : String)
-     with Pre => Name'Length <= Task_Name'Length;
-
-   procedure Start
-     with No_Return;
-
-   procedure Print_Ready_Tasks;
-
-   -- Scheduler --
-
-   function Current_Task return Task_ID;
-   function Task_To_Run return Task_ID;
-   procedure Yield;
-   procedure Resume (ID : Task_ID);
-
-   type Suspend_Reason is (Alarm, Semaphore, Mutex);
-   procedure Suspend (Reason : Suspend_Reason);
-
-   procedure Fault;
-   --  Signal a fault from the running task
-
-   procedure Fault (ID : Task_ID);
-   --  Signal a fault from the given task
-
-   procedure Change_Priority (New_Prio : Task_Priority);
-
-   procedure Delay_Until (Wake_Up_Time : Time);
-
-   procedure Wakeup_Expired_Alarms;
-
-   function Context_Switch_Needed return Boolean;
-   procedure Do_Context_Switch;
-
-   function Current_Task_Context return System.Address;
-   pragma Export (C, Current_Task_Context, "current_task_context");
-
-private
-
-   Running_Task : Task_Object_Access := null;
-   Ready_Tasks  : Task_Object_Access := null;
-
-end AGATE.Scheduler;
