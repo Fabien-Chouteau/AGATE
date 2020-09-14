@@ -2,17 +2,17 @@
 project AGATE is
    type Arch_Kind is ("Cortex-M4", "RISCV32");
 
-   Arch : Arch_Kind := external("Architecture", "Cortex-M4");
+   Arch : Arch_Kind := external("AGATE_Architecture", "Cortex-M4");
 
    for Languages use ("Ada", "Asm_Cpp");
    for Object_Dir use "obj";
    for Create_Missing_Dirs use "true";
 
    type Traces_Output_Kind is ("none", "arm_semihosting", "console");
-   Traces_Output : Traces_Output_Kind := external("Traces_Output", "none");
+   Traces_Output : Traces_Output_Kind := external("AGATE_Trace_Output", "none");
 
    type Traces_Kind is ("none", "vcd");
-   Traces : Traces_Kind := external("Traces", "none");
+   Traces : Traces_Kind := external("AGATE_Trace_Kind", "none");
 
    type Enabled_Disabled is ("enabled", "disabled");
 
@@ -34,8 +34,8 @@ project AGATE is
          Console := "adatextio";
          Src_Dir := Src_Dir & ("src/armvx-m");
       when "RISCV32" =>
-         for Runtime ("ada") use Project'Project_Dir & "/run-times/zfp-hifive1";
          for Target use "riscv32-unknown-elf";
+         for Runtime ("ada") use Project'Project_Dir & "/run-times/zfp-hifive1";
          Timer   := "riscv32";
          Traps   := "riscv32";
          Console := "fe310";
@@ -75,7 +75,7 @@ project AGATE is
    end Naming;
 
    type BUILD_TYPE is ("Debug", "Production");
-   Build : BUILD_Type := external ("BUILD", "Debug");
+   Build : BUILD_Type := external ("AGATE_Build_Mode", "Debug");
 
    package Compiler is
       case Build is

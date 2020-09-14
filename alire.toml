@@ -1,0 +1,11 @@
+name = "agate"
+version = "0.1.0"
+
+description = "Playing with the idea of a tasking/RTOS library in Ada"
+licenses = ["BSD 3-Clauses"]
+maintainers = ["fabien.chouteau@gmail.com"]
+maintainers-logins = ["Fabien-Chouteau"]
+project-files = ["agate.gpr"]
+tags = ["embedded", "rtos", "thread", "mutex"]
+
+
